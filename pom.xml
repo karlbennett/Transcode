@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>transcode</name>
+
+    <artifactId>transcode</artifactId>
+
+    <groupId>org.karlbennett</groupId>
+
+    <version>1.0-SNAPSHOT</version>
+
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lib.dir>${project.build.outputDirectory}/lib/</lib.dir>
+        <native.dir>src/main/native/</native.dir>
+    </properties>
+
+    <build>
+
+        <sourceDirectory>${native.dir}</sourceDirectory>
+
+        <resources>
+            <resource>
+                <directory>${native.dir}</directory>
+                <includes>
+                    <include>**/*.h</include>
+                    <include>**/*.cpp</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <id>build-native</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <tasks>
+                                <delete dir="${lib.dir}"/>
+                                <mkdir dir="${lib.dir}"/>
+                                <exec dir="${native.dir}" executable="make" failonerror="true"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <includes>
+                        <include>*.h</include>
+                        <include>*.cpp</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

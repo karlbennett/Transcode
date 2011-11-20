@@ -1,0 +1,9 @@
+# Ignore Intellij project files.
+*.iml
+
+# Ignore maven build directories.
+target/
+
+# Ignore compiled binary files.
+*.o
+*.so
