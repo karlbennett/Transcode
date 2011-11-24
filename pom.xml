@@ -16,16 +16,23 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lib.dir>${project.build.outputDirectory}/lib/</lib.dir>
+
+        <!--This is the directory where all the native source code is kept.-->
         <native.dir>src/main/native/</native.dir>
+
+        <!--This is the directory where the compiled native object files will be placed.-->
+        <lib.dir>${project.build.outputDirectory}/lib/</lib.dir>
     </properties>
 
     <build>
 
+        <!--Set the main source directory, though I don't know if this actually makes much of a difference.-->
         <sourceDirectory>${native.dir}</sourceDirectory>
 
         <resources>
             <resource>
+                <!--Set the resource directory to be the actual source directory, this is done so that maven will package -->
+                <!--the source into a source JAR even though it is not Java code.-->
                 <directory>${native.dir}</directory>
                 <includes>
                     <include>**/*.h</include>
@@ -36,6 +43,7 @@
 
         <plugins>
             <plugin>
+                <!--Generate the JNI headers and compile the native code.-->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
 
@@ -45,6 +53,8 @@
                         <phase>compile</phase>
                         <configuration>
                             <tasks>
+                                <!--We create the native binary output directories with ANT so that the method of creation is -->
+                                <!--platform independent.-->
                                 <delete dir="${lib.dir}"/>
                                 <mkdir dir="${lib.dir}"/>
                                 <exec dir="${native.dir}" executable="make" failonerror="true"/>
@@ -58,6 +68,7 @@
             </plugin>
 
             <plugin>
+                <!--Package the native source code up into a source JAR so that other projects can get access to the header files.-->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.1.2</version>
