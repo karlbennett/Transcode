@@ -42,4 +42,4 @@ LIBS = -L/usr/lib/i386-linux-gnu -lgstreamer-0.10\
 all : $(OBJ)
 
 clean :
-	rm $(OBJ)
+	rm $(LIB_DIR)*.so
