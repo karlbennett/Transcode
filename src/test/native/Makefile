@@ -12,9 +12,9 @@ TEST_CLASSES_DIR = $(TARGET)test-classes/
 LIB_TEST_DIR = $(TEST_CLASSES_DIR)lib-test/
 
 
-#####################
+##########################
 # Setup native compiling #
-#####################
+##########################
 
 # The C++ compiler that will be used.
 CCC = g++
@@ -37,3 +37,4 @@ all:
 	$(BIN_TEST_ONE)
 
 clean:
+    rm $(LIB_TEST_DIR)*
