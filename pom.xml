@@ -20,14 +20,24 @@
         <!--This is the directory where all the native source code is kept.-->
         <native.dir>src/main/native/</native.dir>
 
+        <!--This is the directory where all the native test code is kept.-->
+        <native.test.dir>src/test/native/</native.test.dir>
+
+
+        <native.test.resource.dir>src/test/resources/</native.test.resource.dir>
+
         <!--This is the directory where the compiled native object files will be placed.-->
         <lib.dir>${project.build.outputDirectory}/lib/</lib.dir>
+
+        <lib.test.dir>${project.build.testOutputDirectory}/lib-test/</lib.test.dir>
     </properties>
 
     <build>
 
         <!--Set the main source directory, though I don't know if this actually makes much of a difference.-->
         <sourceDirectory>${native.dir}</sourceDirectory>
+
+        <testSourceDirectory>${native.test.dir}</testSourceDirectory>
 
         <resources>
             <resource>
@@ -40,6 +50,14 @@
                 </includes>
             </resource>
         </resources>
+
+        <testResources>
+            <testResource>
+                <directory>${native.test.resource.dir}</directory>
+                <filtering>false</filtering>
+                <targetPath>${lib.test.dir}</targetPath>
+            </testResource>
+        </testResources>
 
         <plugins>
             <plugin>
@@ -63,6 +81,53 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
+                    </execution>
+
+                    <execution>
+                        <id>clean-native</id>
+                        <phase>pre-clean</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <exec dir="${native.dir}" executable="make" failonerror="false">
+                                    <arg value="clean"/>
+                                </exec>
+                            </tasks>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>build-native-tests</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <!--We create the native binary output directories with ANT so that the method of creation is -->
+                                <!--platform independent.-->
+                                <delete dir="${lib.test.dir}"/>
+                                <mkdir dir="${lib.test.dir}"/>
+                                <exec dir="${native.test.dir}" executable="make" failonerror="true"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>clean-native-tests</id>
+                        <phase>pre-clean</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <exec dir="${native.test.dir}" executable="make" failonerror="false">
+                                    <arg value="clean"/>
+                                </exec>
+                            </tasks>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
