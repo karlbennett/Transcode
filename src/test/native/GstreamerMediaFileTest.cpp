@@ -30,8 +30,6 @@ BOOST_AUTO_TEST_CASE( test_open_media_file )
 	transcode::GstreamerMediaFile mediafile1(VIDEO_ONE);
 	transcode::GstreamerMediaFile mediafile2(VIDEO_TWO);
 	transcode::GstreamerMediaFile mediafile3(VIDEO_THREE);
-
-	BOOST_TEST_MESSAGE( "media file creation failed." );
 }
 
 /**
@@ -60,7 +58,8 @@ BOOST_AUTO_TEST_CASE( test_open_invalid_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_open_non_media_file )
 {
-	transcode::GstreamerMediaFile mediafile(TEXT_FILE);
+	BOOST_REQUIRE_THROW( transcode::GstreamerMediaFile mediafile(TEXT_FILE),
+				transcode::MediaFileException );
 }
 
 /**
