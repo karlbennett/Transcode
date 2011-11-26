@@ -2,6 +2,7 @@
 #define __MEDIA_FILE_CPP__
 
 #include <media/io/gstreamer/GstreamerMediaFile.h>
+#include <media/io/exception/MediaFileException.h>
 #include <media/MediaContainer.h>
 #include <media/VideoStream.h>
 #include <media/AudioStream.h>
@@ -10,6 +11,7 @@
 #include <glib.h>
 #include <gst/gst.h>
 #include <iostream>
+#include <fstream>
 #include <boost/xpressive/xpressive.hpp>
 
 
@@ -259,6 +261,12 @@ static void typeFound(GstElement *typefind, guint probability, GstCaps *caps,
 	}
 }
 
+static bool fileExists(std::string fileName) {
+
+  std::ifstream ifile(fileName.c_str());
+
+  return ifile;
+}
 
 
 /**
@@ -270,7 +278,11 @@ static void typeFound(GstElement *typefind, guint probability, GstCaps *caps,
 transcode::GstreamerMediaFile::GstreamerMediaFile(const std::string& uri):
 		transcode::MediaFile() {
 
-	using namespace transcode;
+
+	if (!fileExists(uri)) {
+
+		throw MediaFileException("");
+	}
 
 	// Initialise the Gstreamer framework.
 	gst_init(NULL, NULL);
