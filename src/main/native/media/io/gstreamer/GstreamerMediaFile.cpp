@@ -15,6 +15,17 @@
 #include <boost/xpressive/xpressive.hpp>
 
 
+struct GstreamerStruct {
+
+	transcode::MediaContainer *mediaContainer;
+	std::vector<transcode::AudioStream> *audioStreams;
+	std::vector<transcode::VideoStream> *videoStreams;
+	GMainLoop *loop;
+	GstElement *pipeline;
+	std::string errorMessage;
+};
+
+
 /**
  * Terminate the provided GMainLoop. This function is a call back
  * that is used to terminate a running GMainLoop.
@@ -45,7 +56,8 @@ static gboolean exitLoop(gpointer loop) {
  *                   args[1] = (std::vector<VideoStream>*) the
  *                   MediaFile objects videoStreams attribute.
  */
-static void padAdded(GstElement *demuxer, GstPad *pad, gpointer **args) {
+static void padAdded(GstElement *demuxer, GstPad *pad,
+		GstreamerStruct& gstStruct) {
 
 	using namespace transcode;
 
@@ -73,10 +85,7 @@ static void padAdded(GstElement *demuxer, GstPad *pad, gpointer **args) {
 			gst_structure_get_int(str, "rate", &rate);
 			gst_structure_get_int(str, "channels", &channels);
 
-			std::vector<AudioStream> *audioStreams =
-					(std::vector<AudioStream>*) args[0];
-
-			audioStreams->push_back(AudioStream(mimeType, rate, channels));
+			gstStruct.audioStreams->push_back(AudioStream(mimeType, rate, channels));
 		}
 
 		// If this is a video stream then get it's width, height,
@@ -97,10 +106,7 @@ static void padAdded(GstElement *demuxer, GstPad *pad, gpointer **args) {
 				if (!gst_structure_get_int(str, "framerate", &framerate))
 					framerate = 0;
 
-				std::vector<VideoStream> *videoStreams = (std::vector<
-						VideoStream>*) args[1];
-
-				videoStreams->push_back(
+				gstStruct.videoStreams->push_back(
 						VideoStream(mimeType, width, height, framerate));
 			}
 		}
@@ -112,7 +118,7 @@ static void padAdded(GstElement *demuxer, GstPad *pad, gpointer **args) {
 
 /**
  * Stop the GMainLoop when there are no more demuxer pads to
- * process. This is a call back function that is regestered to the
+ * process. This is a call back function that is registered to the
  * no-more-pads event for the demuxer element.
  *
  * @params demuxer - the demuxer element that has no more pads to be
@@ -151,7 +157,7 @@ static void noMorePads(GstElement* demuxer, GMainLoop *loop) {
  *                                objects MediaContainer attribute.
  */
 static void typeFound(GstElement *typefind, guint probability, GstCaps *caps,
-		gpointer **args) {
+		GstreamerStruct& gstStruct) {
 
 	using namespace transcode;
 
@@ -181,7 +187,7 @@ static void typeFound(GstElement *typefind, guint probability, GstCaps *caps,
 	}
 
 	// This will point to the demuxer that will be added to the pipeline.
-	GstElement *demuxer;
+	GstElement *demuxer = NULL;
 
 	/*
 	 Create the correct demuxer element for the mediafiles
@@ -214,59 +220,110 @@ static void typeFound(GstElement *typefind, guint probability, GstCaps *caps,
 		containerDescription = "MPEG-4/QuickTime file format (MP4)";
 	}
 
-	// Retrieve the mediaContainer pointer from the args array.
-	MediaContainer *mediaContainer = (MediaContainer*) args[1];
+	// If we have managed to acquire a demuxer element then start decoding the media file.
+	if (demuxer != NULL) {
 
-	// Set the value for the MediaFile objects mediaContainer
-	// attribute.
-	*mediaContainer = MediaContainer(containerMimeType, containerDescription);
+		// Set the value for the MediaFile objects mediaContainer
+		// attribute.
+		*gstStruct.mediaContainer = MediaContainer(containerMimeType,
+				containerDescription);
 
-	// Retrieve the GMainLoop pointer from the args array. This will be passed
-	// into the demuxers 'no-more-pads' events call back.
-	GMainLoop *loop = (GMainLoop*) args[0];
+		// Add the demuxer element to the pipeline and set it's state to ready so
+		// that it will process the data that is sent to it.
+		gst_bin_add(GST_BIN (gstStruct.pipeline), demuxer);
+		gst_element_set_state(demuxer, GST_STATE_READY);
 
-	// Retrieve the pipeline from the args array. The demuxer element will be
-	// added to this.
-	GstElement *pipeline = (GstElement*) args[2];
+		/*
+		 Register the call back for the demuxers 'pad-added' event. It's in
+		 this call back that the MediaFile objects audioStreams and videoStreams
+		 attributes are populated.
+		 */
+		g_signal_connect(demuxer, "pad-added", G_CALLBACK (padAdded),
+				&gstStruct);
 
-	// Add the demuxer element to the pipeline and set it's state to ready so
-	// that it will process the data that is sent to it.
-	gst_bin_add(GST_BIN (pipeline), demuxer);
-	gst_element_set_state(demuxer, GST_STATE_READY);
+		// Register the call back for the demuxers 'no-more-pads' events, it is
+		// in this call back that the GMainLoop will be terminated.
+		g_signal_connect(demuxer, "no-more-pads", G_CALLBACK (noMorePads),
+				gstStruct.loop);
 
-	/*
-	 Register the call back for the demuxers 'pad-added' event. It's in
-	 this call back that the MediaFile objects audioStreams and videoStreams
-	 attributes are populated.
-	 */
-	g_signal_connect(demuxer, "pad-added", G_CALLBACK (padAdded), args[3]);
+		// Retrieve the typefinders source pad so that it can be linked to the
+		// demuxers sink pad.
+		GstPad *src = gst_element_get_static_pad(typefind, "src");
 
-	// Register the call back for the demuxers 'no-more-pads' events, it is
-	// in this call back that the GMainLoop will be terminated.
-	g_signal_connect(demuxer, "no-more-pads", G_CALLBACK (noMorePads), loop);
+		// Retrieve the demuxers sink pad so that it can be linked to the
+		// typefinders source pad.
+		GstPad *sink = gst_element_get_static_pad(demuxer, "sink");
 
-	// Retrieve the typefinders source pad so that it can be linked to the
-	// demuxers sink pad.
-	GstPad *src = gst_element_get_static_pad(typefind, "src");
+		// Try and link the typefinders srouce pad to the demuxers sink pad
+		// so that the media file data can flow into the demuxer.
+		if (G_UNLIKELY (gst_pad_link (src, sink) != GST_PAD_LINK_OK)) {
 
-	// Retrieve the demuxers sink pad so that it can be linked to the
-	// typefinders source pad.
-	GstPad *sink = gst_element_get_static_pad(demuxer, "sink");
+			gstStruct.errorMessage = "Linking pads failed.";
+		}
+	} else {
 
-	// Try and link the typefinders srouce pad to the demuxers sink pad
-	// so that the media file data can flow into the demuxer.
-	if (G_UNLIKELY (gst_pad_link (src, sink) != GST_PAD_LINK_OK)) {
+		gstStruct.errorMessage = "Could not find a related demuxer for the file.";
 
-		std::cout << "Linking pads failed." << std::endl;
+		g_main_loop_quit (gstStruct.loop);
 	}
 }
 
-static bool fileExists(std::string fileName) {
+/**
+ * React to each message sent on a Gstreamer pipelines bus.
+ *
+ * If the message indicates the end of stream the GMainLoop will be stopped.
+ * If the message is an error the GstreamerStruct will have it's error
+ * message set and the GMainLoop will be stopped.
+ *
+ * @param bus - the Gstreamer pipelines bus
+ * @param msg - the message that has just been sent on the pipelines bus.
+ * @param bus - a pointer for a GstreamerStruct.
+ *
+ * @return TRUE, always.
+ */
+static gboolean messageSent(GstBus *bus, GstMessage *msg, gpointer data) {
 
-  std::ifstream ifile(fileName.c_str());
+	// Get the GstreamerStruct so that we can stop the GMainLoop or set
+	// the error message.
+	GstreamerStruct *gstStruct = (GstreamerStruct*) data;
 
-  return ifile;
+	// See if we have seen an end of stream or error message.
+	switch(GST_MESSAGE_TYPE (msg)) {
+
+		// If we've seen an end of stream message just stop the GMainLoop.
+		case GST_MESSAGE_EOS: {
+
+			g_main_loop_quit (gstStruct->loop);
+			break;
+		}
+
+		// If we've seen an error message then set the GstreamerStruct
+		// error message string.
+		case GST_MESSAGE_ERROR: {
+
+			gchar *debug;
+			GError *error;
+
+			// Extract the error element.
+			gst_message_parse_error (msg, &error, &debug);
+			g_free (debug);
+
+			// Set the error message string with the message string
+			// from the error.
+			gstStruct->errorMessage = error->message;
+			g_error_free (error);
+
+			g_main_loop_quit (gstStruct->loop);
+
+			break;
+		}
+		default:
+		break;
+	}
+
+	return TRUE;
 }
+
 
 
 /**
@@ -277,12 +334,6 @@ static bool fileExists(std::string fileName) {
  */
 transcode::GstreamerMediaFile::GstreamerMediaFile(const std::string& uri):
 		transcode::MediaFile() {
-
-
-	if (!fileExists(uri)) {
-
-		throw MediaFileException("");
-	}
 
 	// Initialise the Gstreamer framework.
 	gst_init(NULL, NULL);
@@ -322,16 +373,30 @@ transcode::GstreamerMediaFile::GstreamerMediaFile(const std::string& uri):
 	// string.
 	g_object_set(G_OBJECT (filesrc), "location", uri.c_str(), NULL);
 
-	// Set up the arguments that are going to be passed into
-	// the 'have-type' events call back function.
+	/*
+	 Create the variables that will be placed within thes
+	 GstreamerStruct. They have been created in the scope
+	 of the constructor so that they aren't destroyed till
+	 the end of the constructor.
+	*/
 	MediaContainer mediaContainer("", "");
 	std::vector<AudioStream> audioStreams;
 	std::vector<VideoStream> videoStreams;
 
-	// TODO: WRONG! Create a private object to replace these hideous arrays!
-	void *padAddedArgs[2] = { &audioStreams, &videoStreams };
+	// Populate the GstreamerStruct so that the call back functions
+	// can access all the elements they require.
+	GstreamerStruct gstStruct;
 
-	void *haveTypeArgs[4] = { loop, &mediaContainer, pipeline, &padAddedArgs };
+	gstStruct.mediaContainer = &mediaContainer;
+	gstStruct.audioStreams = &audioStreams;
+	gstStruct.videoStreams = &videoStreams;
+	gstStruct.loop = loop;
+	gstStruct.pipeline = pipeline;
+
+	// Add a call back to handle any messaged sent within the pipeline.
+	GstBus *bus = gst_pipeline_get_bus(GST_PIPELINE (pipeline));
+	gst_bus_add_watch(bus, messageSent, &gstStruct);
+	gst_object_unref(bus);
 
 	/*
 	 Set the call back function that will be called on the
@@ -341,7 +406,7 @@ transcode::GstreamerMediaFile::GstreamerMediaFile(const std::string& uri):
 	 element.
 	 */
 	g_signal_connect(typefind, "have-type", G_CALLBACK (typeFound),
-			haveTypeArgs);
+			&gstStruct);
 
 	/*
 	 Add the filesrc and typefind elements to the pipeline. A demuxer
@@ -369,6 +434,10 @@ transcode::GstreamerMediaFile::GstreamerMediaFile(const std::string& uri):
 	// related to it and the elements contained within are freed.
 	gst_element_set_state(GST_ELEMENT (pipeline), GST_STATE_NULL);
 	gst_object_unref(GST_OBJECT (pipeline));
+
+	// If the error message has been set then something went wrong
+	// so throw an exception containing the error message.
+	if (gstStruct.errorMessage.length() > 0) throw MediaFileException(gstStruct.errorMessage);
 
 	setFileUri(uri);
 	setMediaContainer(mediaContainer);
