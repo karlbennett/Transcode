@@ -5,6 +5,14 @@
 # The target directory of the maven build, all the compiled code will be placed under this directory.
 TARGET = ../../../target/
 
+# The directory that where maven will look for files to be placed in the packaged JAR file.
+CLASSES_DIR = $(TARGET)classes/
+
+# The directory that will contain the compiled C++ files.
+LIB_DIR = $(CLASSES_DIR)lib/
+
+SRC_DIR = ../../main/native
+
 # The directory that will contain the compiled java test classes.
 TEST_CLASSES_DIR = $(TARGET)test-classes/
 
@@ -20,9 +28,13 @@ LIB_TEST_DIR = $(TEST_CLASSES_DIR)lib-test/
 CCC = g++
 
 # The required header files for the native code.
-INCLUDES = -I/usr/include/
+INCLUDES = -pthread -I/usr/include/ -I$(SRC_DIR) -I./ -I/usr/include/glib-2.0\
+	-I/usr/lib/i386-linux-gnu/glib-2.0/include -I/usr/include/gstreamer-0.10\
+	-I/usr/include/libxml2
 
-LIBS = -lboost_test_exec_monitor
+LIBS = -L/usr/lib/i386-linux-gnu -L$(LIB_DIR) -lboost_test_exec_monitor -lgstreamer-0.10\
+	-lgstpbutils-0.10 -lgstapp-0.10 -lgobject-2.0 -lgmodule-2.0 -lxml2 -lgthread-2.0 -lrt\
+	-lglib-2.0 -lGstreamerMediaFile
 
 # The first C++ test source file.
 SRC_TEST_ONE = GstreamerMediaFileTest.cpp
@@ -34,7 +46,7 @@ COMPILE_NATIVE_TWO_CMD = $(CCC) $(INCLUDES) $(SRC_TEST_ONE) $(LIBS) -o $(BIN_TES
 
 all:
 	$(COMPILE_NATIVE_TWO_CMD)
-	$(BIN_TEST_ONE)
+	LD_LIBRARY_PATH=$(LIB_DIR) $(BIN_TEST_ONE)
 
 clean:
-    rm $(LIB_TEST_DIR)*
+	rm $(LIB_TEST_DIR)*
