@@ -22,7 +22,7 @@ class MediaFileException {
 		std::string message;
 
 	public:
-		MediaFileException(std::string msg): message(msg) {}
+		MediaFileException(const std::string& msg): message(msg) {}
 
 		virtual ~MediaFileException() {}
 
