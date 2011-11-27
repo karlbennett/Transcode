@@ -15,6 +15,10 @@
 #include <boost/xpressive/xpressive.hpp>
 
 
+/**
+ * Struct to hold all the attributes that need to be
+ * accessed by the different call back functions.
+ */
 struct GstreamerStruct {
 
 	transcode::MediaContainer *mediaContainer;
