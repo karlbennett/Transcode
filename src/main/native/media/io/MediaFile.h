@@ -12,18 +12,18 @@ namespace transcode {
 class MediaFile {
 
     private:
-		std::string fileUri;
+		std::string filePath;
 		transcode::MediaContainer mediaContainer;
 		std::vector<transcode::AudioStream> audioStreams;
 		std::vector<transcode::VideoStream> videoStreams;
 
     protected:
 		explicit MediaFile():
-		fileUri(), mediaContainer("", ""),
+		filePath(), mediaContainer("", ""),
 		videoStreams(), audioStreams() {}
 
-		void setFileUri(const std::string& fileUri)
-		    { this->fileUri = fileUri; }
+		void setFilePath(const std::string& fileUri)
+		    { this->filePath = fileUri; }
 
 		void setMediaContainer(const MediaContainer& mediaContainer)
 		    { this->mediaContainer = mediaContainer; }
@@ -39,13 +39,13 @@ class MediaFile {
         		const transcode::MediaContainer& mc,
         		const std::vector<transcode::AudioStream>& as,
         		const std::vector<transcode::VideoStream>& vs):
-        			fileUri(uri), mediaContainer(mc), audioStreams(as),
+        			filePath(uri), mediaContainer(mc), audioStreams(as),
         			videoStreams(vs) {}
 
         virtual ~MediaFile() {};
 
-        std::string getFileUri()
-	    	const { return fileUri; }
+        std::string getFilePath()
+	    	const { return filePath; }
 
         transcode::MediaContainer getMediaContainer()
 	    	const { return mediaContainer; }

@@ -4,6 +4,7 @@
 #include <media/io/gstreamer/GstreamerMediaFile.h>
 #include <media/io/exception/MediaFileException.h>
 #include <string>
+#include <iostream>
 
 
 /**
@@ -54,22 +55,24 @@ BOOST_AUTO_TEST_CASE( test_media_file_properties )
 {
 	transcode::GstreamerMediaFile mediafile1(VIDEO_ONE);
 
-	BOOST_CHECK_EQUAL( mediafile1.getFileUri(), VIDEO_ONE );
+	BOOST_CHECK_EQUAL( mediafile1.getFilePath(), VIDEO_ONE );
 
 	BOOST_CHECK_EQUAL( mediafile1.getMediaContainer().getMimeType(),
 			AVI_CONTAINER );
 
-	BOOST_CHECK_EQUAL( mediafile1.getAudioStreamSize(), 1 );
+	BOOST_CHECK_EQUAL( mediafile1.getAudioStreamSize(), 2 );
 	BOOST_CHECK_EQUAL( mediafile1.getAudioStream(0).getMimeType(),
 			MPG_AUDIO );
+	BOOST_CHECK_EQUAL( mediafile1.getAudioStream(1).getMimeType(),
+				MPG_AUDIO );
 
-	BOOST_CHECK_EQUAL( mediafile1.getVideoStreamSize(), 1);
+	BOOST_CHECK_EQUAL( mediafile1.getVideoStreamSize(), 1 );
 	BOOST_CHECK_EQUAL( mediafile1.getVideoStream(0).getMimeType(),
 			DIVX_VIDEO);
 
 	transcode::GstreamerMediaFile mediafile2(VIDEO_TWO);
 
-	BOOST_CHECK_EQUAL( mediafile2.getFileUri(), VIDEO_TWO );
+	BOOST_CHECK_EQUAL( mediafile2.getFilePath(), VIDEO_TWO );
 
 	BOOST_CHECK_EQUAL( mediafile2.getMediaContainer().getMimeType(),
 			MKV_CONTAINER );
@@ -84,7 +87,7 @@ BOOST_AUTO_TEST_CASE( test_media_file_properties )
 
 	transcode::GstreamerMediaFile mediafile3(VIDEO_THREE);
 
-	BOOST_CHECK_EQUAL( mediafile3.getFileUri(), VIDEO_THREE );
+	BOOST_CHECK_EQUAL( mediafile3.getFilePath(), VIDEO_THREE );
 
 	BOOST_CHECK_EQUAL( mediafile3.getMediaContainer().getMimeType(),
 			MP4_CONTAINER );
