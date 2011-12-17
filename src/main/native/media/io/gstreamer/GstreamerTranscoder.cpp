@@ -99,6 +99,25 @@ static gboolean autoplugContinue(GstElement *decoder, GstPad *checkedPad,
 	return FALSE;
 }
 
+static gboolean errorSent(GstBus *bus, GstMessage *msg, gpointer data) {
+
+	GMainLoop *loop = (GMainLoop*)data;
+
+	gchar *debug;
+	GError *error;
+
+	// Extract the error element.
+	gst_message_parse_error(msg, &error, &debug);
+	g_free(debug);
+
+	std::cout << "Error (" << GST_MESSAGE_TYPE_NAME(msg) << "): " << error->message << std::endl;
+
+	g_error_free(error);
+	g_main_loop_quit(loop);
+
+	return TRUE;
+}
+
 
 /**
  * An Transcoder class implemented with the Gstreamer media framework.
@@ -114,6 +133,13 @@ transcode::GstreamerTranscoder::GstreamerTranscoder(MediaFile in, MediaFile out)
 
 	// Initialise the Gstreamer framework.
 	gst_init(NULL, NULL);
+
+	/**
+	 * A GMainLoop that is used to pause the main thread of this
+	 * classes construction while the Gstreamer thread processes the
+	 * related media file.
+	 */
+	loop = g_main_loop_new(NULL, FALSE);
 
 	/*
 	 Create references for:
@@ -140,6 +166,12 @@ transcode::GstreamerTranscoder::GstreamerTranscoder(MediaFile in, MediaFile out)
 
 	// Instantiate the sink element with the name 'sink'.
 	sink = gst_element_factory_make("appsink", "sink");
+
+	// Add the call back to handle any messages sent within the pipeline.
+	GstBus *bus = gst_pipeline_get_bus(GST_PIPELINE (pipeline));
+	gst_bus_add_signal_watch(bus);
+	g_signal_connect(bus, "message::error", G_CALLBACK (errorSent), loop);
+	gst_object_unref(bus);
 
 	// Point the filesrc to the location of the input file.
 	g_object_set(G_OBJECT (source), "location", in.getFilePath().c_str(), NULL);
@@ -178,11 +210,10 @@ transcode::GstreamerTranscoder::GstreamerTranscoder(MediaFile in, MediaFile out)
 	// Create the caps for the video stream profile using the width,
 	// height, and framerate of the output media files first video
 	// stream object. Example: http://gstreamer.freedesktop.org/data/doc/gstreamer/head/manual/html/section-caps-api.html#section-caps-filter
-	caps = gst_caps_new_simple(outPutVideoStream.getMimeType().c_str(),
-			"width", G_TYPE_INT, outPutVideoStream.getWidth(),
-			"height", G_TYPE_INT, outPutVideoStream.getHeight(),
-			"framerate", GST_TYPE_FRACTION, outPutVideoStream.getFramerate(), 1,
-			NULL);
+	caps = gst_caps_new_simple(outPutVideoStream.getMimeType().c_str(), "width",
+			G_TYPE_INT, outPutVideoStream.getWidth(), "height", G_TYPE_INT,
+			outPutVideoStream.getHeight(), "framerate", GST_TYPE_FRACTION,
+			outPutVideoStream.getFramerate(), 1, NULL);
 
 	// Create the video stream profile using the width, height, and
 	// framerate of the output media files first video stream object.
@@ -200,14 +231,14 @@ transcode::GstreamerTranscoder::GstreamerTranscoder(MediaFile in, MediaFile out)
 
 	// Create the caps for the audio stream profile using the sample rate and
 	// channels of the output media files first audio stream object.
-	caps = gst_caps_new_simple(outPutAudioStream.getMimeType().c_str(),
-			"rate", G_TYPE_INT, outPutAudioStream.getSampleRate(),
-			"channels", G_TYPE_INT, outPutAudioStream.getChannels(),
-			NULL);
+	caps = gst_caps_new_simple(outPutAudioStream.getMimeType().c_str(), "rate",
+			G_TYPE_INT, outPutAudioStream.getSampleRate(), "channels",
+			G_TYPE_INT, outPutAudioStream.getChannels(), NULL);
 
 	// Create the audio stream profile using the sample rate and
 	// channels of the output media files first audio stream object.
-	gst_encoding_container_profile_add_profile(prof,
+	gst_encoding_container_profile_add_profile(
+			prof,
 			(GstEncodingProfile*) gst_encoding_audio_profile_new(caps, NULL,
 					NULL, 0));
 
@@ -219,7 +250,7 @@ transcode::GstreamerTranscoder::GstreamerTranscoder(MediaFile in, MediaFile out)
 
 	// Add the source, decoder, encoder, and sink elements to the pipeline so
 	// they are all ready to begin transcoding the input media file.
-	gst_bin_add_many (GST_BIN (pipeline), source, decoder, encoder, sink, NULL);
+	gst_bin_add_many(GST_BIN (pipeline), source, decoder, encoder, sink, NULL);
 
 	// The source element and decoder element can be linked automatically.
 	gst_element_link(source, decoder);
@@ -236,7 +267,9 @@ transcode::GstreamerTranscoder::GstreamerTranscoder(MediaFile in, MediaFile out)
 			G_CALLBACK (autoplugContinue), encoder);
 
 	// Start the Gstreamer pipeline.
-	gst_element_set_state (pipeline, GST_STATE_PLAYING);
+	gst_element_set_state(pipeline, GST_STATE_PLAYING);
+
+	g_main_loop_run(loop);
 
 	// Pull the first buffer from the sink so we can ready it's data for
 	// reading as well as find out the size of the first buffer.

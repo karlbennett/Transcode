@@ -10,6 +10,7 @@
 
 #include <media/io/Transcoder.h>
 #include <media/io/MediaFile.h>
+#include <glib.h>
 #include <gst/gst.h>
 
 namespace transcode {
@@ -21,6 +22,7 @@ class GstreamerTranscoder: public Transcoder {
 		int bytesRead;
 		char *bytes;
 
+		GMainLoop *loop;
 		GstElement *pipeline;
 		GstElement *sink;
 		GstBuffer *buffer;
