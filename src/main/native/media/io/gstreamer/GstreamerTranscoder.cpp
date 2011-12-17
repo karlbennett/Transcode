@@ -143,7 +143,7 @@ GstreamerTranscoder::GstreamerTranscoder(MediaFile in, MediaFile out) :
 	sink = gst_element_factory_make("appsink", "sink");
 
 	// Point the filesrc to the location of the input file.
-	g_object_set(G_OBJECT (source), "location", in.getFileUri().c_str(), NULL);
+	g_object_set(G_OBJECT (source), "location", in.getFilePath().c_str(), NULL);
 
 	g_object_set(G_OBJECT (sink), "max-buffers", 128, NULL);
 
