@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_media_file_properties )
 	BOOST_CHECK_EQUAL( mediafile2.getMediaContainer().getMimeType(),
 			MKV_CONTAINER );
 
-	BOOST_CHECK_EQUAL( mediafile2.getAudioStreamSize(), 1 );
+	BOOST_CHECK_EQUAL( mediafile2.getAudioStreamSize(), 2 );
 	BOOST_CHECK_EQUAL( mediafile2.getAudioStream(0).getMimeType(),
 			MPG_AUDIO );
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( test_media_file_properties )
 	BOOST_CHECK_EQUAL( mediafile3.getMediaContainer().getMimeType(),
 			MP4_CONTAINER );
 
-	BOOST_CHECK_EQUAL( mediafile3.getAudioStreamSize(), 1 );
+	BOOST_CHECK_EQUAL( mediafile3.getAudioStreamSize(), 2 );
 	BOOST_CHECK_EQUAL( mediafile3.getAudioStream(0).getMimeType(),
 			MPG_AUDIO );
 
