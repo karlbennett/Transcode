@@ -99,7 +99,6 @@ static gboolean autoplugContinue(GstElement *decoder, GstPad *checkedPad,
 	return FALSE;
 }
 
-namespace transcode {
 
 /**
  * An Transcoder class implemented with the Gstreamer media framework.
@@ -110,7 +109,7 @@ namespace transcode {
  * @param in  - the input media file that is to be transcoded.
  * @param out - the output format that the media file is to be transcoded to.
  */
-GstreamerTranscoder::GstreamerTranscoder(MediaFile in, MediaFile out) :
+transcode::GstreamerTranscoder::GstreamerTranscoder(MediaFile in, MediaFile out) :
 		Transcoder(in, out) {
 
 	// Initialise the Gstreamer framework.
@@ -256,7 +255,7 @@ GstreamerTranscoder::GstreamerTranscoder(MediaFile in, MediaFile out) :
 /**
  * The classes destructor.
  */
-GstreamerTranscoder::~GstreamerTranscoder() {
+transcode::GstreamerTranscoder::~GstreamerTranscoder() {
 
 	// Stop the pipeline and unreference it so that the memory
 	// related to it and the elements contained within are freed.
@@ -269,7 +268,7 @@ GstreamerTranscoder::~GstreamerTranscoder() {
  *
  * @param c - the byte (char) that is to be populated from the transcoded stream.
  */
-void GstreamerTranscoder::get(char& c) {
+void transcode::GstreamerTranscoder::get(char& c) {
 
 	// If we have read all the bytes from the last allocated buffer then free
 	// it and read in a new one.
@@ -295,7 +294,7 @@ void GstreamerTranscoder::get(char& c) {
  * @param n - the number of bytes (char) that are to be populated within
  *            the provided array.
  */
-void GstreamerTranscoder::get(char *c, int n) {
+void transcode::GstreamerTranscoder::get(char *c, int n) {
 
 	// Record to total number of bytes read so we know when to stop reading them.
 	int totalBytesRead = 0;
@@ -311,5 +310,3 @@ void GstreamerTranscoder::get(char *c, int n) {
 		c[totalBytesRead++] = byte; // ...and add it to the byte array.
 	}
 }
-
-} /* namespace transcode */
