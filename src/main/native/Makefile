@@ -5,10 +5,10 @@
 # The target directory of the maven build, all the compiled code will be placed under this directory.
 TARGET = ../../../target/
 
-# The directory that where maven will look for files to be placed in the packaged JAR file.
+# The directory where maven will look for files that will be placed in the packaged JAR file.
 CLASSES_DIR = $(TARGET)classes/
 
-# The directory that will contain the compiled C++ files.
+# The directory that will contain the compiled native files that will be packages into the JAR file.
 LIB_DIR = $(CLASSES_DIR)lib/
 
 
