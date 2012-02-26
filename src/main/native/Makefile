@@ -20,20 +20,16 @@ LIB_DIR = $(CLASSES_DIR)lib/
 CCC = g++
 
 # The source files to compile.
-SRC = media/io/gstreamer/GstreamerMediaFile.cpp media/io/gstreamer/GstreamerTranscoder.cpp
+SRC = utils/MediaUtils.cpp
 
 # The source files with their extensions changed to the object file extension of ".so".
 OBJ = $(SRC:.cpp=.so)
 
 # The required head files.
-INCLUDES = -pthread -I./ -I/usr/include/glib-2.0\
-	-I/usr/lib/i386-linux-gnu/glib-2.0/include\
-	-I/usr/include/gstreamer-0.10 -I/usr/include/libxml2
+INCLUDES = -I./ -I/usr/include/
 
 # The required libraries.
-LIBS = -L/usr/lib/i386-linux-gnu -lgstreamer-0.10\
-	-lgstpbutils-0.10 -lgstapp-0.10 -lgobject-2.0\
-	-lgmodule-2.0 -lxml2 -lgthread-2.0 -lrt -lglib-2.0
+LIBS = -L/usr/lib/
 
 # The rule for how a ".cpp" file should be compiled into a ".so" file.
 %.so : %.cpp
