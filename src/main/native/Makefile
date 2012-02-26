@@ -20,16 +20,16 @@ LIB_DIR = $(CLASSES_DIR)lib/
 CCC = g++
 
 # The source files to compile.
-SRC = utils/MediaUtils.cpp
+SRC = utils/MediaUtilsFFMPEG.cpp
 
 # The source files with their extensions changed to the object file extension of ".so".
 OBJ = $(SRC:.cpp=.so)
 
 # The required head files.
-INCLUDES = -I./ -I/usr/include/
+INCLUDES = -D__STDC_CONSTANT_MACROS -I./ -I/usr/include/
 
 # The required libraries.
-LIBS = -L/usr/lib/
+LIBS = -L/usr/lib/ -lavformat -lavcodec -lavutil -lboost_filesystem
 
 # The rule for how a ".cpp" file should be compiled into a ".so" file.
 %.so : %.cpp

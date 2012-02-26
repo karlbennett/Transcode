@@ -15,11 +15,36 @@
 namespace transcode {
 
 /**
+ * An exception that is thrown from within the MediaUtils functions.
+ */
+class MediaUtilsException {
+
+private:
+	std::string message;
+
+public:
+	MediaUtilsException() :
+			message("") {
+	}
+
+	/**
+	 * Instantiate a MediaUtilsException object with the provided message.
+	 */
+	MediaUtilsException(std::string msg) :
+			message(msg) {
+	}
+};
+
+/**
  * Struct to hold all the common attributes for a media type.
  */
 struct MediaDetail {
 
-	const std::string mimeType;
+	std::string mimeType;
+
+	MediaDetail() :
+			mimeType("") {
+	}
 
 	/**
 	 * Construct a new MediaDetails struct with the provided mimetype.
@@ -36,8 +61,12 @@ struct MediaDetail {
  */
 struct AudioDetail: MediaDetail {
 
-	const int rate;
-	const int channels;
+	int rate;
+	int channels;
+
+	AudioDetail() :
+			MediaDetail(), rate(0), channels(0) {
+	}
 
 	/**
 	 * Construct a new AudioDetails struct with the provided mimetype,
@@ -57,9 +86,13 @@ struct AudioDetail: MediaDetail {
  */
 struct VideoDetail: MediaDetail {
 
-	const int width;
-	const int height;
-	const boost::rational<int> frameRate;
+	int width;
+	int height;
+	int frameRate;
+
+	VideoDetail() :
+			MediaDetail(), width(0), height(0), frameRate(0) {
+	}
 
 	/**
 	 * Construct a new VideoDetails struct with the provided mimetype,
@@ -72,7 +105,7 @@ struct VideoDetail: MediaDetail {
 	 * 					0 means a variable framerate.
 	 */
 	VideoDetail(const std::string& mType, const int& w, const int& h,
-			const boost::rational<int>& fr) :
+			const int& fr) :
 			MediaDetail(mType), width(w), height(h), frameRate(fr) {
 	}
 };
@@ -82,9 +115,15 @@ struct VideoDetail: MediaDetail {
  */
 struct ContainerDetail: MediaDetail {
 
-	const std::string description;
-	const std::vector<AudioDetail> audioDetails;
-	const std::vector<VideoDetail> videoDetails;
+	std::string description;
+	std::vector<AudioDetail> audioDetails;
+	std::vector<VideoDetail> videoDetails;
+
+	ContainerDetail() :
+			MediaDetail(), description(""), audioDetails(
+					std::vector<AudioDetail>()), videoDetails(
+					std::vector<VideoDetail>()) {
+	}
 
 	/**
 	 * Construct a new ContainerDetails struct with the provided mimetype,
@@ -110,10 +149,14 @@ struct ContainerDetail: MediaDetail {
  */
 struct MediaFileDetail {
 
-	const ContainerDetail container;
-	const std::string path;
-	const std::string name;
-	const int size;
+	ContainerDetail container;
+	std::string path;
+	std::string name;
+	int size;
+
+	MediaFileDetail() :
+			container(ContainerDetail()), path(""), name(""), size(0) {
+	}
 
 	/**
 	 * Construct a new MediaFileDetail struct with the provided container,
@@ -130,6 +173,14 @@ struct MediaFileDetail {
 	}
 };
 
+/**
+ * Extract the file name from the provided file path.
+ *
+ * @param filePath - the path to the file that will have it's name extracted.
+ *
+ * @return the name of the file if a correct path was provided.
+ */
+std::string extractFileName(std::string filePath);
 
 /**
  * Find the details for the media file at the provided path.
