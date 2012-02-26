@@ -23,7 +23,7 @@ extern "C" {
 
 /**
  * Initialise the map that will be used to find the mime type for a
- * select libav CodecID's.
+ * select few libav CodecID's.
  */
 static std::map<CodecID, std::string> initialiseCodecToMimeType() {
 
