@@ -4,6 +4,7 @@
 # Ignore eclipse project directories.
 .cproject
 .project
+.settings
 
 # Ignore maven build directories.
 target/
