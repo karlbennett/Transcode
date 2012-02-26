@@ -6,7 +6,7 @@ class TestObject {};
 /**
  * Test example.
  */
-BOOST_AUTO_TEST_CASE( test_open_media_file )
+BOOST_AUTO_TEST_CASE( test_example )
 {
 
 	// Example test for exception.
