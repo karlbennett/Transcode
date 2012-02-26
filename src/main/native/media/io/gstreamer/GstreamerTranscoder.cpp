@@ -46,8 +46,28 @@ static void padAdded(GstElement * decoder, GstPad * pad, GstElement * encoder) {
 		// the encoder element that we will connect to the new decoder pad.
 		GstPad *sinkpad;
 
+		/**
+		 * Maybe loop here and try and see if the right sink pad can be found?
+		 */
+
 		// Request a compatible pad from the encoder element.
-		sinkpad = gst_element_get_compatible_pad(encoder, pad, NULL);
+		g_signal_emit_by_name(encoder, "request-pad", caps, &sinkpad);
+
+		gchar *encoderName = gst_element_get_name(encoder);
+		gchar *sinkName = gst_pad_get_name(sinkpad);
+		GstCaps *sinkCaps = gst_pad_get_caps(sinkpad);
+		GstStructure *sinkStructure = gst_caps_get_structure(sinkCaps, 0);
+		const gchar *sinkMimeType = gst_structure_get_name(sinkStructure);
+
+		std::cout << "Encoder Name: " << encoderName << std::endl;
+		std::cout << "Sink Pad: " << sinkName << std::endl;
+		std::cout << "Sink MimeType: " << sinkMimeType << std::endl;
+		if (gst_pad_get_direction(sinkpad) == GST_PAD_SINK) std::cout << "SINK PAD!" << std::endl;
+		else std::cout << "Shit source pad..." << std::endl;
+
+		gst_caps_unref (sinkCaps);
+		g_free(sinkName);
+		g_free(encoderName);
 
 		// If the pad is link then don't try and link the new pad.
 		if (gst_pad_is_linked(sinkpad)) {
@@ -57,7 +77,7 @@ static void padAdded(GstElement * decoder, GstPad * pad, GstElement * encoder) {
 		} else {
 
 			// Otherwise try and link the new pad to the encoders compatible pad.
-			if (G_UNLIKELY (gst_pad_link (pad, sinkpad) == GST_PAD_LINK_OK)) {
+			if (gst_pad_link (pad, sinkpad) == GST_PAD_LINK_OK) {
 
 				cout << "Pad linked: " << mimeType << endl;
 
@@ -67,6 +87,8 @@ static void padAdded(GstElement * decoder, GstPad * pad, GstElement * encoder) {
 			}
 		}
 	}
+
+	gst_caps_unref (caps);
 }
 
 /**
@@ -85,18 +107,34 @@ static void padAdded(GstElement * decoder, GstPad * pad, GstElement * encoder) {
 static gboolean autoplugContinue(GstElement *decoder, GstPad *checkedPad,
 		GstCaps *caps, GstElement *encoder) {
 
+	std::cout << "UM WHAT!" << std::endl;
+
+	GstStructure *structure = gst_caps_get_structure(caps, 0);
+	std::string mimeType = gst_structure_get_name(structure);
+	std::cout << "-----------------Source Pad: " << mimeType << std::endl;
+
 	// A reference to hold the sink pad that was returned by the encoder.
 	GstPad *sinkpad;
 
 	// Try and see if the current pad can be connected to the encoder.
 	g_signal_emit_by_name(encoder, "request-pad", caps, &sinkpad);
 
-	// If it can't try the next pad.
-	if (sinkpad == NULL)
-		return TRUE;
+	if (sinkpad != NULL) {
 
-	// Otherwise use this pad.
-	return FALSE;
+		GstCaps *sinkCaps = gst_pad_get_caps(sinkpad);
+		GstStructure *sinkStructure = gst_caps_get_structure(sinkCaps, 0);
+		std::string sinkMimeType = gst_structure_get_name(sinkStructure);
+
+		std::cout << "-----------------Sink Pad: " << sinkMimeType <<  std::endl;
+
+		if (mimeType.compare(sinkMimeType) ==  0) {
+			std::cout << "SUCCESS!" << std::endl;
+
+			return FALSE;
+		}
+	}
+
+	return TRUE;
 }
 
 static gboolean errorSent(GstBus *bus, GstMessage *msg, gpointer data) {
