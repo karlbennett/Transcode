@@ -204,8 +204,9 @@ MediaFileDetail findMediaFileDetails(const std::string& fp) {
 	// different elements.
 	path filePath(fp);
 
-	// Another small optimisation, if the provided file does not exist then again
-	// don't bother with any further processing.
+	// Another small optimisation, use the boost filesystem exists function to
+	// check if the provided file does not exist and if it doesn't again don't
+	// bother with any further processing.
 	if (!exists(filePath)) {
 
 		throw MediaUtilsException("File " + fp + " does not exist.");
@@ -217,7 +218,7 @@ MediaFileDetail findMediaFileDetails(const std::string& fp) {
 	// of the media file.
 	int fileSize = file_size(filePath);
 
-	// Initialise the ffmpeg libav library so we can use it to inpect the media file.
+	// Initialise the ffmpeg libav library so we can use it to inspect the media file.
 	avcodec_init();
 	avcodec_register_all();
 	av_register_all();
