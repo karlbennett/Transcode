@@ -173,14 +173,6 @@ struct MediaFileDetail {
 	}
 };
 
-/**
- * Extract the file name from the provided file path.
- *
- * @param filePath - the path to the file that will have it's name extracted.
- *
- * @return the name of the file if a correct path was provided.
- */
-std::string extractFileName(std::string filePath);
 
 /**
  * Find the details for the media file at the provided path.
