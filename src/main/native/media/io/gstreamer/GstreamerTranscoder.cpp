@@ -59,12 +59,6 @@ static void padAdded(GstElement * decoder, GstPad * pad, GstElement * encoder) {
 		GstStructure *sinkStructure = gst_caps_get_structure(sinkCaps, 0);
 		const gchar *sinkMimeType = gst_structure_get_name(sinkStructure);
 
-		std::cout << "Encoder Name: " << encoderName << std::endl;
-		std::cout << "Sink Pad: " << sinkName << std::endl;
-		std::cout << "Sink MimeType: " << sinkMimeType << std::endl;
-		if (gst_pad_get_direction(sinkpad) == GST_PAD_SINK) std::cout << "SINK PAD!" << std::endl;
-		else std::cout << "Shit source pad..." << std::endl;
-
 		gst_caps_unref (sinkCaps);
 		g_free(sinkName);
 		g_free(encoderName);
@@ -107,11 +101,8 @@ static void padAdded(GstElement * decoder, GstPad * pad, GstElement * encoder) {
 static gboolean autoplugContinue(GstElement *decoder, GstPad *checkedPad,
 		GstCaps *caps, GstElement *encoder) {
 
-	std::cout << "UM WHAT!" << std::endl;
-
 	GstStructure *structure = gst_caps_get_structure(caps, 0);
 	std::string mimeType = gst_structure_get_name(structure);
-	std::cout << "-----------------Source Pad: " << mimeType << std::endl;
 
 	// A reference to hold the sink pad that was returned by the encoder.
 	GstPad *sinkpad;
@@ -124,8 +115,6 @@ static gboolean autoplugContinue(GstElement *decoder, GstPad *checkedPad,
 		GstCaps *sinkCaps = gst_pad_get_caps(sinkpad);
 		GstStructure *sinkStructure = gst_caps_get_structure(sinkCaps, 0);
 		std::string sinkMimeType = gst_structure_get_name(sinkStructure);
-
-		std::cout << "-----------------Sink Pad: " << sinkMimeType <<  std::endl;
 
 		if (mimeType.compare(sinkMimeType) ==  0) {
 			std::cout << "SUCCESS!" << std::endl;
