@@ -236,15 +236,20 @@ MediaFileDetail findMediaFileDetails(const std::string& fp) {
 	// Find the description for the media files container.
 	std::string description = videoFile->iformat->long_name;
 
+	// Extract all the audio codecs.
 	std::vector<AudioDetail> audioDetails = extractAudioDetails(*videoFile);
+	// Extract all the video codecs.
 	std::vector<VideoDetail> videoDetails = extractVideoDetails(*videoFile);
 
+	// Construct a container struct with all the previously gathered details.
 	ContainerDetail container(containerMimeType, description, audioDetails,
 			videoDetails);
 
+	// Clean up the lib av structs.
 	closeCodecs(*videoFile);
 	av_close_input_file(videoFile);
 
+	// Then lastly return a fully populated MediaFileDetail struct.
 	return MediaFileDetail(container, fp, fileName, fileSize);
 }
 
