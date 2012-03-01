@@ -55,6 +55,16 @@ static std::map<CodecID, std::string> initialiseCodecToMimeType() {
 	codecToMimeType[CODEC_ID_XVID] = "video/x-xvid";
 #endif
 
+	// Subtitle types.
+	codecToMimeType[CODEC_ID_DVD_SUBTITLE] = "application/dvd";
+	codecToMimeType[CODEC_ID_DVB_SUBTITLE] = "application/dvb";
+	codecToMimeType[CODEC_ID_TEXT] = "text/plain";
+	codecToMimeType[CODEC_ID_XSUB] = "application/x-subrip";
+	codecToMimeType[CODEC_ID_SSA] = "application/ssa";
+	codecToMimeType[CODEC_ID_MOV_TEXT] = "text/plain";
+	codecToMimeType[CODEC_ID_HDMV_PGS_SUBTITLE] = "application/pgs";
+	codecToMimeType[CODEC_ID_DVB_TELETEXT] = "application/dvb";
+
 	return codecToMimeType;
 }
 
@@ -88,7 +98,6 @@ std::map<CodecID, std::string> CODEC_TO_MIMETYPE = initialiseCodecToMimeType();
 std::map<std::string, std::string> NAME_TO_MIMETYPE =
 		initialiseNameToMimeType();
 
-
 /**
  * Extract the media details of the given type from the libav AVFormatContext struct
  * using the provided get details function.
@@ -99,26 +108,29 @@ std::map<std::string, std::string> NAME_TO_MIMETYPE =
  *
  * @return a vector containing all the extracted audio details.
  */
-template<typename T> std::vector<T> extractDetails(const AVFormatContext& videoFile,
-		AVMediaType mediatype, std::tr1::function<T(const AVCodecContext&)> detailsCallback) {
+template<typename T> std::vector<T> extractDetails(
+		const AVFormatContext& videoFile, AVMediaType mediatype,
+		std::tr1::function<T(const AVStream&)> detailsCallback) {
 
 	// Simplify the use of the transcode api.
 	using namespace transcode;
 
 	std::vector<T> details;
 
-	AVCodecContext *codec;
+	AVStream *stream;
+	AVMediaType codecType;
 
 	// Iterate through the streams searching for any audio streams.
 	for (int i = 0; i < videoFile.nb_streams; i++) {
 
-		codec = videoFile.streams[i]->codec;
+		stream = videoFile.streams[i];
+		codecType = videoFile.streams[i]->codec->codec_type;
 
 		// If we find an audio stream use its details to construct an AudioDetail
 		// struct.
-		if (codec->codec_type == mediatype) {
+		if (codecType == mediatype) {
 
-			details.push_back(detailsCallback(*codec));
+			details.push_back(detailsCallback(*stream));
 		}
 	}
 
@@ -126,31 +138,74 @@ template<typename T> std::vector<T> extractDetails(const AVFormatContext& videoF
 }
 
 /**
- * Get the audio details from the provided libav AVCodecContext.
+ * Extract the language from the provided libav AVStream.
  *
- * @param codec - the av codec that contains the relevant audio details.
+ * @param stream - the av stream that contains the relevant language.
+ *
+ * @return the name of the streams language if one has been set.
+ */
+static std::string extractLanguage(const AVStream& stream) {
+
+	// Try and find the language value by inspecting the streams metadata.
+	// Supposedly this is paired to the key "language".
+	AVMetadataTag *metadata = av_metadata_get(stream.metadata, "language", NULL,
+			0);
+
+	return metadata == NULL ? "" : metadata->value;
+}
+
+/**
+ * Extract the subtitle detail from the provided libav AVStream.
+ *
+ * @param stream - the av stream that contains the relevant subtitle details.
+ *
+ * @return a subtitle details struct populated from values within the provided codec.
+ */
+static transcode::SubtitleDetail extractSubtitleDetail(const AVStream& stream) {
+
+	AVCodecContext *codec = stream.codec;
+
+	std::string language = extractLanguage(stream);
+
+	transcode::SubtitleDetail subtitleDetail(CODEC_TO_MIMETYPE[codec->codec_id],
+			language);
+
+	return subtitleDetail;
+}
+
+/**
+ * Extract the audio detail from the provided libav AVStream.
+ *
+ * @param stream - the av stream that contains the relevant audio details.
  *
  * @return an audio details struct populated from values within the provided codec.
  */
-static transcode::AudioDetail getAudioDetails(const AVCodecContext& codec) {
+static transcode::AudioDetail extractAudioDetail(const AVStream& stream) {
 
-	transcode::AudioDetail audioDetail(CODEC_TO_MIMETYPE[codec.codec_id],
-						codec.bit_rate, codec.channels);
+	AVCodecContext *codec = stream.codec;
+
+	std::string language = extractLanguage(stream);
+	;
+
+	transcode::AudioDetail audioDetail(CODEC_TO_MIMETYPE[codec->codec_id],
+			language, codec->bit_rate, codec->channels);
 
 	return audioDetail;
 }
 
 /**
- * Get the video details from the provided libav AVCodecContext.
+ * Extract the video detail from the provided libav AVStream.
  *
- * @param codec - the av codec that contains the relevant video details.
+ * @param stream - the av stream that contains the relevant video details.
  *
  * @return a video details struct populated from values within the provided codec.
  */
-static transcode::VideoDetail getVideoDetails(const AVCodecContext& codec) {
+static transcode::VideoDetail extractVideoDetail(const AVStream& stream) {
 
-	transcode::VideoDetail videoDetail(CODEC_TO_MIMETYPE[codec.codec_id],
-						codec.width, codec.height, codec.frame_number);
+	AVCodecContext *codec = stream.codec;
+
+	transcode::VideoDetail videoDetail(CODEC_TO_MIMETYPE[codec->codec_id],
+			codec->width, codec->height, codec->frame_number);
 
 	return videoDetail;
 }
@@ -231,13 +286,19 @@ MediaFileDetail findMediaFileDetails(const std::string& fp) {
 	std::string description = videoFile->iformat->long_name;
 
 	// Extract all the audio codecs.
-	std::vector<AudioDetail> audioDetails = extractDetails<AudioDetail>(*videoFile, AVMEDIA_TYPE_AUDIO, getAudioDetails);
+	std::vector<SubtitleDetail> subtitleDetails =
+			extractDetails<SubtitleDetail>(*videoFile, AVMEDIA_TYPE_SUBTITLE,
+					extractSubtitleDetail);
+	// Extract all the audio codecs.
+	std::vector<AudioDetail> audioDetails = extractDetails<AudioDetail>(
+			*videoFile, AVMEDIA_TYPE_AUDIO, extractAudioDetail);
 	// Extract all the video codecs.
-	std::vector<VideoDetail> videoDetails = extractDetails<VideoDetail>(*videoFile, AVMEDIA_TYPE_VIDEO, getVideoDetails);
+	std::vector<VideoDetail> videoDetails = extractDetails<VideoDetail>(
+			*videoFile, AVMEDIA_TYPE_VIDEO, extractVideoDetail);
 
 	// Construct a container struct with all the previously gathered details.
-	ContainerDetail container(containerMimeType, description, audioDetails,
-			videoDetails);
+	ContainerDetail container(containerMimeType, description, subtitleDetails,
+			audioDetails, videoDetails);
 
 	// Clean up the lib av structs.
 	closeCodecs(*videoFile);

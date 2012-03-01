@@ -57,15 +57,38 @@ struct MediaDetail {
 };
 
 /**
+ * Struct to hold all the common attributes for a subtitle media type.
+ */
+struct SubtitleDetail: MediaDetail {
+
+	std::string language;
+
+	SubtitleDetail() :
+			MediaDetail(), language("") {
+	}
+
+	/**
+	 * Construct a new SubtitleDetail struct with the provided mimetype
+	 * and language.
+	 *
+	 * @param mType - the mimeType for this VideoDetails struct.
+	 * @param language - the language of the subtitle.
+	 */
+	SubtitleDetail(const std::string& mType, const std::string& lang) :
+			MediaDetail(mType), language(lang) {
+	}
+};
+
+/**
  * Struct to hold all the common attributes for an audio media type.
  */
-struct AudioDetail: MediaDetail {
+struct AudioDetail: SubtitleDetail {
 
 	int rate;
 	int channels;
 
 	AudioDetail() :
-			MediaDetail(), rate(0), channels(0) {
+			SubtitleDetail(), rate(0), channels(0) {
 	}
 
 	/**
@@ -73,11 +96,13 @@ struct AudioDetail: MediaDetail {
 	 * rate, and channel numbers.
 	 *
 	 * @param mType - the mimeType for this AudioDetails struct.
+	 * @param language - the language of the stream.
 	 * @param rate - the sample rate of the data, in samples (per channel) per second.
 	 * @param channels - the number of channels of audio data.
 	 */
-	AudioDetail(const std::string& mType, const int& rt, const int& ch) :
-			MediaDetail(mType), rate(rt), channels(ch) {
+	AudioDetail(const std::string& mType, const std::string& language,
+			const int& rt, const int& ch) :
+			SubtitleDetail(mType, language), rate(rt), channels(ch) {
 	}
 };
 
@@ -116,13 +141,15 @@ struct VideoDetail: MediaDetail {
 struct ContainerDetail: MediaDetail {
 
 	std::string description;
+	std::vector<SubtitleDetail> subtitleDetails;
 	std::vector<AudioDetail> audioDetails;
 	std::vector<VideoDetail> videoDetails;
 
 	ContainerDetail() :
-			MediaDetail(), description(""), audioDetails(
-					std::vector<AudioDetail>()), videoDetails(
-					std::vector<VideoDetail>()) {
+			MediaDetail(), description(""),
+			subtitleDetails(std::vector<SubtitleDetail>()),
+			audioDetails(std::vector<AudioDetail>()),
+			videoDetails(std::vector<VideoDetail>()) {
 	}
 
 	/**
@@ -131,16 +158,19 @@ struct ContainerDetail: MediaDetail {
 	 *
 	 * @param mType - the mimeType for this ContainerDetails struct.
 	 * @param description - a description of this container.
+	 * @param subtitleDetails - a list of subtitle details related to the
+	 * 						subtitle streams contained within this container.
 	 * @param audioDetails - a list of audio details related to the audio
 	 * 						streams contained within this container.
 	 * @param videoDetails - a list of video details related to the video
 	 * 						streams contained within this container.
 	 */
 	ContainerDetail(const std::string& mType, const std::string& desc,
+			const std::vector<SubtitleDetail>& sdts,
 			const std::vector<AudioDetail>& adts,
 			const std::vector<VideoDetail>& vdts) :
-			MediaDetail(mType), description(desc), audioDetails(adts), videoDetails(
-					vdts) {
+			MediaDetail(mType), description(desc), subtitleDetails(sdts),
+			audioDetails(adts), videoDetails(vdts) {
 	}
 };
 
@@ -172,7 +202,6 @@ struct MediaFileDetail {
 			container(cntr), path(p), name(n), size(s) {
 	}
 };
-
 
 /**
  * Find the details for the media file at the provided path.
