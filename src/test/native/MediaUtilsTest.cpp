@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE( test_open_media_files )
 * Test to make sure that the GstreamerMediaFile throws the correct
 * exception when an empty string is provided.
 */
-BOOST_AUTO_TEST_CASE( test_open_empty_string_media_file )
+BOOST_AUTO_TEST_CASE( test_open_empty_string )
 {
 	BOOST_REQUIRE_THROW( transcode::findMediaFileDetails(""),
 			transcode::MediaUtilsException );
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( test_open_empty_string_media_file )
 */
 BOOST_AUTO_TEST_CASE( test_open_invalid_media_file )
 {
-	BOOST_REQUIRE_THROW( transcode::findMediaFileDetails("file does not exists"),
+	BOOST_REQUIRE_THROW( transcode::findMediaFileDetails("file does not exist"),
 				transcode::MediaUtilsException );
 }
 
