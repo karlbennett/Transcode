@@ -204,6 +204,42 @@ struct MediaFileDetail {
 };
 
 /**
+ * Find the subtitle details for the media file at the provided path.
+ *
+ * @param filePath - the path to the file that will have it's details inspected.
+ *
+ * @return the subtitle details for the provided media file if possible.
+ */
+std::vector<SubtitleDetail> findSubtitleDetails(const std::string& filePath);
+
+/**
+ * Find the audio details for the media file at the provided path.
+ *
+ * @param filePath - the path to the file that will have it's details inspected.
+ *
+ * @return the audio details for the provided media file if possible.
+ */
+std::vector<AudioDetail> findAudioDetails(const std::string& filePath);
+
+/**
+ * Find the video details for the media file at the provided path.
+ *
+ * @param filePath - the path to the file that will have it's details inspected.
+ *
+ * @return the video details for the provided media file if possible.
+ */
+std::vector<VideoDetail> findVideoDetails(const std::string& filePath);
+
+/**
+ * Find the container details for the media file at the provided path.
+ *
+ * @param filePath - the path to the file that will have it's details inspected.
+ *
+ * @return the container details for the provided media file if possible.
+ */
+ContainerDetail findContainerDetails(const std::string& filePath);
+
+/**
  * Find the details for the media file at the provided path.
  *
  * @param filePath - the path to the file that will have it's details inspected.
