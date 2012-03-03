@@ -90,12 +90,13 @@ static std::map<std::string, std::string> initialiseNameToMimeType() {
 /**
  * The map that is used to look up mime types from libav CodecID's.
  */
-std::map<CodecID, std::string> CODEC_TO_MIMETYPE = initialiseCodecToMimeType();
+const std::map<CodecID, std::string> CODEC_TO_MIMETYPE =
+		initialiseCodecToMimeType();
 
 /**
  * The map that is used to look up mime types from libav container names.
  */
-std::map<std::string, std::string> NAME_TO_MIMETYPE =
+const std::map<std::string, std::string> NAME_TO_MIMETYPE =
 		initialiseNameToMimeType();
 
 /**
@@ -106,10 +107,10 @@ std::map<std::string, std::string> NAME_TO_MIMETYPE =
  * @param mediaType - the type of media stream that should have it's codec inspected.
  * @param detailsCallback - the function to use to get the correct details out of the codec.
  *
- * @return a vector containing all the extracted audio details.
+ * @return a vector containing all the extracted details.
  */
 template<typename T> std::vector<T> extractDetails(
-		const AVFormatContext& videoFile, AVMediaType mediatype,
+		const AVFormatContext *videoFile, AVMediaType mediatype,
 		std::tr1::function<T(const AVStream&)> detailsCallback) {
 
 	// Simplify the use of the transcode api.
@@ -121,10 +122,10 @@ template<typename T> std::vector<T> extractDetails(
 	AVMediaType codecType;
 
 	// Iterate through the streams searching for any audio streams.
-	for (int i = 0; i < videoFile.nb_streams; i++) {
+	for (int i = 0; i < videoFile->nb_streams; i++) {
 
-		stream = videoFile.streams[i];
-		codecType = videoFile.streams[i]->codec->codec_type;
+		stream = videoFile->streams[i];
+		codecType = videoFile->streams[i]->codec->codec_type;
 
 		// If we find an audio stream use its details to construct an AudioDetail
 		// struct.
@@ -135,6 +136,89 @@ template<typename T> std::vector<T> extractDetails(
 	}
 
 	return details;
+}
+
+/**
+ * Convenience template to make it easier to get the value out of a constant map.
+ *
+ * @param map - the map to get the value out of.
+ * @param key - the key of the value in the map that we wish to get.
+ *
+ * @return the value from the const map that is related to the provided key if it
+ * 			exists, otherwise return NULL.
+ */
+template<typename K, typename V> V get(const std::map<K, V>& map
+		, const K& key) {
+
+	// Use the map find function so that we can get the value from a const map.
+	// Code from here:
+	// http://stackoverflow.com/questions/687789/c-const-stdmap-reference-fails-to-compile
+	typename std::map<K, V>::const_iterator it;
+	it = map.find(key);
+	if (it != map.end()) {
+
+		return it->second;
+	}
+
+	return NULL;
+}
+
+/**
+ * Initialise the FFMPEG api and create an AVFormatContext to be used to expose
+ * information about the media file at the provided path.
+ *
+ * @param filePath - the path to the file that will have it's details inspected.
+ *
+ * @return an initialised AVFormatContext struct for the provided media file.
+ */
+static AVFormatContext* initialiseFFMPEG(const std::string& filePath) {
+
+	// Initialise the ffmpeg libav library so we can use it to inspect
+	// the media file.
+	avcodec_init();
+	avcodec_register_all();
+	av_register_all();
+
+	// Open the media file. This will populate the AVFormatContext
+	// with all the information about this media file.
+	AVFormatContext *videoFile;
+	if (av_open_input_file(&videoFile, filePath.c_str(), NULL, 0, NULL) < 0) {
+
+		throw transcode::MediaUtilsException("Could not open the media file");
+	}
+
+	return videoFile;
+}
+
+/**
+ * Check to make sure we are working with an actual file.
+ *
+ * @param fp - the path to the file that will have it's details inspected.
+ *
+ * @return a boost filesystem path class related to the provided file.
+ */
+static boost::filesystem::path checkFile(const std::string& fp) {
+
+	// Small optimisation, if no filename is provided then don't bother doing
+	// anything.
+	if (0 == fp.compare("")) {
+
+		throw transcode::MediaUtilsException("No file name provided.");
+	}
+
+	// Create a path class, this provides easy access to a file paths
+	// different elements.
+	boost::filesystem::path filePath(fp);
+
+	// Another small optimisation, use the boost filesystem exists function to
+	// check if the provided file does not exist and if it doesn't again don't
+	// bother with any further processing.
+	if (!boost::filesystem::exists(filePath)) {
+
+		throw transcode::MediaUtilsException("File " + fp + " does not exist.");
+	}
+
+	return filePath;
 }
 
 /**
@@ -167,8 +251,8 @@ static transcode::SubtitleDetail extractSubtitleDetail(const AVStream& stream) {
 
 	std::string language = extractLanguage(stream);
 
-	transcode::SubtitleDetail subtitleDetail(CODEC_TO_MIMETYPE[codec->codec_id],
-			language);
+	transcode::SubtitleDetail subtitleDetail(
+			get(CODEC_TO_MIMETYPE, codec->codec_id), language);
 
 	return subtitleDetail;
 }
@@ -185,9 +269,8 @@ static transcode::AudioDetail extractAudioDetail(const AVStream& stream) {
 	AVCodecContext *codec = stream.codec;
 
 	std::string language = extractLanguage(stream);
-	;
 
-	transcode::AudioDetail audioDetail(CODEC_TO_MIMETYPE[codec->codec_id],
+	transcode::AudioDetail audioDetail(get(CODEC_TO_MIMETYPE, codec->codec_id),
 			language, codec->bit_rate, codec->channels);
 
 	return audioDetail;
@@ -204,10 +287,66 @@ static transcode::VideoDetail extractVideoDetail(const AVStream& stream) {
 
 	AVCodecContext *codec = stream.codec;
 
-	transcode::VideoDetail videoDetail(CODEC_TO_MIMETYPE[codec->codec_id],
+	transcode::VideoDetail videoDetail(get(CODEC_TO_MIMETYPE, codec->codec_id),
 			codec->width, codec->height, codec->frame_number);
 
 	return videoDetail;
+}
+
+/**
+ * Find the details of the requested type from the provided file using the
+ * provided media type.
+ *
+ * @param fp - the path to the file that will have it's details inspected.
+ * @param mediatype - the type of details that should be found.
+ * @param detailsCallback - the function to use to get the correct details.
+ *
+ * @return a vector containing all the extracted details.
+ */
+template<typename T> std::vector<T> findDetails(std::string fp,
+		AVMediaType mediatype,
+		std::tr1::function<T(const AVStream&)> detailsCallback) {
+
+	checkFile(fp);
+
+	AVFormatContext *videoFile = initialiseFFMPEG(fp);
+
+	return extractDetails<T>(videoFile, mediatype, detailsCallback);
+}
+
+/**
+ * Build a ContainerDetail struct out of the details in the provided
+ * AVFormatContext.
+ *
+ * @param videoFile - the AVFormatContext that contains the details to be
+ * 			used to populate the ContainerDetail.
+ *
+ * @return a populated ContainerDetail struct.
+ */
+static transcode::ContainerDetail buildContainerDetail(
+		const AVFormatContext *videoFile) {
+
+	// Find the mime type for the media files container.
+	std::string containerMimeType = get(NAME_TO_MIMETYPE,
+			std::string(videoFile->iformat->name));
+	// Find the description for the media files container.
+	std::string description = videoFile->iformat->long_name;
+
+	using namespace transcode;
+
+	// Extract all the audio codecs.
+	std::vector<SubtitleDetail> subtitleDetails =
+			extractDetails<SubtitleDetail>(videoFile, AVMEDIA_TYPE_SUBTITLE,
+					extractSubtitleDetail);
+	// Extract all the audio codecs.
+	std::vector<AudioDetail> audioDetails = extractDetails<AudioDetail>(
+			videoFile, AVMEDIA_TYPE_AUDIO, extractAudioDetail);
+	// Extract all the video codecs.
+	std::vector<VideoDetail> videoDetails = extractDetails<VideoDetail>(
+			videoFile, AVMEDIA_TYPE_VIDEO, extractVideoDetail);
+
+	return ContainerDetail(containerMimeType, description, subtitleDetails,
+			audioDetails, videoDetails);
 }
 
 /**
@@ -215,20 +354,20 @@ static transcode::VideoDetail extractVideoDetail(const AVStream& stream) {
  *
  * @param videoFile - the AVFormatContext that will have all it's codecs closed.
  */
-static void closeCodecs(AVFormatContext& videoFile) {
+static void closeCodecs(AVFormatContext *videoFile) {
 
 	AVCodecContext *codec;
 
-	for (int i = 0; i < videoFile.nb_streams; i++) {
+	for (int i = 0; i < videoFile->nb_streams; i++) {
 
-		codec = videoFile.streams[i]->codec;
+		codec = videoFile->streams[i]->codec;
 
 		// Try and free the codec. If it fails throw an exception.
 		if (0 > avcodec_close(codec)) {
 
 			std::stringstream errorMessage;
 			errorMessage << "Could not close codec " << i << "of type "
-					<< CODEC_TO_MIMETYPE[codec->codec_id] << ".";
+					<< get(CODEC_TO_MIMETYPE, codec->codec_id) << ".";
 
 			throw transcode::MediaUtilsException(errorMessage.str());
 		}
@@ -237,29 +376,36 @@ static void closeCodecs(AVFormatContext& videoFile) {
 
 namespace transcode {
 
+std::vector<SubtitleDetail> findSubtitleDetails(const std::string& fp) {
+
+	return findDetails<SubtitleDetail>(fp, AVMEDIA_TYPE_SUBTITLE,
+			extractSubtitleDetail);
+}
+
+std::vector<AudioDetail> findAudioDetails(const std::string& fp) {
+
+	return findDetails<AudioDetail>(fp, AVMEDIA_TYPE_AUDIO, extractAudioDetail);
+}
+
+std::vector<VideoDetail> findVideoDetails(const std::string& fp) {
+
+	return findDetails<VideoDetail>(fp, AVMEDIA_TYPE_VIDEO, extractVideoDetail);
+}
+
+ContainerDetail findContainerDetails(const std::string& fp) {
+
+	checkFile(fp);
+
+	AVFormatContext *videoFile = initialiseFFMPEG(fp);
+
+	return buildContainerDetail(videoFile);
+}
+
 MediaFileDetail findMediaFileDetails(const std::string& fp) {
 
-	// Small optimisation, if no filename is provided then don't bother doing
-	// anything.
-	if (0 == fp.compare("")) {
-
-		throw MediaUtilsException("No file name provided.");
-	}
-
-	// Use the boost fielsystem api to find the files name and size.
-	using namespace boost::filesystem;
-
-	// Create a path class, this provides easy access to a file paths
-	// different elements.
-	path filePath(fp);
-
-	// Another small optimisation, use the boost filesystem exists function to
-	// check if the provided file does not exist and if it doesn't again don't
-	// bother with any further processing.
-	if (!exists(filePath)) {
-
-		throw MediaUtilsException("File " + fp + " does not exist.");
-	}
+	// Check to make sure we are working with a real file.
+	// If not throw a MediaUtilsException.
+	boost::filesystem::path filePath = checkFile(fp);
 
 	// Get the files name from the file path object.
 	std::string fileName = filePath.filename();
@@ -267,41 +413,16 @@ MediaFileDetail findMediaFileDetails(const std::string& fp) {
 	// of the media file.
 	int fileSize = file_size(filePath);
 
-	// Initialise the ffmpeg libav library so we can use it to inspect the media file.
-	avcodec_init();
-	avcodec_register_all();
-	av_register_all();
+	// Initialise FFMPEG and get the AVFormatContext for the provided file.
+	// If the AVFormatContext cannot be opened a MediaUtilsException is
+	// thrown.
+	AVFormatContext *videoFile = initialiseFFMPEG(fp);
 
-	// Open the media file. This will populate the AVFormatContext
-	// with all the information about this media file.
-	AVFormatContext *videoFile;
-	if (av_open_input_file(&videoFile, fp.c_str(), NULL, 0, NULL) < 0) {
-
-		throw MediaUtilsException("Could not open the media file");
-	}
-
-	// Find the mime type for the media files container.
-	std::string containerMimeType = NAME_TO_MIMETYPE[videoFile->iformat->name];
-	// Find the description for the media files container.
-	std::string description = videoFile->iformat->long_name;
-
-	// Extract all the audio codecs.
-	std::vector<SubtitleDetail> subtitleDetails =
-			extractDetails<SubtitleDetail>(*videoFile, AVMEDIA_TYPE_SUBTITLE,
-					extractSubtitleDetail);
-	// Extract all the audio codecs.
-	std::vector<AudioDetail> audioDetails = extractDetails<AudioDetail>(
-			*videoFile, AVMEDIA_TYPE_AUDIO, extractAudioDetail);
-	// Extract all the video codecs.
-	std::vector<VideoDetail> videoDetails = extractDetails<VideoDetail>(
-			*videoFile, AVMEDIA_TYPE_VIDEO, extractVideoDetail);
-
-	// Construct a container struct with all the previously gathered details.
-	ContainerDetail container(containerMimeType, description, subtitleDetails,
-			audioDetails, videoDetails);
+	// Build a container struct from the AVFormatContext.
+	ContainerDetail container = buildContainerDetail(videoFile);
 
 	// Clean up the lib av structs.
-	closeCodecs(*videoFile);
+	closeCodecs(videoFile);
 	av_close_input_file(videoFile);
 
 	// Then lastly return a fully populated MediaFileDetail struct.
