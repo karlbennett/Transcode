@@ -8,6 +8,8 @@
 #ifndef __STANDARD_UTILS_CPP__
 #define __STANDARD_UTILS_CPP__
 
+#include <utils/StandardUtils.hpp>
+
 #include <map>
 
 template<typename K, typename V> V get(const std::map<K, V>& map
