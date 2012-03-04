@@ -20,7 +20,7 @@ namespace utils {
  * @param key - the key of the value in the map that we wish to get.
  *
  * @return the value from the const map that is related to the provided key if it
- * 			exists, otherwise return NULL.
+ * 			exists, otherwise return an empty instance of the value type.
  */
 template<typename K, typename V> V get(const std::map<K, V>& map
 		, const K& key) {
@@ -37,7 +37,7 @@ template<typename K, typename V> V get(const std::map<K, V>& map
 		return it->second;
 	}
 
-	return NULL;
+	return V();
 }
 
 } /* namespace utils */
