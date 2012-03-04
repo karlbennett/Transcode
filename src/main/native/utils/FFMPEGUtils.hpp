@@ -22,7 +22,6 @@ extern "C" {
 
 #include <tr1/functional>
 
-
 namespace transcode {
 namespace utils {
 /**
@@ -50,6 +49,65 @@ const std::map<std::string, std::string> NAME_TO_MIMETYPE =
 		initialiseNameToMimeType();
 
 /**
+ * Get the FFMPEG message for the provided error code.
+ *
+ * @param errorCode - the FFMPEG error code.
+ *
+ * @return the error message that relates to the provided error code.
+ */
+std::string ffmpegErrorMessage(int errorCode);
+
+/**
+ * Exception that is thrown if something goes wrong with the FFMPEG library.
+ */
+class FFMPEGException: public MediaUtilsException {
+
+private:
+	int errorCode;
+
+public:
+
+	/**
+	 * Default constructor, set message to empty string and error code to 0.
+	 */
+	FFMPEGException() throw () :
+			MediaUtilsException(), errorCode(0) {
+	}
+
+	/**
+	 * Instantiate an FFMPEGException with the provided message and error code.
+	 *
+	 * @param msg - the message for this exception.
+	 * @param ec - the FFMPEG error code for this exception.
+	 */
+	FFMPEGException(const std::string& msg, const int& ec) throw () :
+			MediaUtilsException(msg), errorCode(ec) {
+	}
+
+	/**
+	 * Instantiate a new FFMPEGException with the provided error code and the
+	 * message set automatically from the error code.
+	 *
+	 * @param ec - the FFMPEG error code for this exception.
+	 */
+	FFMPEGException(const int& ec) throw () :
+			MediaUtilsException(ffmpegErrorMessage(ec)), errorCode(ec) {
+	}
+
+	~FFMPEGException() throw () {
+	}
+
+	/**
+	 * Get the error code for this exception.
+	 *
+	 * @return the error code for this exception.
+	 */
+	int getErrorCode() {
+		return errorCode;
+	}
+};
+
+/**
  * Initialise the FFMPEG api and create an AVFormatContext to be used to expose
  * information about the media file at the provided path.
  *
@@ -57,7 +115,8 @@ const std::map<std::string, std::string> NAME_TO_MIMETYPE =
  *
  * @return an initialised AVFormatContext struct for the provided media file.
  */
-AVFormatContext* initialiseFFMPEG(const std::string& filePath);
+AVFormatContext* initialiseFFMPEG(const std::string& filePath)
+		throw (FFMPEGException);
 
 /**
  * Extract the media details of the given type from the libav AVFormatContext struct
@@ -161,15 +220,14 @@ VideoDetail extractVideoDetail(const AVStream& stream);
  *
  * @return a populated ContainerDetail struct.
  */
-ContainerDetail buildContainerDetail(
-		const AVFormatContext *videoFile);
+ContainerDetail buildContainerDetail(const AVFormatContext *videoFile);
 
 /**
  * Close any codecs that are related to the provided AVFormatContext.
  *
  * @param videoFile - the AVFormatContext that will have all it's codecs closed.
  */
-void closeCodecs(AVFormatContext *videoFile);
+void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException);
 
 } /* namespace utils */
 } /* namespace transcode */

@@ -8,6 +8,7 @@
 extern "C" {
 #include "libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
+#include "libavutil/error.h"
 }
 
 #include <utils/FFMPEGUtils.hpp>
@@ -19,7 +20,6 @@ extern "C" {
 #include <vector>
 #include <map>
 #include <sstream>
-
 
 std::map<CodecID, std::string> transcode::utils::initialiseCodecToMimeType() {
 
@@ -79,7 +79,19 @@ std::map<std::string, std::string> transcode::utils::initialiseNameToMimeType() 
 	return nameToMimeType;
 }
 
-AVFormatContext* transcode::utils::initialiseFFMPEG(const std::string& filePath) {
+std::string transcode::utils::ffmpegErrorMessage(int errorCode) {
+
+	size_t bufferSize = 1024;
+
+	char buffer[bufferSize];
+
+	int err = av_strerror(errorCode, buffer, bufferSize);
+
+	return err == 0 ? buffer : "Unknown";
+}
+
+AVFormatContext* transcode::utils::initialiseFFMPEG(const std::string& filePath)
+		throw (transcode::utils::FFMPEGException) {
 
 	// Initialise the ffmpeg libav library so we can use it to inspect
 	// the media file.
@@ -90,9 +102,14 @@ AVFormatContext* transcode::utils::initialiseFFMPEG(const std::string& filePath)
 	// Open the media file. This will populate the AVFormatContext
 	// with all the information about this media file.
 	AVFormatContext *videoFile;
-	if (av_open_input_file(&videoFile, filePath.c_str(), NULL, 0, NULL) < 0) {
 
-		throw MediaUtilsException("Could not open the media file");
+	int errorCode = av_open_input_file(&videoFile, filePath.c_str(), NULL, 0,
+			NULL);
+
+	// If an error code was returned throw an appropriate exception.
+	if (0 > errorCode) {
+
+		throw FFMPEGException(errorCode);
 	}
 
 	return videoFile;
@@ -108,38 +125,38 @@ std::string transcode::utils::extractLanguage(const AVStream& stream) {
 	return metadata == NULL ? "" : metadata->value;
 }
 
-transcode::SubtitleDetail transcode::utils::extractSubtitleDetail(const AVStream& stream) {
+transcode::SubtitleDetail transcode::utils::extractSubtitleDetail(
+		const AVStream& stream) {
 
 	AVCodecContext *codec = stream.codec;
 
 	std::string language = extractLanguage(stream);
 
 	transcode::SubtitleDetail subtitleDetail(
-			get(CODEC_TO_MIMETYPE, codec->codec_id),
-			language);
+			get(CODEC_TO_MIMETYPE, codec->codec_id), language);
 
 	return subtitleDetail;
 }
 
-transcode::AudioDetail transcode::utils::extractAudioDetail(const AVStream& stream) {
+transcode::AudioDetail transcode::utils::extractAudioDetail(
+		const AVStream& stream) {
 
 	AVCodecContext *codec = stream.codec;
 
 	std::string language = extractLanguage(stream);
 
-	transcode::AudioDetail audioDetail(
-			get(CODEC_TO_MIMETYPE, codec->codec_id), language,
-			codec->bit_rate, codec->channels);
+	transcode::AudioDetail audioDetail(get(CODEC_TO_MIMETYPE, codec->codec_id),
+			language, codec->bit_rate, codec->channels);
 
 	return audioDetail;
 }
 
-transcode::VideoDetail transcode::utils::extractVideoDetail(const AVStream& stream) {
+transcode::VideoDetail transcode::utils::extractVideoDetail(
+		const AVStream& stream) {
 
 	AVCodecContext *codec = stream.codec;
 
-	transcode::VideoDetail videoDetail(
-			get(CODEC_TO_MIMETYPE, codec->codec_id),
+	transcode::VideoDetail videoDetail(get(CODEC_TO_MIMETYPE, codec->codec_id),
 			codec->width, codec->height, codec->frame_number);
 
 	return videoDetail;
@@ -169,7 +186,8 @@ transcode::ContainerDetail transcode::utils::buildContainerDetail(
 			audioDetails, videoDetails);
 }
 
-void transcode::utils::closeCodecs(AVFormatContext *videoFile) {
+void transcode::utils::closeCodecs(AVFormatContext *videoFile)
+		throw (transcode::utils::FFMPEGException) {
 
 	AVCodecContext *codec;
 
@@ -177,15 +195,12 @@ void transcode::utils::closeCodecs(AVFormatContext *videoFile) {
 
 		codec = videoFile->streams[i]->codec;
 
+		int errorCode = avcodec_close(codec);
+
 		// Try and free the codec. If it fails throw an exception.
-		if (0 > avcodec_close(codec)) {
+		if (0 > errorCode) {
 
-			std::stringstream errorMessage;
-			errorMessage << "Could not close codec " << i << "of type "
-					<< get(CODEC_TO_MIMETYPE, codec->codec_id)
-					<< ".";
-
-			throw MediaUtilsException(errorMessage.str());
+			throw FFMPEGException(errorCode);
 		}
 	}
 }
