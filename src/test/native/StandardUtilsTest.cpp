@@ -42,3 +42,9 @@ BOOST_AUTO_TEST_CASE( test_map_get_success )
 	BOOST_CHECK_EQUAL( get(TEST_MAP, 4), FOUR );
 	BOOST_CHECK_EQUAL( get(TEST_MAP, 5), FIVE );
 }
+
+BOOST_AUTO_TEST_CASE( test_map_get_failure )
+{
+
+	BOOST_CHECK_EQUAL( get(TEST_MAP, 6), string() );
+}
