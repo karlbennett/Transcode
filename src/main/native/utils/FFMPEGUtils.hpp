@@ -14,6 +14,7 @@ extern "C" {
 }
 
 #include <utils/FileUtils.hpp>
+#include <utils/MediaUtils.hpp>
 
 #include <string>
 #include <vector>
