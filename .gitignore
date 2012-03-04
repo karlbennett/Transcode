@@ -1,5 +1,7 @@
 # Ignore Intellij project files.
 *.iml
+*.ipr
+*.iws
 
 # Ignore eclipse project directories.
 .cproject
