@@ -10,6 +10,9 @@
 
 #include <map>
 
+namespace transcode {
+namespace utils {
+
 /**
  * Convenience template to make it easier to get the value out of a constant map.
  *
@@ -36,5 +39,8 @@ template<typename K, typename V> V get(const std::map<K, V>& map
 
 	return NULL;
 }
+
+} /* namespace utils */
+} /* namespace transcode */
 
 #endif /* __STANDARD_UTILS_HPP__ */

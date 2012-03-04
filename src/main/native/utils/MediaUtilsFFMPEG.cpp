@@ -228,7 +228,8 @@ static transcode::SubtitleDetail extractSubtitleDetail(const AVStream& stream) {
 	std::string language = extractLanguage(stream);
 
 	transcode::SubtitleDetail subtitleDetail(
-			get(CODEC_TO_MIMETYPE, codec->codec_id), language);
+			transcode::utils::get(CODEC_TO_MIMETYPE, codec->codec_id),
+			language);
 
 	return subtitleDetail;
 }
@@ -246,8 +247,9 @@ static transcode::AudioDetail extractAudioDetail(const AVStream& stream) {
 
 	std::string language = extractLanguage(stream);
 
-	transcode::AudioDetail audioDetail(get(CODEC_TO_MIMETYPE, codec->codec_id),
-			language, codec->bit_rate, codec->channels);
+	transcode::AudioDetail audioDetail(
+			transcode::utils::get(CODEC_TO_MIMETYPE, codec->codec_id), language,
+			codec->bit_rate, codec->channels);
 
 	return audioDetail;
 }
@@ -263,7 +265,8 @@ static transcode::VideoDetail extractVideoDetail(const AVStream& stream) {
 
 	AVCodecContext *codec = stream.codec;
 
-	transcode::VideoDetail videoDetail(get(CODEC_TO_MIMETYPE, codec->codec_id),
+	transcode::VideoDetail videoDetail(
+			transcode::utils::get(CODEC_TO_MIMETYPE, codec->codec_id),
 			codec->width, codec->height, codec->frame_number);
 
 	return videoDetail;
@@ -303,7 +306,7 @@ static transcode::ContainerDetail buildContainerDetail(
 		const AVFormatContext *videoFile) {
 
 	// Find the mime type for the media files container.
-	std::string containerMimeType = get(NAME_TO_MIMETYPE,
+	std::string containerMimeType = transcode::utils::get(NAME_TO_MIMETYPE,
 			std::string(videoFile->iformat->name));
 	// Find the description for the media files container.
 	std::string description = videoFile->iformat->long_name;
@@ -343,7 +346,8 @@ static void closeCodecs(AVFormatContext *videoFile) {
 
 			std::stringstream errorMessage;
 			errorMessage << "Could not close codec " << i << "of type "
-					<< get(CODEC_TO_MIMETYPE, codec->codec_id) << ".";
+					<< transcode::utils::get(CODEC_TO_MIMETYPE, codec->codec_id)
+					<< ".";
 
 			throw transcode::MediaUtilsException(errorMessage.str());
 		}
@@ -405,6 +409,6 @@ MediaFileDetail findMediaFileDetails(const std::string& fp) {
 	return MediaFileDetail(container, fp, fileName, fileSize);
 }
 
-}
+} /* namespace transcode */
 
 #endif /* __MEDIA_FFMPEG_UTILS_CPP__ */
