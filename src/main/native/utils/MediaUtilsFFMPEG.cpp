@@ -15,6 +15,7 @@ extern "C" {
 
 #include <utils/MediaUtils.hpp>
 #include <utils/StandardUtils.hpp>
+#include <utils/FileUtils.hpp>
 #include <boost/filesystem.hpp>
 
 #include <string>
@@ -167,37 +168,6 @@ static AVFormatContext* initialiseFFMPEG(const std::string& filePath) {
 }
 
 /**
- * Check to make sure we are working with an actual file.
- *
- * @param fp - the path to the file that will have it's details inspected.
- *
- * @return a boost filesystem path class related to the provided file.
- */
-static boost::filesystem::path checkFile(const std::string& fp) {
-
-	// Small optimisation, if no filename is provided then don't bother doing
-	// anything.
-	if (0 == fp.compare("")) {
-
-		throw transcode::MediaUtilsException("No file name provided.");
-	}
-
-	// Create a path class, this provides easy access to a file paths
-	// different elements.
-	boost::filesystem::path filePath(fp);
-
-	// Another small optimisation, use the boost filesystem exists function to
-	// check if the provided file does not exist and if it doesn't again don't
-	// bother with any further processing.
-	if (!boost::filesystem::exists(filePath)) {
-
-		throw transcode::MediaUtilsException("File " + fp + " does not exist.");
-	}
-
-	return filePath;
-}
-
-/**
  * Extract the language from the provided libav AVStream.
  *
  * @param stream - the av stream that contains the relevant language.
@@ -286,7 +256,7 @@ template<typename T> std::vector<T> findDetails(std::string fp,
 		AVMediaType mediatype,
 		std::tr1::function<T(const AVStream&)> detailsCallback) {
 
-	checkFile(fp);
+	transcode::utils::checkFile(fp);
 
 	AVFormatContext *videoFile = initialiseFFMPEG(fp);
 
@@ -374,7 +344,7 @@ std::vector<VideoDetail> findVideoDetails(const std::string& fp) {
 
 ContainerDetail findContainerDetails(const std::string& fp) {
 
-	checkFile(fp);
+	transcode::utils::checkFile(fp);
 
 	AVFormatContext *videoFile = initialiseFFMPEG(fp);
 
@@ -385,7 +355,7 @@ MediaFileDetail findMediaFileDetails(const std::string& fp) {
 
 	// Check to make sure we are working with a real file.
 	// If not throw a MediaUtilsException.
-	boost::filesystem::path filePath = checkFile(fp);
+	boost::filesystem::path filePath = transcode::utils::checkFile(fp);
 
 	// Get the files name from the file path object.
 	std::string fileName = filePath.filename();
