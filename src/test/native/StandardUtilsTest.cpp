@@ -43,6 +43,9 @@ BOOST_AUTO_TEST_CASE( test_map_get_success )
 	BOOST_CHECK_EQUAL( get(TEST_MAP, 5), FIVE );
 }
 
+/**
+ * Test that the standard utils get function works for invalid entries.
+ */
 BOOST_AUTO_TEST_CASE( test_map_get_failure )
 {
 
