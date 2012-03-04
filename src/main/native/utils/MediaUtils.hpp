@@ -9,6 +9,7 @@
 #define __MEDIA_UTILS_HPP__
 
 #include <string>
+#include <exception>
 #include <vector>
 #include <boost/rational.hpp>
 
@@ -17,21 +18,27 @@ namespace transcode {
 /**
  * An exception that is thrown from within the MediaUtils functions.
  */
-class MediaUtilsException {
+class MediaUtilsException: public std::exception {
 
 private:
 	std::string message;
 
 public:
-	MediaUtilsException() :
-			message("") {
+	MediaUtilsException() throw() :
+			exception(), message("") {
 	}
 
 	/**
 	 * Instantiate a MediaUtilsException object with the provided message.
 	 */
-	MediaUtilsException(std::string msg) :
-			message(msg) {
+	MediaUtilsException(std::string msg) throw() :
+			exception(), message(msg) {
+	}
+
+	~MediaUtilsException() throw() {}
+
+	const char* what() const throw () {
+		return message.c_str();
 	}
 };
 
