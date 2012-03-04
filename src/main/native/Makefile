@@ -28,8 +28,8 @@ OBJ = $(SRC:.cpp=.so)
 # The required head files.
 INCLUDES = -D__STDC_CONSTANT_MACROS -I./ -I/usr/include/
 
-# The required libraries.
-LIBS = -L/usr/lib/ -lavformat -lavcodec -lavutil -lboost_filesystem
+# The required libraries. Leaving here for later static compiling.
+# LIBS = -L/usr/lib/ -lavformat -lavcodec -lavutil -lboost_filesystem
 
 # The rule for how a ".cpp" file should be compiled into a ".so" file.
 %.so : %.cpp

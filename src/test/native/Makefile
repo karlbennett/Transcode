@@ -31,7 +31,8 @@ CCC = g++
 # The required header files for the native code.
 INCLUDES = -I/usr/include/ -I$(SRC_DIR) -I./
 
-LIBS = -L/usr/lib/i386-linux-gnu -L/usr/lib/ -L$(LIB_DIR) -lboost_test_exec_monitor -lMediaUtilsFFMPEG
+LIBS = -L/usr/lib/i386-linux-gnu -L/usr/lib/ -L$(LIB_DIR) -lboost_test_exec_monitor \
+-lavformat -lavcodec -lavutil -lboost_filesystem -lMediaUtilsFFMPEG
 
 # The C++ test source files.
 SRC_TEST_ONE = TestExample.cpp
