@@ -45,7 +45,7 @@
                 <!--the source into a source JAR even though it is not Java code.-->
                 <directory>${native.dir}</directory>
                 <includes>
-                    <include>**/*.h</include>
+                    <include>**/*.hpp</include>
                     <include>**/*.cpp</include>
                 </includes>
             </resource>
@@ -61,7 +61,19 @@
 
         <plugins>
             <plugin>
-                <!--Generate the JNI headers and compile the native code.-->
+                <!-- Exclude the *.cpp files from being packaged in the JAR because this is source code that should only be provided on -->
+                <!-- request. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.cpp</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
 
@@ -148,7 +160,7 @@
 
                 <configuration>
                     <includes>
-                        <include>*.h</include>
+                        <include>*.hpp</include>
                         <include>*.cpp</include>
                     </includes>
                 </configuration>
