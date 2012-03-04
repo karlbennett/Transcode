@@ -5,8 +5,8 @@
  *      Author: karl
  */
 
-#ifndef __MEDIA_UTILS_CPP__
-#define __MEDIA_UTILS_CPP__
+#ifndef __MEDIA_FFMPEG_UTILS_CPP__
+#define __MEDIA_FFMPEG_UTILS_CPP__
 
 extern "C" {
 #include "libavformat/avformat.h"
@@ -14,6 +14,7 @@ extern "C" {
 }
 
 #include <utils/MediaUtils.hpp>
+#include <utils/StandardUtils.hpp>
 #include <boost/filesystem.hpp>
 
 #include <string>
@@ -136,31 +137,6 @@ template<typename T> std::vector<T> extractDetails(
 	}
 
 	return details;
-}
-
-/**
- * Convenience template to make it easier to get the value out of a constant map.
- *
- * @param map - the map to get the value out of.
- * @param key - the key of the value in the map that we wish to get.
- *
- * @return the value from the const map that is related to the provided key if it
- * 			exists, otherwise return NULL.
- */
-template<typename K, typename V> V get(const std::map<K, V>& map
-		, const K& key) {
-
-	// Use the map find function so that we can get the value from a const map.
-	// Code from here:
-	// http://stackoverflow.com/questions/687789/c-const-stdmap-reference-fails-to-compile
-	typename std::map<K, V>::const_iterator it;
-	it = map.find(key);
-	if (it != map.end()) {
-
-		return it->second;
-	}
-
-	return NULL;
 }
 
 /**
@@ -431,4 +407,4 @@ MediaFileDetail findMediaFileDetails(const std::string& fp) {
 
 }
 
-#endif /* __MEDIA_UTILS_CPP__ */
+#endif /* __MEDIA_FFMPEG_UTILS_CPP__ */
