@@ -58,7 +58,14 @@ ContainerDetail findContainerDetails(const std::string& fp)
 
 	using namespace transcode::utils;
 
-	checkFile(fp);
+	try {
+
+		(void) checkFile(fp);
+
+	} catch (std::exception& e) {
+
+		throw MediaUtilsException(e.what());
+	}
 
 	AVFormatContext *videoFile = initialiseFFMPEG(fp);
 

@@ -180,7 +180,7 @@ template<typename T> std::vector<T> findDetails(std::string fp,
 
 	try {
 
-		transcode::utils::checkFile(fp);
+		(void) transcode::utils::checkFile(fp);
 
 	} catch (std::exception& e) {
 
