@@ -11,13 +11,17 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
-boost::filesystem::path transcode::utils::checkFile(const std::string& fp) {
+namespace transcode {
+namespace utils {
+
+boost::filesystem::path checkFile(const std::string& fp)
+		throw (FileException) {
 
 	// Small optimisation, if no filename is provided then don't bother doing
 	// anything.
 	if (0 == fp.compare("")) {
 
-		throw MediaUtilsException("No file name provided.");
+		throw FileException("No file name provided.");
 	}
 
 	// Create a path class, this provides easy access to a file paths
@@ -29,8 +33,11 @@ boost::filesystem::path transcode::utils::checkFile(const std::string& fp) {
 	// bother with any further processing.
 	if (!boost::filesystem::exists(filePath)) {
 
-		throw MediaUtilsException("File " + fp + " does not exist.");
+		throw FileException("File " + fp + " does not exist.");
 	}
 
 	return filePath;
 }
+
+} /* namespace utils */
+} /* namespace transcode */

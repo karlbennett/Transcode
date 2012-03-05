@@ -21,7 +21,10 @@ extern "C" {
 #include <map>
 #include <sstream>
 
-std::map<CodecID, std::string> transcode::utils::initialiseCodecToMimeType() {
+namespace transcode {
+namespace utils {
+
+std::map<CodecID, std::string> initialiseCodecToMimeType() {
 
 	std::map<CodecID, std::string> codecToMimeType;
 
@@ -64,7 +67,7 @@ std::map<CodecID, std::string> transcode::utils::initialiseCodecToMimeType() {
 	return codecToMimeType;
 }
 
-std::map<std::string, std::string> transcode::utils::initialiseNameToMimeType() {
+std::map<std::string, std::string> initialiseNameToMimeType() {
 
 	std::map<std::string, std::string> nameToMimeType;
 
@@ -79,7 +82,7 @@ std::map<std::string, std::string> transcode::utils::initialiseNameToMimeType() 
 	return nameToMimeType;
 }
 
-std::string transcode::utils::ffmpegErrorMessage(int errorCode) {
+std::string ffmpegErrorMessage(int errorCode) {
 
 	size_t bufferSize = 1024;
 
@@ -90,8 +93,8 @@ std::string transcode::utils::ffmpegErrorMessage(int errorCode) {
 	return err == 0 ? buffer : "Unknown";
 }
 
-AVFormatContext* transcode::utils::initialiseFFMPEG(const std::string& filePath)
-		throw (transcode::utils::FFMPEGException) {
+AVFormatContext* initialiseFFMPEG(const std::string& filePath)
+		throw (FFMPEGException) {
 
 	// Initialise the ffmpeg libav library so we can use it to inspect
 	// the media file.
@@ -115,7 +118,7 @@ AVFormatContext* transcode::utils::initialiseFFMPEG(const std::string& filePath)
 	return videoFile;
 }
 
-std::string transcode::utils::extractLanguage(const AVStream& stream) {
+std::string extractLanguage(const AVStream& stream) {
 
 	// Try and find the language value by inspecting the streams metadata.
 	// Supposedly this is paired to the key "language".
@@ -125,8 +128,7 @@ std::string transcode::utils::extractLanguage(const AVStream& stream) {
 	return metadata == NULL ? "" : metadata->value;
 }
 
-transcode::SubtitleDetail transcode::utils::extractSubtitleDetail(
-		const AVStream& stream) {
+SubtitleDetail extractSubtitleDetail(const AVStream& stream) {
 
 	AVCodecContext *codec = stream.codec;
 
@@ -138,8 +140,7 @@ transcode::SubtitleDetail transcode::utils::extractSubtitleDetail(
 	return subtitleDetail;
 }
 
-transcode::AudioDetail transcode::utils::extractAudioDetail(
-		const AVStream& stream) {
+AudioDetail extractAudioDetail(const AVStream& stream) {
 
 	AVCodecContext *codec = stream.codec;
 
@@ -151,8 +152,7 @@ transcode::AudioDetail transcode::utils::extractAudioDetail(
 	return audioDetail;
 }
 
-transcode::VideoDetail transcode::utils::extractVideoDetail(
-		const AVStream& stream) {
+VideoDetail extractVideoDetail(const AVStream& stream) {
 
 	AVCodecContext *codec = stream.codec;
 
@@ -162,8 +162,7 @@ transcode::VideoDetail transcode::utils::extractVideoDetail(
 	return videoDetail;
 }
 
-transcode::ContainerDetail transcode::utils::buildContainerDetail(
-		const AVFormatContext *videoFile) {
+ContainerDetail buildContainerDetail(const AVFormatContext *videoFile) {
 
 	// Find the mime type for the media files container.
 	std::string containerMimeType = get(NAME_TO_MIMETYPE,
@@ -186,8 +185,7 @@ transcode::ContainerDetail transcode::utils::buildContainerDetail(
 			audioDetails, videoDetails);
 }
 
-void transcode::utils::closeCodecs(AVFormatContext *videoFile)
-		throw (transcode::utils::FFMPEGException) {
+void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException) {
 
 	AVCodecContext *codec;
 
@@ -204,3 +202,6 @@ void transcode::utils::closeCodecs(AVFormatContext *videoFile)
 		}
 	}
 }
+
+} /* namespace utils */
+} /* namespace transcode */

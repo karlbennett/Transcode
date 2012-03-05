@@ -22,13 +22,14 @@ extern "C" {
 #include <vector>
 #include <map>
 #include <sstream>
+#include <exception>
 #include <tr1/functional>
 #include <boost/filesystem.hpp>
 
-
 namespace transcode {
 
-std::vector<SubtitleDetail> findSubtitleDetails(const std::string& fp) {
+std::vector<SubtitleDetail> findSubtitleDetails(const std::string& fp)
+		throw (MediaUtilsException) {
 
 	using namespace transcode::utils;
 
@@ -36,21 +37,24 @@ std::vector<SubtitleDetail> findSubtitleDetails(const std::string& fp) {
 			extractSubtitleDetail);
 }
 
-std::vector<AudioDetail> findAudioDetails(const std::string& fp) {
+std::vector<AudioDetail> findAudioDetails(const std::string& fp)
+		throw (MediaUtilsException) {
 
 	using namespace transcode::utils;
 
 	return findDetails<AudioDetail>(fp, AVMEDIA_TYPE_AUDIO, extractAudioDetail);
 }
 
-std::vector<VideoDetail> findVideoDetails(const std::string& fp) {
+std::vector<VideoDetail> findVideoDetails(const std::string& fp)
+		throw (MediaUtilsException) {
 
 	using namespace transcode::utils;
 
 	return findDetails<VideoDetail>(fp, AVMEDIA_TYPE_VIDEO, extractVideoDetail);
 }
 
-ContainerDetail findContainerDetails(const std::string& fp) {
+ContainerDetail findContainerDetails(const std::string& fp)
+		throw (MediaUtilsException) {
 
 	using namespace transcode::utils;
 
@@ -61,13 +65,22 @@ ContainerDetail findContainerDetails(const std::string& fp) {
 	return buildContainerDetail(videoFile);
 }
 
-MediaFileDetail findMediaFileDetails(const std::string& fp) {
+MediaFileDetail findMediaFileDetails(const std::string& fp)
+		throw (MediaUtilsException) {
 
 	using namespace transcode::utils;
 
 	// Check to make sure we are working with a real file.
 	// If not throw a MediaUtilsException.
-	boost::filesystem::path filePath = checkFile(fp);
+	boost::filesystem::path filePath;
+	try {
+
+		filePath = checkFile(fp);
+
+	} catch (std::exception& e) {
+
+		throw MediaUtilsException(e.what());
+	}
 
 	// Get the files name from the file path object.
 	std::string fileName = filePath.filename();

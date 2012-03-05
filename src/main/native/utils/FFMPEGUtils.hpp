@@ -66,7 +66,6 @@ private:
 	int errorCode;
 
 public:
-
 	/**
 	 * Default constructor, set message to empty string and error code to 0.
 	 */
@@ -75,13 +74,13 @@ public:
 	}
 
 	/**
-	 * Instantiate an FFMPEGException with the provided message and error code.
+	 * Instantiate a new FFMPEGException with the provided error message and
+	 * set the error code to 0.
 	 *
 	 * @param msg - the message for this exception.
-	 * @param ec - the FFMPEG error code for this exception.
 	 */
-	FFMPEGException(const std::string& msg, const int& ec) throw () :
-			MediaUtilsException(msg), errorCode(ec) {
+	FFMPEGException(const std::string& msg) throw () :
+			MediaUtilsException(msg), errorCode(0) {
 	}
 
 	/**
@@ -92,6 +91,16 @@ public:
 	 */
 	FFMPEGException(const int& ec) throw () :
 			MediaUtilsException(ffmpegErrorMessage(ec)), errorCode(ec) {
+	}
+
+	/**
+	 * Instantiate an FFMPEGException with the provided message and error code.
+	 *
+	 * @param msg - the message for this exception.
+	 * @param ec - the FFMPEG error code for this exception.
+	 */
+	FFMPEGException(const std::string& msg, const int& ec) throw () :
+			MediaUtilsException(msg), errorCode(ec) {
 	}
 
 	~FFMPEGException() throw () {
@@ -166,9 +175,17 @@ template<typename T> std::vector<T> extractDetails(
  */
 template<typename T> std::vector<T> findDetails(std::string fp,
 		AVMediaType mediatype,
-		std::tr1::function<T(const AVStream&)> detailsCallback) {
+		std::tr1::function<T(const AVStream&)> detailsCallback)
+				throw (FFMPEGException) {
 
-	transcode::utils::checkFile(fp);
+	try {
+
+		transcode::utils::checkFile(fp);
+
+	} catch (std::exception& e) {
+
+		throw FFMPEGException(e.what());
+	}
 
 	AVFormatContext *videoFile = initialiseFFMPEG(fp);
 

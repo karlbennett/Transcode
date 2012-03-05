@@ -24,18 +24,19 @@ private:
 	std::string message;
 
 public:
-	MediaUtilsException() throw() :
+	MediaUtilsException() throw () :
 			exception(), message("") {
 	}
 
 	/**
 	 * Instantiate a MediaUtilsException object with the provided message.
 	 */
-	MediaUtilsException(std::string msg) throw() :
+	MediaUtilsException(std::string msg) throw () :
 			exception(), message(msg) {
 	}
 
-	~MediaUtilsException() throw() {}
+	~MediaUtilsException() throw () {
+	}
 
 	const char* what() const throw () {
 		return message.c_str();
@@ -153,10 +154,10 @@ struct ContainerDetail: MediaDetail {
 	std::vector<VideoDetail> videoDetails;
 
 	ContainerDetail() :
-			MediaDetail(), description(""),
-			subtitleDetails(std::vector<SubtitleDetail>()),
-			audioDetails(std::vector<AudioDetail>()),
-			videoDetails(std::vector<VideoDetail>()) {
+			MediaDetail(), description(""), subtitleDetails(
+					std::vector<SubtitleDetail>()), audioDetails(
+					std::vector<AudioDetail>()), videoDetails(
+					std::vector<VideoDetail>()) {
 	}
 
 	/**
@@ -176,8 +177,8 @@ struct ContainerDetail: MediaDetail {
 			const std::vector<SubtitleDetail>& sdts,
 			const std::vector<AudioDetail>& adts,
 			const std::vector<VideoDetail>& vdts) :
-			MediaDetail(mType), description(desc), subtitleDetails(sdts),
-			audioDetails(adts), videoDetails(vdts) {
+			MediaDetail(mType), description(desc), subtitleDetails(sdts), audioDetails(
+					adts), videoDetails(vdts) {
 	}
 };
 
@@ -217,7 +218,8 @@ struct MediaFileDetail {
  *
  * @return the subtitle details for the provided media file if possible.
  */
-std::vector<SubtitleDetail> findSubtitleDetails(const std::string& filePath);
+std::vector<SubtitleDetail> findSubtitleDetails(const std::string& filePath)
+		throw (MediaUtilsException);
 
 /**
  * Find the audio details for the media file at the provided path.
@@ -226,7 +228,8 @@ std::vector<SubtitleDetail> findSubtitleDetails(const std::string& filePath);
  *
  * @return the audio details for the provided media file if possible.
  */
-std::vector<AudioDetail> findAudioDetails(const std::string& filePath);
+std::vector<AudioDetail> findAudioDetails(const std::string& filePath)
+		throw (MediaUtilsException);
 
 /**
  * Find the video details for the media file at the provided path.
@@ -235,7 +238,8 @@ std::vector<AudioDetail> findAudioDetails(const std::string& filePath);
  *
  * @return the video details for the provided media file if possible.
  */
-std::vector<VideoDetail> findVideoDetails(const std::string& filePath);
+std::vector<VideoDetail> findVideoDetails(const std::string& filePath)
+		throw (MediaUtilsException);
 
 /**
  * Find the container details for the media file at the provided path.
@@ -244,7 +248,8 @@ std::vector<VideoDetail> findVideoDetails(const std::string& filePath);
  *
  * @return the container details for the provided media file if possible.
  */
-ContainerDetail findContainerDetails(const std::string& filePath);
+ContainerDetail findContainerDetails(const std::string& filePath)
+		throw (MediaUtilsException);
 
 /**
  * Find the details for the media file at the provided path.
@@ -253,7 +258,8 @@ ContainerDetail findContainerDetails(const std::string& filePath);
  *
  * @return the details for the provided media file if possible.
  */
-MediaFileDetail findMediaFileDetails(const std::string& filePath);
+MediaFileDetail findMediaFileDetails(const std::string& filePath)
+		throw (MediaUtilsException);
 
 }
 
