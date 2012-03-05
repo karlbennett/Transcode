@@ -6,7 +6,6 @@
  */
 
 #include <utils/FileUtils.hpp>
-#include <utils/MediaUtils.hpp>
 
 #include <string>
 #include <boost/filesystem.hpp>
