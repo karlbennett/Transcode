@@ -110,7 +110,7 @@ AVFormatContext* retrieveAVFormatContext(const std::string& filePath);
  * @return a vector containing subtitle detail structs populated from
  *      values within the media file.
  */
-std::vector<SubtitleDetail> extractSubtitleDetail(const AVFormatContext *videoFile);
+std::vector<SubtitleDetail> extractSubtitleDetails(const AVFormatContext *videoFile);
 
 /**
  * Extract the audio detail from the provided libav AVFormatContext.
@@ -120,7 +120,7 @@ std::vector<SubtitleDetail> extractSubtitleDetail(const AVFormatContext *videoFi
  * @return a vector containing audio detail structs populated from values
  *      within the media file.
  */
-std::vector<AudioDetail> extractAudioDetail(const AVFormatContext *videoFile);
+std::vector<AudioDetail> extractAudioDetails(const AVFormatContext *videoFile);
 
 /**
  * Extract the video detail from the provided libav AVFormatContext.
@@ -130,7 +130,7 @@ std::vector<AudioDetail> extractAudioDetail(const AVFormatContext *videoFile);
  * @return a vector containing video detail structs populated from values
  *      within the media file.
  */
-std::vector<VideoDetail> extractVideoDetail(const AVFormatContext *videoFile);
+std::vector<VideoDetail> extractVideoDetails(const AVFormatContext *videoFile);
 
 /**
  * Build a ContainerDetail struct out of the details in the provided
