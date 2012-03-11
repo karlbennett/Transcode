@@ -1,6 +1,7 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include <util/util_media.hpp>
+#include <metadata.hpp>
 #include <TestUtils.h>
 
 /**
@@ -8,11 +9,11 @@
 */
 BOOST_AUTO_TEST_CASE( test_open_media_files )
 {
-	transcode::MediaFileDetail medaFile1 = transcode::findMediaFileDetails(
+	transcode::MediaFileMetaData medaFile1 = transcode::findMediaFileDetails(
 				VIDEO_ONE);
-	transcode::MediaFileDetail medaFile2 = transcode::findMediaFileDetails(
+	transcode::MediaFileMetaData medaFile2 = transcode::findMediaFileDetails(
 					VIDEO_TWO);
-	transcode::MediaFileDetail medaFile3 = transcode::findMediaFileDetails(
+	transcode::MediaFileMetaData medaFile3 = transcode::findMediaFileDetails(
 					VIDEO_THREE);
 }
 
@@ -51,7 +52,7 @@ BOOST_AUTO_TEST_CASE( test_open_non_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_find_avi_media_file_details ) {
 
-	transcode::MediaFileDetail medaFile = transcode::findMediaFileDetails(
+	transcode::MediaFileMetaData medaFile = transcode::findMediaFileDetails(
 			VIDEO_ONE);
 
 	BOOST_CHECK_EQUAL( medaFile.name, VIDEO_ONE_NAME);
@@ -72,7 +73,7 @@ BOOST_AUTO_TEST_CASE( test_find_avi_media_file_details ) {
  */
 BOOST_AUTO_TEST_CASE( test_find_mkv_media_file_details ) {
 
-	transcode::MediaFileDetail medaFile = transcode::findMediaFileDetails(
+	transcode::MediaFileMetaData medaFile = transcode::findMediaFileDetails(
 				VIDEO_TWO);
 
 		BOOST_CHECK_EQUAL( medaFile.name, VIDEO_TWO_NAME);
@@ -94,7 +95,7 @@ BOOST_AUTO_TEST_CASE( test_find_mkv_media_file_details ) {
  */
 BOOST_AUTO_TEST_CASE( test_find_mp4_media_file_details ) {
 
-	transcode::MediaFileDetail medaFile = transcode::findMediaFileDetails(
+	transcode::MediaFileMetaData medaFile = transcode::findMediaFileDetails(
 			VIDEO_THREE);
 
 	BOOST_CHECK_EQUAL( medaFile.name, VIDEO_THREE_NAME);

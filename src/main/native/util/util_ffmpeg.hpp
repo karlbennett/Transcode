@@ -8,7 +8,7 @@
 #ifndef __UTILS_FFMPEG_HPP__
 #define __UTILS_FFMPEG_HPP__
 
-#include <util/util_media.hpp>
+#include <error.hpp>
 
 #include <string>
 #include <vector>
@@ -16,12 +16,14 @@
 
 struct AVFormatContext;
 
-struct SubtitleDetail;
-struct AudioDetail;
-struct VideoDetail;
-struct ContainerDetail;
-
 namespace transcode {
+
+struct SubtitleMetaData;
+struct AudioMetaData;
+struct VideoMetaData;
+struct ContainerMetaData;
+struct MediaFileMetaData;
+
 namespace utils {
 
 /**
@@ -36,7 +38,7 @@ std::string ffmpegErrorMessage(int errorCode);
 /**
  * Exception that is thrown if something goes wrong with the FFMPEG library.
  */
-class FFMPEGException: public UtilMediaException {
+class FFMPEGException: public MediaException {
 
 private:
     int errorCode;
@@ -46,7 +48,7 @@ public:
      * Default constructor, set message to empty string and error code to 0.
      */
     FFMPEGException() throw () :
-            UtilMediaException(), errorCode(0) {
+        MediaException(), errorCode(0) {
     }
 
     /**
@@ -56,7 +58,7 @@ public:
      * @param msg - the message for this exception.
      */
     FFMPEGException(const std::string& msg) throw () :
-            UtilMediaException(msg), errorCode(0) {
+        MediaException(msg), errorCode(0) {
     }
 
     /**
@@ -66,7 +68,7 @@ public:
      * @param ec - the FFMPEG error code for this exception.
      */
     FFMPEGException(const int& ec) throw () :
-            UtilMediaException(ffmpegErrorMessage(ec)), errorCode(ec) {
+        MediaException(ffmpegErrorMessage(ec)), errorCode(ec) {
     }
 
     /**
@@ -76,7 +78,7 @@ public:
      * @param ec - the FFMPEG error code for this exception.
      */
     FFMPEGException(const std::string& msg, const int& ec) throw () :
-            UtilMediaException(msg), errorCode(ec) {
+        MediaException(msg), errorCode(ec) {
     }
 
     ~FFMPEGException() throw () {
@@ -111,7 +113,7 @@ AVFormatContext* retrieveAVFormatContext(const std::string& filePath)
  * @return a vector containing subtitle detail structs populated from
  *      values within the media file.
  */
-std::vector<SubtitleDetail> extractSubtitleDetails(
+std::vector<SubtitleMetaData> extractSubtitleDetails(
         const AVFormatContext *videoFile) throw (FFMPEGException);
 
 /**
@@ -122,7 +124,7 @@ std::vector<SubtitleDetail> extractSubtitleDetails(
  * @return a vector containing audio detail structs populated from values
  *      within the media file.
  */
-std::vector<AudioDetail> extractAudioDetails(const AVFormatContext *videoFile)
+std::vector<AudioMetaData> extractAudioDetails(const AVFormatContext *videoFile)
         throw (FFMPEGException);
 
 /**
@@ -133,7 +135,7 @@ std::vector<AudioDetail> extractAudioDetails(const AVFormatContext *videoFile)
  * @return a vector containing video detail structs populated from values
  *      within the media file.
  */
-std::vector<VideoDetail> extractVideoDetails(const AVFormatContext *videoFile)
+std::vector<VideoMetaData> extractVideoDetails(const AVFormatContext *videoFile)
         throw (FFMPEGException);
 
 /**
@@ -145,7 +147,7 @@ std::vector<VideoDetail> extractVideoDetails(const AVFormatContext *videoFile)
  *
  * @return a populated ContainerDetail struct.
  */
-ContainerDetail buildContainerDetail(const AVFormatContext *videoFile)
+ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile)
         throw (FFMPEGException);
 
 /**

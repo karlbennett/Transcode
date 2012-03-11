@@ -12,7 +12,7 @@ extern "C" {
 }
 
 #include <util/util_ffmpeg.hpp>
-#include <util/util_media.hpp>
+#include <metadata.hpp>
 #include <util/util_standard.hpp>
 
 #include <string>
@@ -121,13 +121,13 @@ static std::string extractLanguage(const AVStream& stream) {
  *
  * @return a subtitle details struct populated from values within the provided codec.
  */
-static transcode::SubtitleDetail extractSubtitleDetail(const AVStream& stream) {
+static transcode::SubtitleMetaData extractSubtitleDetail(const AVStream& stream) {
 
     AVCodecContext *codec = stream.codec;
 
     std::string language = extractLanguage(stream);
 
-    transcode::SubtitleDetail subtitleDetail(
+    transcode::SubtitleMetaData subtitleDetail(
             transcode::utils::get(helper::CODEC_TO_MIMETYPE, codec->codec_id),
             language);
 
@@ -141,13 +141,13 @@ static transcode::SubtitleDetail extractSubtitleDetail(const AVStream& stream) {
  *
  * @return an audio details struct populated from values within the provided codec.
  */
-static transcode::AudioDetail extractAudioDetail(const AVStream& stream) {
+static transcode::AudioMetaData extractAudioDetail(const AVStream& stream) {
 
     AVCodecContext *codec = stream.codec;
 
     std::string language = extractLanguage(stream);
 
-    transcode::AudioDetail audioDetail(
+    transcode::AudioMetaData audioDetail(
             transcode::utils::get(helper::CODEC_TO_MIMETYPE, codec->codec_id),
             language, codec->bit_rate, codec->channels);
 
@@ -161,11 +161,11 @@ static transcode::AudioDetail extractAudioDetail(const AVStream& stream) {
  *
  * @return a video details struct populated from values within the provided codec.
  */
-static transcode::VideoDetail extractVideoDetail(const AVStream& stream) {
+static transcode::VideoMetaData extractVideoDetail(const AVStream& stream) {
 
     AVCodecContext *codec = stream.codec;
 
-    transcode::VideoDetail videoDetail(
+    transcode::VideoMetaData videoDetail(
             transcode::utils::get(helper::CODEC_TO_MIMETYPE, codec->codec_id),
             codec->width, codec->height, codec->frame_number);
 
@@ -217,16 +217,16 @@ public:
 
     AVFormatContext* retrieveAVFormatContext(const std::string& filePath) const;
 
-    std::vector<SubtitleDetail> extractSubtitleDetails(
+    std::vector<SubtitleMetaData> extractSubtitleDetails(
             const AVFormatContext *videoFile) const;
 
-    std::vector<AudioDetail> extractAudioDetails(
+    std::vector<AudioMetaData> extractAudioDetails(
             const AVFormatContext *videoFile) const;
 
-    std::vector<VideoDetail> extractVideoDetails(
+    std::vector<VideoMetaData> extractVideoDetails(
             const AVFormatContext *videoFile) const;
 
-    ContainerDetail buildContainerDetail(const AVFormatContext *videoFile) const;
+    ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile) const;
 
     void closeCodecs(AVFormatContext *videoFile) const throw (FFMPEGException);
 };
@@ -322,28 +322,28 @@ AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
     return videoFile;
 }
 
-std::vector<SubtitleDetail> FfmpegSingleton::extractSubtitleDetails(
+std::vector<SubtitleMetaData> FfmpegSingleton::extractSubtitleDetails(
         const AVFormatContext *videoFile) const {
 
-    return extractDetails<SubtitleDetail>(videoFile, AVMEDIA_TYPE_SUBTITLE,
+    return extractDetails<SubtitleMetaData>(videoFile, AVMEDIA_TYPE_SUBTITLE,
             callback::extractSubtitleDetail);
 }
 
-std::vector<AudioDetail> FfmpegSingleton::extractAudioDetails(
+std::vector<AudioMetaData> FfmpegSingleton::extractAudioDetails(
         const AVFormatContext *videoFile) const {
 
-    return extractDetails<AudioDetail>(videoFile, AVMEDIA_TYPE_AUDIO,
+    return extractDetails<AudioMetaData>(videoFile, AVMEDIA_TYPE_AUDIO,
             callback::extractAudioDetail);
 }
 
-std::vector<VideoDetail> FfmpegSingleton::extractVideoDetails(
+std::vector<VideoMetaData> FfmpegSingleton::extractVideoDetails(
         const AVFormatContext *videoFile) const {
 
-    return extractDetails<VideoDetail>(videoFile, AVMEDIA_TYPE_VIDEO,
+    return extractDetails<VideoMetaData>(videoFile, AVMEDIA_TYPE_VIDEO,
             callback::extractVideoDetail);
 }
 
-ContainerDetail FfmpegSingleton::buildContainerDetail(
+ContainerMetaData FfmpegSingleton::buildContainerDetail(
         const AVFormatContext *videoFile) const {
 
     checkFormatContext(videoFile);
@@ -360,14 +360,14 @@ ContainerDetail FfmpegSingleton::buildContainerDetail(
     std::string description = inputFormat->long_name;
 
     // Extract all the audio codecs.
-    std::vector<SubtitleDetail> subtitleDetails = extractSubtitleDetails(
+    std::vector<SubtitleMetaData> subtitleDetails = extractSubtitleDetails(
             videoFile);
     // Extract all the audio codecs.
-    std::vector<AudioDetail> audioDetails = extractAudioDetails(videoFile);
+    std::vector<AudioMetaData> audioDetails = extractAudioDetails(videoFile);
     // Extract all the video codecs.
-    std::vector<VideoDetail> videoDetails = extractVideoDetails(videoFile);
+    std::vector<VideoMetaData> videoDetails = extractVideoDetails(videoFile);
 
-    return ContainerDetail(containerMimeType, description, subtitleDetails,
+    return ContainerMetaData(containerMimeType, description, subtitleDetails,
             audioDetails, videoDetails);
 }
 
@@ -414,25 +414,25 @@ AVFormatContext* retrieveAVFormatContext(const std::string& filePath)
     return FfmpegSingleton::getInstance().retrieveAVFormatContext(filePath);
 }
 
-std::vector<SubtitleDetail> extractSubtitleDetails(
+std::vector<SubtitleMetaData> extractSubtitleDetails(
         const AVFormatContext *videoFile) throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().extractSubtitleDetails(videoFile);
 }
 
-std::vector<AudioDetail> extractAudioDetails(const AVFormatContext *videoFile)
+std::vector<AudioMetaData> extractAudioDetails(const AVFormatContext *videoFile)
         throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().extractAudioDetails(videoFile);
 }
 
-std::vector<VideoDetail> extractVideoDetails(const AVFormatContext *videoFile)
+std::vector<VideoMetaData> extractVideoDetails(const AVFormatContext *videoFile)
         throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().extractVideoDetails(videoFile);
 }
 
-ContainerDetail buildContainerDetail(const AVFormatContext *videoFile)
+ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile)
         throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().buildContainerDetail(videoFile);

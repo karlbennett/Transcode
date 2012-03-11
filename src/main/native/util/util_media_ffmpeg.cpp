@@ -11,17 +11,14 @@ extern "C" {
 }
 
 #include <util/util_media.hpp>
-#include <util/util_standard.hpp>
+#include <metadata.hpp>
+#include <error.hpp>
 #include <util/util_file.hpp>
 #include <util/util_ffmpeg.hpp>
 
 #include <string>
 #include <vector>
-#include <map>
-#include <sstream>
-#include <exception>
 #include <tr1/functional>
-#include <boost/filesystem.hpp>
 
 namespace helper {
 
@@ -33,7 +30,8 @@ namespace helper {
  *
  * @return a new File object related to the provided path.
  */
-static transcode::utils::File checkedFile(const std::string& path) {
+static transcode::utils::File checkedFile(const std::string& path)
+        throw (transcode::UtilMediaException) {
 
     using namespace transcode::utils;
 
@@ -57,52 +55,96 @@ static transcode::utils::File checkedFile(const std::string& path) {
  *
  * @return the AVFormatContext for the provided media file.
  */
-static AVFormatContext* retrieveCheckedAVFormatContext(const std::string& path) {
+static AVFormatContext* retrieveCheckedAVFormatContext(
+        const std::string& path) throw (transcode::UtilMediaException) {
 
     using namespace transcode::utils;
 
     File file = checkedFile(path);
 
-    return retrieveAVFormatContext(file.getPath());
+    try {
+
+        return retrieveAVFormatContext(file.getPath());
+
+    } catch (transcode::MediaException& e) {
+
+        throw transcode::UtilMediaException(e.what());
+    }
+
+    return NULL; // We should never get here.
+}
+
+/**
+ * Helper template used to wrap an extract details function so that
+ * it's exception can be converted to a UtilMediaException.
+ *
+ * @param formatContext - the format context that will be passed to
+ *      the extract details function.
+ * @param detailsCallback - the function that will be called with
+ *      the format context.
+ *
+ * @return a populated construct of the requested type.
+ */
+template<typename T> T extractCheckedDetails(
+        const AVFormatContext *formatContext,
+        std::tr1::function<T(const AVFormatContext*)> detailsCallback)
+                throw (transcode::UtilMediaException) {
+
+    T details;
+
+    try {
+
+        details = detailsCallback(formatContext);
+
+    } catch (std::exception& e) {
+
+        throw transcode::UtilMediaException(e.what());
+    }
+
+    return details;
 }
 
 }
 
 namespace transcode {
 
-std::vector<SubtitleDetail> findSubtitleDetails(const std::string& path)
+std::vector<SubtitleMetaData> findSubtitleDetails(const std::string& path)
         throw (UtilMediaException) {
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
-    return transcode::utils::extractSubtitleDetails(videoFile);
+    return helper::extractCheckedDetails< std::vector<SubtitleMetaData> >(
+            videoFile, transcode::utils::extractSubtitleDetails);
 }
 
-std::vector<AudioDetail> findAudioDetails(const std::string& path)
+std::vector<AudioMetaData> findAudioDetails(const std::string& path)
         throw (UtilMediaException) {
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
-    return transcode::utils::extractAudioDetails(videoFile);
+    return helper::extractCheckedDetails< std::vector<AudioMetaData> >(
+            videoFile, transcode::utils::extractAudioDetails);
 }
 
-std::vector<VideoDetail> findVideoDetails(const std::string& path)
+std::vector<VideoMetaData> findVideoDetails(const std::string& path)
         throw (UtilMediaException) {
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
-    return transcode::utils::extractVideoDetails(videoFile);
+    return helper::extractCheckedDetails< std::vector<VideoMetaData> >(
+            videoFile, transcode::utils::extractVideoDetails);
 }
 
-ContainerDetail findContainerDetails(const std::string& path)
+ContainerMetaData findContainerDetails(const std::string& path)
         throw (UtilMediaException) {
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
-    return transcode::utils::buildContainerDetail(videoFile);
+    return helper::extractCheckedDetails<ContainerMetaData>(
+            videoFile, transcode::utils::buildContainerDetail);
 }
 
-MediaFileDetail findMediaFileDetails(const std::string& path)
+MediaFileMetaData findMediaFileDetails(const std::string& path)
         throw (UtilMediaException) {
 
     using namespace transcode::utils;
@@ -118,17 +160,20 @@ MediaFileDetail findMediaFileDetails(const std::string& path)
     // Initialise FFMPEG and get the AVFormatContext for the provided file.
     // If the AVFormatContext cannot be opened a MediaUtilsException is
     // thrown.
-    AVFormatContext *videoFile = retrieveAVFormatContext(file.getPath());
+    AVFormatContext *formatContext = helper::retrieveCheckedAVFormatContext(
+            file.getPath());
 
     // Build a container struct from the AVFormatContext.
-    ContainerDetail container = buildContainerDetail(videoFile);
+    //ContainerMetaData container = buildContainerDetail(videoFile);
+    ContainerMetaData container = helper::extractCheckedDetails<
+            ContainerMetaData>(formatContext, buildContainerDetail);
 
     // Clean up the lib av structs.
-    closeCodecs(videoFile);
-    av_close_input_file(videoFile);
+    closeCodecs(formatContext);
+    av_close_input_file(formatContext);
 
     // Then lastly return a fully populated MediaFileDetail struct.
-    return MediaFileDetail(container, path, fileName, fileSize);
+    return MediaFileMetaData(container, path, fileName, fileSize);
 }
 
 } /* namespace transcode */
