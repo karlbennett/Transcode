@@ -7,6 +7,7 @@
 const std::string VIDEO_ONE = "../../../target/test-classes/lib-test/test.avi";
 const std::string VIDEO_TWO = "../../../target/test-classes/lib-test/test.mkv";
 const std::string VIDEO_THREE = "../../../target/test-classes/lib-test/test.mp4";
+const std::string INVALID_FILE = "file does not exist";
 const std::string TEXT_FILE = "../../../target/test-classes/lib-test/test.txt";
 
 // Names of the test media files.
