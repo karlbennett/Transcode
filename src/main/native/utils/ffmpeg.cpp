@@ -208,28 +208,27 @@ private:
     void operator=(FfmpegSingleton const&); // Should not be implemented.
 
 public:
-    static FfmpegSingleton& getInstance()
-    {
+    static const FfmpegSingleton& getInstance() {
         static FfmpegSingleton instance;
         return instance;
     }
 
-    std::string ffmpegErrorMessage(int errorCode);
+    std::string ffmpegErrorMessage(int errorCode) const;
 
-    AVFormatContext* retrieveAVFormatContext(const std::string& filePath);
+    AVFormatContext* retrieveAVFormatContext(const std::string& filePath) const;
 
     std::vector<SubtitleDetail> extractSubtitleDetails(
-            const AVFormatContext *videoFile);
+            const AVFormatContext *videoFile) const;
 
     std::vector<AudioDetail> extractAudioDetails(
-            const AVFormatContext *videoFile);
+            const AVFormatContext *videoFile) const;
 
     std::vector<VideoDetail> extractVideoDetails(
-            const AVFormatContext *videoFile);
+            const AVFormatContext *videoFile) const;
 
-    ContainerDetail buildContainerDetail(const AVFormatContext *videoFile);
+    ContainerDetail buildContainerDetail(const AVFormatContext *videoFile) const;
 
-    void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException);
+    void closeCodecs(AVFormatContext *videoFile) const throw (FFMPEGException);
 };
 
 /**
@@ -294,7 +293,7 @@ template<typename T> std::vector<T> extractDetails(
     return details;
 }
 
-std::string FfmpegSingleton::ffmpegErrorMessage(int errorCode) {
+std::string FfmpegSingleton::ffmpegErrorMessage(int errorCode) const {
 
     size_t bufferSize = 1024;
 
@@ -306,7 +305,7 @@ std::string FfmpegSingleton::ffmpegErrorMessage(int errorCode) {
 }
 
 AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
-        const std::string& filePath) {
+        const std::string& filePath) const {
 
     // Open the media file. This will populate the AVFormatContext
     // with all the information about this media file.
@@ -324,28 +323,28 @@ AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
 }
 
 std::vector<SubtitleDetail> FfmpegSingleton::extractSubtitleDetails(
-        const AVFormatContext *videoFile) {
+        const AVFormatContext *videoFile) const {
 
     return extractDetails<SubtitleDetail>(videoFile, AVMEDIA_TYPE_SUBTITLE,
             callback::extractSubtitleDetail);
 }
 
 std::vector<AudioDetail> FfmpegSingleton::extractAudioDetails(
-        const AVFormatContext *videoFile) {
+        const AVFormatContext *videoFile) const {
 
     return extractDetails<AudioDetail>(videoFile, AVMEDIA_TYPE_AUDIO,
             callback::extractAudioDetail);
 }
 
 std::vector<VideoDetail> FfmpegSingleton::extractVideoDetails(
-        const AVFormatContext *videoFile) {
+        const AVFormatContext *videoFile) const {
 
     return extractDetails<VideoDetail>(videoFile, AVMEDIA_TYPE_VIDEO,
             callback::extractVideoDetail);
 }
 
 ContainerDetail FfmpegSingleton::buildContainerDetail(
-        const AVFormatContext *videoFile) {
+        const AVFormatContext *videoFile) const {
 
     checkFormatContext(videoFile);
 
@@ -372,7 +371,7 @@ ContainerDetail FfmpegSingleton::buildContainerDetail(
             audioDetails, videoDetails);
 }
 
-void FfmpegSingleton::closeCodecs(AVFormatContext *videoFile)
+void FfmpegSingleton::closeCodecs(AVFormatContext *videoFile) const
         throw (FFMPEGException) {
 
     checkFormatContext(videoFile);
