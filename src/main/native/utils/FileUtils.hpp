@@ -18,38 +18,116 @@ namespace utils {
 class FileException: public std::exception {
 
 private:
-	std::string message;
+    std::string message_;
 
 public:
-	/**
-	 * Default constructor, set the message to empty string.
-	 */
-	FileException() throw() :
-			exception(), message("") {
-	}
+    /**
+     * Default constructor, set the message to empty string.
+     */
+    FileException() throw () :
+            exception(), message_("") {
+    }
 
-	/**
-	 * Instantiate a FileException object with the provided message.
-	 */
-	FileException(std::string msg) throw() :
-			exception(), message(msg) {
-	}
+    /**
+     * Instantiate a FileException object with the provided message.
+     */
+    FileException(std::string message) throw () :
+            exception(), message_(message) {
+    }
 
-	~FileException() throw() {}
+    ~FileException() throw () {
+    }
 
-	const char* what() const throw () {
-		return message.c_str();
-	}
+    const char* what() const throw () {
+        return message_.c_str();
+    }
 };
 
 /**
- * Check to make sure we are working with an actual file.
- *
- * @param fp - the path to the file that will have it's details inspected.
- *
- * @return a boost filesystem path class related to the provided file.
+ * A class that represents a file on the file system, it can be used
+ * to access meta data about the file.
  */
-boost::filesystem::path checkFile(const std::string& fp) throw(FileException);
+class File {
+
+private:
+    std::string name_;
+    std::string path_;
+    std::string relativePath_;
+    std::string absolutePath_;
+    unsigned long size_;
+
+public:
+
+    /**
+     * Instantiate an empty File object.
+     */
+    File() :
+            name_(""),
+                    path_(""),
+                    relativePath_(""),
+                    absolutePath_(""),
+                    size_(0) {
+    }
+
+    /**
+     * Instantiate a new File object that will be populated from the
+     * meta data of the file at the provided path.
+     *
+     * @param path - the path to the file that will be inspected.
+     */
+    File(std::string path) throw (FileException);
+
+    /**
+     * Get the name of the related file minus the path.
+     *
+     * @return the name of the file.
+     */
+    std::string getName() const
+    {
+        return name_;
+    }
+
+    /**
+     * Get the full path of the file that was used to create this object.
+     *
+     * @return the path of the file.
+     */
+    std::string getPath() const
+    {
+        return path_;
+    }
+
+    /**
+     * Get the absolute path of the file.
+     *
+     * @return the absolute path of the file.
+     */
+    std::string getAbsolutePath() const
+    {
+        return absolutePath_;
+    }
+
+    /**
+     * Get the relative path of the file to the current running directory.
+     *
+     * @return the relative path of the file.
+     */
+    std::string getRelativePath() const
+    {
+        return relativePath_;
+    }
+
+    /**
+     * Get the size of the related file in bytes.
+     *
+     * @return the size of the file.
+     */
+    unsigned long getSize() const
+    {
+        return size_;
+    }
+
+};
 
 } /* namespace utils */
 } /* namespace transcode */

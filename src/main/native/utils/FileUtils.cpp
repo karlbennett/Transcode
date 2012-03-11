@@ -13,29 +13,44 @@
 namespace transcode {
 namespace utils {
 
-boost::filesystem::path checkFile(const std::string& fp)
-		throw (FileException) {
+File::File(std::string path) throw (FileException) :
+        name_(""),
+                path_(""),
+                relativePath_(""),
+                absolutePath_(""),
+                size_(0) {
 
-	// Small optimisation, if no filename is provided then don't bother doing
-	// anything.
-	if (0 == fp.compare("")) {
+    // Small optimisation, if no filename is provided then don't bother doing
+    // anything.
+    if (0 == path.compare("")) {
 
-		throw FileException("No file name provided.");
-	}
+        throw FileException("No file name provided.");
+    }
 
-	// Create a path class, this provides easy access to a file paths
-	// different elements.
-	boost::filesystem::path filePath(fp);
+    path_ = path; // Now that we know the path is ok record it.
 
-	// Another small optimisation, use the boost filesystem exists function to
-	// check if the provided file does not exist and if it doesn't again don't
-	// bother with any further processing.
-	if (!boost::filesystem::exists(filePath)) {
+    // Create a path class, this provides easy access to a file paths
+    // different elements.
+    boost::filesystem::path filePath(path);
 
-		throw FileException("File " + fp + " does not exist.");
-	}
+    // Another small optimisation, use the boost filesystem exists function to
+    // check if the provided file does not exist and if it doesn't again don't
+    // bother with any further processing.
+    if (!boost::filesystem::exists(filePath)) {
 
-	return filePath;
+        throw FileException("File " + path + " does not exist.");
+    }
+
+    // Lastly the path must point to an actual file not a directory of symlink.
+    if (!boost::filesystem::is_regular_file(filePath)) {
+
+        throw FileException("Path (" + path + ") does not point to a file.");
+    }
+
+    name_ = filePath.filename();
+    absolutePath_ = filePath.canonize().string();
+    relativePath_ = filePath.relative_path().string();
+    size_ = boost::filesystem::file_size(filePath);
 }
 
 } /* namespace utils */

@@ -190,7 +190,7 @@ struct MediaFileDetail {
 	ContainerDetail container;
 	std::string path;
 	std::string name;
-	int size;
+	unsigned long size;
 
 	MediaFileDetail() :
 			container(ContainerDetail()), path(""), name(""), size(0) {
@@ -206,7 +206,7 @@ struct MediaFileDetail {
 	 * @param size - the size of this media file in bytes.
 	 */
 	MediaFileDetail(const ContainerDetail& cntr, const std::string& p,
-			const std::string& n, const int& s) :
+			const std::string& n, const unsigned long& s) :
 			container(cntr), path(p), name(n), size(s) {
 	}
 };
