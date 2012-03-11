@@ -18,24 +18,24 @@ namespace transcode {
 /**
  * An exception that is thrown from within the MediaUtils functions.
  */
-class MediaUtilsException: public std::exception {
+class UtilMediaException: public std::exception {
 
 private:
 	std::string message;
 
 public:
-	MediaUtilsException() throw () :
+	UtilMediaException() throw () :
 			exception(), message("") {
 	}
 
 	/**
 	 * Instantiate a MediaUtilsException object with the provided message.
 	 */
-	MediaUtilsException(std::string msg) throw () :
+	UtilMediaException(std::string msg) throw () :
 			exception(), message(msg) {
 	}
 
-	~MediaUtilsException() throw () {
+	~UtilMediaException() throw () {
 	}
 
 	const char* what() const throw () {
@@ -219,7 +219,7 @@ struct MediaFileDetail {
  * @return the subtitle details for the provided media file if possible.
  */
 std::vector<SubtitleDetail> findSubtitleDetails(const std::string& filePath)
-		throw (MediaUtilsException);
+		throw (UtilMediaException);
 
 /**
  * Find the audio details for the media file at the provided path.
@@ -229,7 +229,7 @@ std::vector<SubtitleDetail> findSubtitleDetails(const std::string& filePath)
  * @return the audio details for the provided media file if possible.
  */
 std::vector<AudioDetail> findAudioDetails(const std::string& filePath)
-		throw (MediaUtilsException);
+		throw (UtilMediaException);
 
 /**
  * Find the video details for the media file at the provided path.
@@ -239,7 +239,7 @@ std::vector<AudioDetail> findAudioDetails(const std::string& filePath)
  * @return the video details for the provided media file if possible.
  */
 std::vector<VideoDetail> findVideoDetails(const std::string& filePath)
-		throw (MediaUtilsException);
+		throw (UtilMediaException);
 
 /**
  * Find the container details for the media file at the provided path.
@@ -249,7 +249,7 @@ std::vector<VideoDetail> findVideoDetails(const std::string& filePath)
  * @return the container details for the provided media file if possible.
  */
 ContainerDetail findContainerDetails(const std::string& filePath)
-		throw (MediaUtilsException);
+		throw (UtilMediaException);
 
 /**
  * Find the details for the media file at the provided path.
@@ -259,7 +259,7 @@ ContainerDetail findContainerDetails(const std::string& filePath)
  * @return the details for the provided media file if possible.
  */
 MediaFileDetail findMediaFileDetails(const std::string& filePath)
-		throw (MediaUtilsException);
+		throw (UtilMediaException);
 
 }
 

@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE( test_open_media_files )
 BOOST_AUTO_TEST_CASE( test_open_empty_string )
 {
 	BOOST_REQUIRE_THROW( transcode::findMediaFileDetails(""),
-			transcode::MediaUtilsException );
+			transcode::UtilMediaException );
 }
 
 /**
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE( test_open_empty_string )
 BOOST_AUTO_TEST_CASE( test_open_invalid_media_file )
 {
 	BOOST_REQUIRE_THROW( transcode::findMediaFileDetails("file does not exist"),
-				transcode::MediaUtilsException );
+				transcode::UtilMediaException );
 }
 
 /**
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( test_open_invalid_media_file )
 BOOST_AUTO_TEST_CASE( test_open_non_media_file )
 {
 	BOOST_REQUIRE_THROW( transcode::findMediaFileDetails(TEXT_FILE),
-					transcode::MediaUtilsException );
+					transcode::UtilMediaException );
 }
 
 /**

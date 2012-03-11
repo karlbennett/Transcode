@@ -43,7 +43,7 @@ static transcode::utils::File checkedFile(const std::string& path) {
 
     } catch (std::exception& e) {
 
-        throw transcode::MediaUtilsException(e.what());
+        throw transcode::UtilMediaException(e.what());
     }
 
     return File(); // We should never get here.
@@ -71,7 +71,7 @@ static AVFormatContext* retrieveCheckedAVFormatContext(const std::string& path) 
 namespace transcode {
 
 std::vector<SubtitleDetail> findSubtitleDetails(const std::string& path)
-        throw (MediaUtilsException) {
+        throw (UtilMediaException) {
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
@@ -79,7 +79,7 @@ std::vector<SubtitleDetail> findSubtitleDetails(const std::string& path)
 }
 
 std::vector<AudioDetail> findAudioDetails(const std::string& path)
-        throw (MediaUtilsException) {
+        throw (UtilMediaException) {
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
@@ -87,7 +87,7 @@ std::vector<AudioDetail> findAudioDetails(const std::string& path)
 }
 
 std::vector<VideoDetail> findVideoDetails(const std::string& path)
-        throw (MediaUtilsException) {
+        throw (UtilMediaException) {
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
@@ -95,7 +95,7 @@ std::vector<VideoDetail> findVideoDetails(const std::string& path)
 }
 
 ContainerDetail findContainerDetails(const std::string& path)
-        throw (MediaUtilsException) {
+        throw (UtilMediaException) {
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
@@ -103,7 +103,7 @@ ContainerDetail findContainerDetails(const std::string& path)
 }
 
 MediaFileDetail findMediaFileDetails(const std::string& path)
-        throw (MediaUtilsException) {
+        throw (UtilMediaException) {
 
     using namespace transcode::utils;
 
