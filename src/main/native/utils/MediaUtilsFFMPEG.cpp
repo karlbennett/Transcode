@@ -49,6 +49,14 @@ static transcode::utils::File checkedFile(const std::string& path) {
     return File(); // We should never get here.
 }
 
+/**
+ * A function to retrieve a AVFormatContext for the media file at the provided
+ * path while also making sure the file is usable.
+ *
+ * @param path - the path to the file on the file system.
+ *
+ * @return the AVFormatContext for the provided media file.
+ */
 static AVFormatContext* retrieveCheckedAVFormatContext(const std::string& path) {
 
     using namespace transcode::utils;
