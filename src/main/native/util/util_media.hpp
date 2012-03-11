@@ -5,8 +5,8 @@
  *      Author: karl
  */
 
-#ifndef __MEDIA_UTILS_HPP__
-#define __MEDIA_UTILS_HPP__
+#ifndef __UTIL_MEDIA_HPP__
+#define __UTIL_MEDIA_HPP__
 
 #include <error.hpp>
 
@@ -101,4 +101,4 @@ MediaFileMetaData findMediaFileDetails(const std::string& filePath)
 
 }
 
-#endif /* __MEDIA_UTILS_HPP__ */
+#endif /* __UTIL_MEDIA_HPP__ */

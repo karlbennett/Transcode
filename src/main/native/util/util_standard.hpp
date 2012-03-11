@@ -5,8 +5,8 @@
  *      Author: karl
  */
 
-#ifndef __STANDARD_UTILS_HPP__
-#define __STANDARD_UTILS_HPP__
+#ifndef __UTIL_STANDARD_HPP__
+#define __UTIL_STANDARD_HPP__
 
 #include <map>
 
@@ -43,4 +43,4 @@ template<typename K, typename V> V get(const std::map<K, V>& map
 } /* namespace utils */
 } /* namespace transcode */
 
-#endif /* __STANDARD_UTILS_HPP__ */
+#endif /* __UTIL_STANDARD_HPP__ */

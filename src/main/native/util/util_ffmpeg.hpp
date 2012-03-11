@@ -5,8 +5,8 @@
  *      Author: karl
  */
 
-#ifndef __UTILS_FFMPEG_HPP__
-#define __UTILS_FFMPEG_HPP__
+#ifndef __UTIL_FFMPEG_HPP__
+#define __UTIL_FFMPEG_HPP__
 
 #include <error.hpp>
 
@@ -160,4 +160,4 @@ void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException);
 } /* utils */
 } /* transcode */
 
-#endif /* __UTILS_FFMPEG_HPP__ */
+#endif /* __UTIL_FFMPEG_HPP__ */

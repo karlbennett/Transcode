@@ -5,8 +5,8 @@
  *      Author: karl
  */
 
-#ifndef __FILEUTILS_HPP__
-#define __FILEUTILS_HPP__
+#ifndef __UTIL_ FILE_HPP__
+#define __UTIL_ FILE_HPP__
 
 #include <string>
 #include <exception>
@@ -131,4 +131,4 @@ public:
 } /* namespace utils */
 } /* namespace transcode */
 
-#endif /* __FILEUTILS_HPP__ */
+#endif /* __UTIL_ FILE_HPP__ */
