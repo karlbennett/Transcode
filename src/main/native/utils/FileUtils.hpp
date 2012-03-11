@@ -10,7 +10,6 @@
 
 #include <string>
 #include <exception>
-#include <boost/filesystem.hpp>
 
 namespace transcode {
 namespace utils {
