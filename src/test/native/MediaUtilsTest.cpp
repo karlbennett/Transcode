@@ -1,6 +1,6 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
-#include <util/MediaUtils.hpp>
+#include <util/util_media.hpp>
 #include <TestUtils.h>
 
 /**
