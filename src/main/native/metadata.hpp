@@ -18,10 +18,10 @@ namespace transcode {
  */
 struct MediaMetaData {
 
-    std::string mimeType_;
+    std::string mimeType;
 
     MediaMetaData() :
-            mimeType_("") {
+            mimeType("") {
     }
 
     /**
@@ -29,8 +29,8 @@ struct MediaMetaData {
      *
      * @param mType - the mimeType for this MediaType struct.
      */
-    MediaMetaData(const std::string& mimeType) :
-            mimeType_(mimeType) {
+    MediaMetaData(const std::string& mType) :
+            mimeType(mType) {
     }
 };
 
@@ -39,21 +39,21 @@ struct MediaMetaData {
  */
 struct SubtitleMetaData: MediaMetaData {
 
-    std::string language_;
+    std::string language;
 
     SubtitleMetaData() :
-            MediaMetaData(), language_("") {
+            MediaMetaData(), language("") {
     }
 
     /**
      * Construct a new SubtitleDetail struct with the provided mimetype
      * and language.
      *
-     * @param mType - the mimeType for this VideoDetails struct.
-     * @param language - the language of the subtitle.
+     * @param mimeType - the mimeType for this VideoDetails struct.
+     * @param lang - the language of the subtitle.
      */
-    SubtitleMetaData(const std::string& mimeType, const std::string& language) :
-            MediaMetaData(mimeType), language_(language) {
+    SubtitleMetaData(const std::string& mimeType, const std::string& lang) :
+            MediaMetaData(mimeType), language(lang) {
     }
 };
 
@@ -62,27 +62,27 @@ struct SubtitleMetaData: MediaMetaData {
  */
 struct AudioMetaData: MediaMetaData {
 
-    std::string language_;
-    int rate_;
-    int channels_;
+    std::string language;
+    int rate;
+    int channels;
 
     AudioMetaData() :
-            MediaMetaData(), language_(""), rate_(0), channels_(0) {
+            MediaMetaData(), language(""), rate(0), channels(0) {
     }
 
     /**
      * Construct a new AudioDetails struct with the provided mimetype,
      * rate, and channel numbers.
      *
-     * @param mType - the mimeType for this AudioDetails struct.
-     * @param language - the language of the stream.
-     * @param rate - the sample rate of the data, in samples (per channel) per second.
-     * @param channels - the number of channels of audio data.
+     * @param mimeType - the mimeType for this AudioDetails struct.
+     * @param lang - the language of the stream.
+     * @param r - the sample rate of the data, in samples (per channel) per second.
+     * @param ch - the number of channels of audio data.
      */
-    AudioMetaData(const std::string& mimeType, const std::string& language,
-            const int& rate, const int& channels) :
-            MediaMetaData(mimeType), language_(language), rate_(rate), channels_(
-                    channels) {
+    AudioMetaData(const std::string& mimeType, const std::string& lang,
+            const int& r, const int& ch) :
+            MediaMetaData(mimeType), language(lang), rate(r), channels(
+                    ch) {
     }
 };
 
@@ -91,28 +91,28 @@ struct AudioMetaData: MediaMetaData {
  */
 struct VideoMetaData: MediaMetaData {
 
-    int width_;
-    int height_;
-    int frameRate_;
+    int width;
+    int height;
+    int frameRate;
 
     VideoMetaData() :
-            MediaMetaData(), width_(0), height_(0), frameRate_(0) {
+            MediaMetaData(), width(0), height(0), frameRate(0) {
     }
 
     /**
      * Construct a new VideoDetails struct with the provided mimetype,
      * frame width, frame height, and frame rate.
      *
-     * @param mType - the mimeType for this VideoDetails struct.
-     * @param width - the width of the video image.
-     * @param height - the height of the video image.
-     * @param frameRate - the average frame rate in frames per second.
+     * @param mimeType - the mimeType for this VideoDetails struct.
+     * @param w - the width of the video image.
+     * @param h - the height of the video image.
+     * @param fr - the average frame rate in frames per second.
      * 					0 means a variable framerate.
      */
-    VideoMetaData(const std::string& mimeType, const int& width,
-            const int& height, const int& frameRate) :
-            MediaMetaData(mimeType), width_(width), height_(height), frameRate_(
-                    frameRate) {
+    VideoMetaData(const std::string& mimeType, const int& w,
+            const int& h, const int& fr) :
+            MediaMetaData(mimeType), width(w), height(h), frameRate(
+                    fr) {
     }
 };
 
@@ -121,42 +121,42 @@ struct VideoMetaData: MediaMetaData {
  */
 struct ContainerMetaData: MediaMetaData {
 
-    std::string description_;
-    std::vector<SubtitleMetaData> subtitleDetails_;
-    std::vector<AudioMetaData> audioDetails_;
-    std::vector<VideoMetaData> videoDetails_;
+    std::string description;
+    std::vector<SubtitleMetaData> subtitleDetails;
+    std::vector<AudioMetaData> audioDetails;
+    std::vector<VideoMetaData> videoDetails;
 
     ContainerMetaData() :
             MediaMetaData(),
-                    description_(""),
-                    subtitleDetails_(std::vector<SubtitleMetaData>()),
-                    audioDetails_(std::vector<AudioMetaData>()),
-                    videoDetails_(std::vector<VideoMetaData>()) {
+                    description(""),
+                    subtitleDetails(std::vector<SubtitleMetaData>()),
+                    audioDetails(std::vector<AudioMetaData>()),
+                    videoDetails(std::vector<VideoMetaData>()) {
     }
 
     /**
      * Construct a new ContainerDetails struct with the provided mimetype,
      * description, audio, and video details.
      *
-     * @param mType - the mimeType for this ContainerDetails struct.
-     * @param description - a description of this container.
-     * @param subtitleDetails - a list of subtitle details related to the
+     * @param mimeType - the mimeType for this ContainerDetails struct.
+     * @param desc - a description of this container.
+     * @param subDets - a list of subtitle details related to the
      * 						subtitle streams contained within this container.
-     * @param audioDetails - a list of audio details related to the audio
+     * @param audioDets - a list of audio details related to the audio
      * 						streams contained within this container.
-     * @param videoDetails - a list of video details related to the video
+     * @param videoDets - a list of video details related to the video
      * 						streams contained within this container.
      */
     ContainerMetaData(const std::string& mimeType,
-            const std::string& description,
-            const std::vector<SubtitleMetaData>& subtitleDetails,
-            const std::vector<AudioMetaData>& audioDetails,
-            const std::vector<VideoMetaData>& videoDetails) :
+            const std::string& desc,
+            const std::vector<SubtitleMetaData>& subDets,
+            const std::vector<AudioMetaData>& audioDets,
+            const std::vector<VideoMetaData>& videoDets) :
             MediaMetaData(mimeType),
-                    description_(description),
-                    subtitleDetails_(subtitleDetails),
-                    audioDetails_(audioDetails),
-                    videoDetails_(videoDetails) {
+                    description(desc),
+                    subtitleDetails(subDets),
+                    audioDetails(audioDets),
+                    videoDetails(videoDets) {
     }
 };
 
@@ -165,27 +165,27 @@ struct ContainerMetaData: MediaMetaData {
  */
 struct MediaFileMetaData {
 
-    ContainerMetaData container_;
-    std::string path_;
-    std::string name_;
-    int size_;
+    ContainerMetaData container;
+    std::string path;
+    std::string name;
+    int size;
 
     MediaFileMetaData() :
-            container_(ContainerMetaData()), path_(""), name_(""), size_(0) {
+            container(ContainerMetaData()), path(""), name(""), size(0) {
     }
 
     /**
      * Construct a new MediaFileDetail struct with the provided container,
      * path, name, and size.
      *
-     * @param container - the container of this media file.
-     * @param path - a full path of this media file.
-     * @param name - the name of this media file minus the path.
-     * @param size - the size of this media file in bytes.
+     * @param cont - the container of this media file.
+     * @param p - a full path of this media file.
+     * @param n - the name of this media file minus the path.
+     * @param s - the size of this media file in bytes.
      */
-    MediaFileMetaData(const ContainerMetaData& container, const std::string& path,
-            const std::string& name, const int& size) :
-            container_(container), path_(path), name_(name), size_(size) {
+    MediaFileMetaData(const ContainerMetaData& cont, const std::string& p,
+            const std::string& n, const int& s) :
+            container(cont), path(p), name(n), size(s) {
     }
 };
 
