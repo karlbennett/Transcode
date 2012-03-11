@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE( test_open_empty_string )
  */
 BOOST_AUTO_TEST_CASE( test_open_invalid_media_file )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::findMediaFileDetails("file does not exist"),
+    BOOST_REQUIRE_THROW( (void) transcode::findMediaFileDetails(INVALID_FILE),
             transcode::UtilMediaException);
 }
 
