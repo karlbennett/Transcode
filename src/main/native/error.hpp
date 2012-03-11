@@ -27,6 +27,8 @@ public:
 
     /**
      * Instantiate a MediaException object with the provided message.
+     *
+     * @param message - the message for the new exception.
      */
     MediaException(std::string message) throw () :
             exception(), message_(message) {
