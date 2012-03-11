@@ -93,7 +93,6 @@ const std::map<CodecID, std::string> CODEC_TO_MIMETYPE =
  */
 const std::map<std::string, std::string> NAME_TO_MIMETYPE =
         initialiseNameToMimeType();
-
 }
 
 namespace callback {
@@ -233,6 +232,68 @@ public:
     void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException);
 };
 
+/**
+ * Check to make sure that the AVFormatContext is in a usable state.
+ *
+ * @param formatContext - the AVFormatContext to check.
+ *
+ * @throws an FFMPEGException if the AVFormatContext cannot be used.
+ */
+static void checkFormatContext(const AVFormatContext *formatContext) {
+
+    if (NULL == formatContext) {
+        throw FFMPEGException("The AVFormatContext cannot be NULL.");
+    }
+}
+
+/**
+ * Extract the media details of the given type from the libav AVFormatContext struct
+ * using the provided get details function.
+ *
+ * @param videoFile - the av format context that contains the audio details to extract.
+ * @param mediaType - the type of media stream that should have it's codec inspected.
+ * @param detailsCallback - the function to use to get the correct details out of the codec.
+ *
+ * @return a vector containing all the extracted details.
+ */
+template<typename T> std::vector<T> extractDetails(
+        const AVFormatContext *videoFile, AVMediaType mediatype,
+        std::tr1::function<T(const AVStream&)> detailsCallback) {
+
+    checkFormatContext(videoFile);
+
+    std::vector<T> details;
+
+    AVStream *stream;
+    AVCodecContext *codecContext;
+    AVMediaType codecType;
+
+    // Iterate through the streams searching for any audio streams.
+    for (int i = 0; i < videoFile->nb_streams; i++) {
+
+        stream = videoFile->streams[i];
+        if (NULL == stream) {
+            throw FFMPEGException("A media stream was null.");
+        }
+
+        codecContext = videoFile->streams[i]->codec;
+        if (NULL == codecContext) {
+            throw FFMPEGException("A codec was null.");
+        }
+
+        codecType = codecContext->codec_type;
+
+        // If we find a stream that matches the provided type use its details to
+        // construct a struct of the requested type.
+        if (codecType == mediatype) {
+
+            details.push_back(detailsCallback(*stream));
+        }
+    }
+
+    return details;
+}
+
 std::string FfmpegSingleton::ffmpegErrorMessage(int errorCode) {
 
     size_t bufferSize = 1024;
@@ -256,47 +317,10 @@ AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
 
     // If an error code was returned throw an appropriate exception.
     if (0 > errorCode) {
-
         throw FFMPEGException(errorCode);
     }
 
     return videoFile;
-}
-
-/**
- * Extract the media details of the given type from the libav AVFormatContext struct
- * using the provided get details function.
- *
- * @param videoFile - the av format context that contains the audio details to extract.
- * @param mediaType - the type of media stream that should have it's codec inspected.
- * @param detailsCallback - the function to use to get the correct details out of the codec.
- *
- * @return a vector containing all the extracted details.
- */
-template<typename T> std::vector<T> extractDetails(
-        const AVFormatContext *videoFile, AVMediaType mediatype,
-        std::tr1::function<T(const AVStream&)> detailsCallback) {
-
-    std::vector<T> details;
-
-    AVStream *stream;
-    AVMediaType codecType;
-
-    // Iterate through the streams searching for any audio streams.
-    for (int i = 0; i < videoFile->nb_streams; i++) {
-
-        stream = videoFile->streams[i];
-        codecType = videoFile->streams[i]->codec->codec_type;
-
-        // If we find an audio stream use its details to construct an AudioDetail
-        // struct.
-        if (codecType == mediatype) {
-
-            details.push_back(detailsCallback(*stream));
-        }
-    }
-
-    return details;
 }
 
 std::vector<SubtitleDetail> FfmpegSingleton::extractSubtitleDetails(
@@ -323,22 +347,26 @@ std::vector<VideoDetail> FfmpegSingleton::extractVideoDetails(
 ContainerDetail FfmpegSingleton::buildContainerDetail(
         const AVFormatContext *videoFile) {
 
+    checkFormatContext(videoFile);
+
+    AVInputFormat *inputFormat = videoFile->iformat;
+    if (NULL == inputFormat) {
+        throw FFMPEGException("The inputFormat is NULL.");
+    }
+
     // Find the mime type for the media files container.
     std::string containerMimeType = get(helper::NAME_TO_MIMETYPE,
-            std::string(videoFile->iformat->name));
+            std::string(inputFormat->name));
     // Find the description for the media files container.
-    std::string description = videoFile->iformat->long_name;
+    std::string description = inputFormat->long_name;
 
     // Extract all the audio codecs.
-    std::vector<SubtitleDetail> subtitleDetails =
-            extractDetails<SubtitleDetail>(videoFile, AVMEDIA_TYPE_SUBTITLE,
-                    callback::extractSubtitleDetail);
+    std::vector<SubtitleDetail> subtitleDetails = extractSubtitleDetails(
+            videoFile);
     // Extract all the audio codecs.
-    std::vector<AudioDetail> audioDetails = extractDetails<AudioDetail>(
-            videoFile, AVMEDIA_TYPE_AUDIO, callback::extractAudioDetail);
+    std::vector<AudioDetail> audioDetails = extractAudioDetails(videoFile);
     // Extract all the video codecs.
-    std::vector<VideoDetail> videoDetails = extractDetails<VideoDetail>(
-            videoFile, AVMEDIA_TYPE_VIDEO, callback::extractVideoDetail);
+    std::vector<VideoDetail> videoDetails = extractVideoDetails(videoFile);
 
     return ContainerDetail(containerMimeType, description, subtitleDetails,
             audioDetails, videoDetails);
@@ -347,17 +375,24 @@ ContainerDetail FfmpegSingleton::buildContainerDetail(
 void FfmpegSingleton::closeCodecs(AVFormatContext *videoFile)
         throw (FFMPEGException) {
 
+    checkFormatContext(videoFile);
+
     AVCodecContext *codec;
+
+    AVStream *stream;
 
     for (int i = 0; i < videoFile->nb_streams; i++) {
 
-        codec = videoFile->streams[i]->codec;
+        stream = videoFile->streams[i];
+        if (NULL == stream) {
+            throw FFMPEGException("A media stream was null.");
+        }
 
-        int errorCode = avcodec_close(codec);
+        codec = stream->codec;
 
         // Try and free the codec. If it fails throw an exception.
+        int errorCode = avcodec_close(codec);
         if (0 > errorCode) {
-
             throw FFMPEGException(errorCode);
         }
     }
