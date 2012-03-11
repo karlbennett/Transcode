@@ -2,7 +2,7 @@
 #include <boost/test/unit_test.hpp>
 #include <util/util_media.hpp>
 #include <metadata.hpp>
-#include <TestUtils.h>
+#include <util_test.hpp>
 
 /**
  * Test to make sure that subtitles can be found for all the test

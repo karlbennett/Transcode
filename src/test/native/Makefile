@@ -35,9 +35,9 @@ LIBS = -L/usr/lib/i386-linux-gnu -L/usr/lib/ -L$(LIB_DIR) -lboost_test_exec_moni
 -lavformat -lavcodec -lavutil -lboost_filesystem -lutil_file -lutil_ffmpeg -lutil_media_ffmpeg
 
 # The C++ test source files.
-SRC_TEST_ONE = TestExample.cpp
-SRC_TEST_TWO = MediaUtilsTest.cpp
-SRC_TEST_THREE = StandardUtilsTest.cpp
+SRC_TEST_ONE = example_test.cpp
+SRC_TEST_TWO = util_media_test.cpp
+SRC_TEST_THREE = util_standard_test.cpp
 
 BIN_TEST_ONE = $(LIB_TEST_DIR)$(basename $(SRC_TEST_ONE))
 BIN_TEST_TWO = $(LIB_TEST_DIR)$(basename $(SRC_TEST_TWO))
