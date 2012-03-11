@@ -409,28 +409,32 @@ std::string ffmpegErrorMessage(int errorCode) {
     return FfmpegSingleton::getInstance().ffmpegErrorMessage(errorCode);
 }
 
-AVFormatContext* retrieveAVFormatContext(const std::string& filePath) {
+AVFormatContext* retrieveAVFormatContext(const std::string& filePath)
+        throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().retrieveAVFormatContext(filePath);
 }
 
 std::vector<SubtitleDetail> extractSubtitleDetails(
-        const AVFormatContext *videoFile) {
+        const AVFormatContext *videoFile) throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().extractSubtitleDetails(videoFile);
 }
 
-std::vector<AudioDetail> extractAudioDetails(const AVFormatContext *videoFile) {
+std::vector<AudioDetail> extractAudioDetails(const AVFormatContext *videoFile)
+        throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().extractAudioDetails(videoFile);
 }
 
-std::vector<VideoDetail> extractVideoDetails(const AVFormatContext *videoFile) {
+std::vector<VideoDetail> extractVideoDetails(const AVFormatContext *videoFile)
+        throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().extractVideoDetails(videoFile);
 }
 
-ContainerDetail buildContainerDetail(const AVFormatContext *videoFile) {
+ContainerDetail buildContainerDetail(const AVFormatContext *videoFile)
+        throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().buildContainerDetail(videoFile);
 }

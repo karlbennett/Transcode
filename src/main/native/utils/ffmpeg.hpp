@@ -100,7 +100,8 @@ public:
  *
  * @return the AVFormatContext for the provided media file.
  */
-AVFormatContext* retrieveAVFormatContext(const std::string& filePath);
+AVFormatContext* retrieveAVFormatContext(const std::string& filePath)
+        throw (FFMPEGException);
 
 /**
  * Extract the subtitle details from the provided libav AVFormatContext.
@@ -110,7 +111,8 @@ AVFormatContext* retrieveAVFormatContext(const std::string& filePath);
  * @return a vector containing subtitle detail structs populated from
  *      values within the media file.
  */
-std::vector<SubtitleDetail> extractSubtitleDetails(const AVFormatContext *videoFile);
+std::vector<SubtitleDetail> extractSubtitleDetails(
+        const AVFormatContext *videoFile) throw (FFMPEGException);
 
 /**
  * Extract the audio detail from the provided libav AVFormatContext.
@@ -120,7 +122,8 @@ std::vector<SubtitleDetail> extractSubtitleDetails(const AVFormatContext *videoF
  * @return a vector containing audio detail structs populated from values
  *      within the media file.
  */
-std::vector<AudioDetail> extractAudioDetails(const AVFormatContext *videoFile);
+std::vector<AudioDetail> extractAudioDetails(const AVFormatContext *videoFile)
+        throw (FFMPEGException);
 
 /**
  * Extract the video detail from the provided libav AVFormatContext.
@@ -130,7 +133,8 @@ std::vector<AudioDetail> extractAudioDetails(const AVFormatContext *videoFile);
  * @return a vector containing video detail structs populated from values
  *      within the media file.
  */
-std::vector<VideoDetail> extractVideoDetails(const AVFormatContext *videoFile);
+std::vector<VideoDetail> extractVideoDetails(const AVFormatContext *videoFile)
+        throw (FFMPEGException);
 
 /**
  * Build a ContainerDetail struct out of the details in the provided
@@ -141,7 +145,8 @@ std::vector<VideoDetail> extractVideoDetails(const AVFormatContext *videoFile);
  *
  * @return a populated ContainerDetail struct.
  */
-ContainerDetail buildContainerDetail(const AVFormatContext *videoFile);
+ContainerDetail buildContainerDetail(const AVFormatContext *videoFile)
+        throw (FFMPEGException);
 
 /**
  * Close any codecs that are related to the provided AVFormatContext.
