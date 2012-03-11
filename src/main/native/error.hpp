@@ -8,6 +8,11 @@
 #ifndef __ERROR_HPP__
 #define __ERROR_HPP__
 
+#include <exception>
+#include <string>
+
+namespace transcode {
+
 /**
  * An exception that is thrown if something goes wrong during
  * media processing.
@@ -34,7 +39,7 @@ public:
             exception(), message_(message) {
     }
 
-    ~MediaUtilsException() throw () {
+    ~MediaException() throw () {
     }
 
     const char* what() const throw () {
@@ -42,5 +47,6 @@ public:
     }
 };
 
+} /* transcode */
 
 #endif /* __ERROR_HPP__ */
