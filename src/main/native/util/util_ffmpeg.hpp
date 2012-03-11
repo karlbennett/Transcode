@@ -26,6 +26,8 @@ struct MediaFileMetaData;
 
 namespace utils {
 
+const std::string UNKNOWN = "Unknown";
+
 /**
  * Get the FFMPEG message for the provided error code.
  *

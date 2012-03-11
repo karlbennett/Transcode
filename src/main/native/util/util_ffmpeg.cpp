@@ -301,7 +301,7 @@ std::string FfmpegSingleton::ffmpegErrorMessage(int errorCode) const {
 
     int err = av_strerror(errorCode, buffer, bufferSize);
 
-    return err == 0 ? buffer : "Unknown";
+    return err == 0 ? buffer : UNKNOWN;
 }
 
 AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
