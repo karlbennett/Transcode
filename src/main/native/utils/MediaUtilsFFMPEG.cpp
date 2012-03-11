@@ -16,7 +16,7 @@ extern "C" {
 #include <utils/MediaUtils.hpp>
 #include <utils/StandardUtils.hpp>
 #include <utils/FileUtils.hpp>
-#include <utils/FFMPEGUtils.hpp>
+#include <utils/ffmpeg.hpp>
 
 #include <string>
 #include <vector>
@@ -29,86 +29,118 @@ extern "C" {
 namespace transcode {
 
 std::vector<SubtitleDetail> findSubtitleDetails(const std::string& fp)
-		throw (MediaUtilsException) {
+        throw (MediaUtilsException) {
 
-	using namespace transcode::utils;
+    using namespace transcode::utils;
 
-	return findDetails<SubtitleDetail>(fp, AVMEDIA_TYPE_SUBTITLE,
-			extractSubtitleDetail);
+    try {
+
+        (void) checkFile(fp);
+
+    } catch (std::exception& e) {
+
+        throw MediaUtilsException(e.what());
+    }
+
+    AVFormatContext *videoFile = retrieveAVFormatContext(fp);
+
+    return extractSubtitleDetails(videoFile);
 }
 
 std::vector<AudioDetail> findAudioDetails(const std::string& fp)
-		throw (MediaUtilsException) {
+        throw (MediaUtilsException) {
 
-	using namespace transcode::utils;
+    using namespace transcode::utils;
 
-	return findDetails<AudioDetail>(fp, AVMEDIA_TYPE_AUDIO, extractAudioDetail);
+    try {
+
+        (void) checkFile(fp);
+
+    } catch (std::exception& e) {
+
+        throw MediaUtilsException(e.what());
+    }
+
+    AVFormatContext *videoFile = retrieveAVFormatContext(fp);
+
+    return extractAudioDetails(videoFile);
 }
 
 std::vector<VideoDetail> findVideoDetails(const std::string& fp)
-		throw (MediaUtilsException) {
+        throw (MediaUtilsException) {
 
-	using namespace transcode::utils;
+    using namespace transcode::utils;
 
-	return findDetails<VideoDetail>(fp, AVMEDIA_TYPE_VIDEO, extractVideoDetail);
+    try {
+
+        (void) checkFile(fp);
+
+    } catch (std::exception& e) {
+
+        throw MediaUtilsException(e.what());
+    }
+
+    AVFormatContext *videoFile = retrieveAVFormatContext(fp);
+
+    return extractVideoDetails(videoFile);
 }
 
 ContainerDetail findContainerDetails(const std::string& fp)
-		throw (MediaUtilsException) {
+        throw (MediaUtilsException) {
 
-	using namespace transcode::utils;
+    using namespace transcode::utils;
 
-	try {
+    try {
 
-		(void) checkFile(fp);
+        (void) checkFile(fp);
 
-	} catch (std::exception& e) {
+    } catch (std::exception& e) {
 
-		throw MediaUtilsException(e.what());
-	}
+        throw MediaUtilsException(e.what());
+    }
 
-	AVFormatContext *videoFile = initialiseFFMPEG(fp);
+    AVFormatContext *videoFile = retrieveAVFormatContext(fp);
 
-	return buildContainerDetail(videoFile);
+    return buildContainerDetail(videoFile);
 }
 
 MediaFileDetail findMediaFileDetails(const std::string& fp)
-		throw (MediaUtilsException) {
+        throw (MediaUtilsException) {
 
-	using namespace transcode::utils;
+    using namespace transcode::utils;
 
-	// Check to make sure we are working with a real file.
-	// If not throw a MediaUtilsException.
-	boost::filesystem::path filePath;
-	try {
+    // Check to make sure we are working with a real file.
+    // If not throw a MediaUtilsException.
+    boost::filesystem::path filePath;
+    try {
 
-		filePath = checkFile(fp);
+        filePath = checkFile(fp);
 
-	} catch (std::exception& e) {
+    } catch (std::exception& e) {
 
-		throw MediaUtilsException(e.what());
-	}
+        throw MediaUtilsException(e.what());
+    }
 
-	// Get the files name from the file path object.
-	std::string fileName = filePath.filename();
-	// Use the boost file system file size function to find the size
-	// of the media file.
-	int fileSize = file_size(filePath);
+    // Get the files name from the file path object.
+    std::string fileName = filePath.filename();
+    // Use the boost file system file size function to find the size
+    // of the media file.
+    int fileSize = file_size(filePath);
 
-	// Initialise FFMPEG and get the AVFormatContext for the provided file.
-	// If the AVFormatContext cannot be opened a MediaUtilsException is
-	// thrown.
-	AVFormatContext *videoFile = initialiseFFMPEG(fp);
+    // Initialise FFMPEG and get the AVFormatContext for the provided file.
+    // If the AVFormatContext cannot be opened a MediaUtilsException is
+    // thrown.
+    AVFormatContext *videoFile = retrieveAVFormatContext(fp);
 
-	// Build a container struct from the AVFormatContext.
-	ContainerDetail container = buildContainerDetail(videoFile);
+    // Build a container struct from the AVFormatContext.
+    ContainerDetail container = buildContainerDetail(videoFile);
 
-	// Clean up the lib av structs.
-	closeCodecs(videoFile);
-	av_close_input_file(videoFile);
+    // Clean up the lib av structs.
+    closeCodecs(videoFile);
+    av_close_input_file(videoFile);
 
-	// Then lastly return a fully populated MediaFileDetail struct.
-	return MediaFileDetail(container, fp, fileName, fileSize);
+    // Then lastly return a fully populated MediaFileDetail struct.
+    return MediaFileDetail(container, fp, fileName, fileSize);
 }
 
 } /* namespace transcode */
