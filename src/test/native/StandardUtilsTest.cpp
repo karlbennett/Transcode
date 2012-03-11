@@ -1,7 +1,7 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 
-#include <utils/StandardUtils.hpp>
+#include <util/StandardUtils.hpp>
 
 #include <string>
 #include <map>

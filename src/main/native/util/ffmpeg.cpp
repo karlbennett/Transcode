@@ -11,9 +11,9 @@ extern "C" {
 #include "libavutil/error.h"
 }
 
-#include <utils/ffmpeg.hpp>
-#include <utils/MediaUtils.hpp>
-#include <utils/StandardUtils.hpp>
+#include <util/ffmpeg.hpp>
+#include <util/MediaUtils.hpp>
+#include <util/StandardUtils.hpp>
 
 #include <string>
 #include <vector>

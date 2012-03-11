@@ -8,7 +8,7 @@
 #ifndef __UTILS_FFMPEG_HPP__
 #define __UTILS_FFMPEG_HPP__
 
-#include <utils/MediaUtils.hpp>
+#include <util/MediaUtils.hpp>
 
 #include <string>
 #include <vector>

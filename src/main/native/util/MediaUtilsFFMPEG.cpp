@@ -10,10 +10,10 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 }
 
-#include <utils/MediaUtils.hpp>
-#include <utils/StandardUtils.hpp>
-#include <utils/file.hpp>
-#include <utils/ffmpeg.hpp>
+#include <util/MediaUtils.hpp>
+#include <util/StandardUtils.hpp>
+#include <util/file.hpp>
+#include <util/ffmpeg.hpp>
 
 #include <string>
 #include <vector>
