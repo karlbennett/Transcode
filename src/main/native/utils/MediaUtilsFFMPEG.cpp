@@ -12,7 +12,7 @@ extern "C" {
 
 #include <utils/MediaUtils.hpp>
 #include <utils/StandardUtils.hpp>
-#include <utils/FileUtils.hpp>
+#include <utils/file.hpp>
 #include <utils/ffmpeg.hpp>
 
 #include <string>

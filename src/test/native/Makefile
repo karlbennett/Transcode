@@ -32,7 +32,7 @@ CCC = g++
 INCLUDES = -I/usr/include/ -I$(SRC_DIR) -I./
 
 LIBS = -L/usr/lib/i386-linux-gnu -L/usr/lib/ -L$(LIB_DIR) -lboost_test_exec_monitor \
--lavformat -lavcodec -lavutil -lboost_filesystem -lFileUtils -lffmpeg -lMediaUtilsFFMPEG
+-lavformat -lavcodec -lavutil -lboost_filesystem -lfile -lffmpeg -lMediaUtilsFFMPEG
 
 # The C++ test source files.
 SRC_TEST_ONE = TestExample.cpp

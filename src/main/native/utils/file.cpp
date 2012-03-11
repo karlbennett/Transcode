@@ -5,7 +5,7 @@
  *      Author: karl
  */
 
-#include <utils/FileUtils.hpp>
+#include <utils/file.hpp>
 
 #include <string>
 #include <boost/filesystem.hpp>
