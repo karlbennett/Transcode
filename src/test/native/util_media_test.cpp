@@ -4,15 +4,16 @@
 #include <metadata.hpp>
 #include <util_test.hpp>
 
+
 /**
  * Test to make sure that subtitles can be found for all the test
  * media files.
  */
 BOOST_AUTO_TEST_CASE( test_find_subtitles )
 {
-    (void) transcode::findSubtitleDetails(VIDEO_ONE);
-    (void) transcode::findSubtitleDetails(VIDEO_TWO);
-    (void) transcode::findSubtitleDetails(VIDEO_THREE);
+    (void) transcode::findSubtitleDetails(VIDEO_AVI);
+    (void) transcode::findSubtitleDetails(VIDEO_MKV);
+    (void) transcode::findSubtitleDetails(VIDEO_MP4);
 }
 
 /**
@@ -21,8 +22,8 @@ BOOST_AUTO_TEST_CASE( test_find_subtitles )
 n*/
 BOOST_AUTO_TEST_CASE( test_find_subtitles_for_empty_string )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findSubtitleDetails(""),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW( (void) transcode::findSubtitleDetails(""),
+            transcode::UtilMediaException);
 }
 
 /**
@@ -31,8 +32,9 @@ BOOST_AUTO_TEST_CASE( test_find_subtitles_for_empty_string )
  */
 BOOST_AUTO_TEST_CASE( test_find_subtitles_for_invalid_media_file )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findSubtitleDetails("file does not exist"),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW(
+            (void) transcode::findSubtitleDetails("file does not exist"),
+            transcode::UtilMediaException);
 }
 
 /**
@@ -41,41 +43,44 @@ BOOST_AUTO_TEST_CASE( test_find_subtitles_for_invalid_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_find_subtitles_for_non_media_file )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findSubtitleDetails(TEXT_FILE),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW( (void) transcode::findSubtitleDetails(TEXT_FILE),
+            transcode::UtilMediaException);
 }
 
 /**
  * Test to make sure that the subtitles of an avi file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_avi_subtitles ) {
+BOOST_AUTO_TEST_CASE( test_find_avi_subtitles )
+{
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::findSubtitleDetails(VIDEO_ONE);
+            transcode::findSubtitleDetails(VIDEO_AVI);
 
-      BOOST_CHECK_EQUAL( subtitleMetaData.size(), 0);
+    testAVISubtitles(subtitleMetaData);
 }
 
 /**
  * Test to make sure that the subtitles of an mkv file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_mkv_subtitles ) {
+BOOST_AUTO_TEST_CASE( test_find_mkv_subtitles )
+{
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::findSubtitleDetails(VIDEO_TWO);
+            transcode::findSubtitleDetails(VIDEO_MKV);
 
-      BOOST_CHECK_EQUAL( subtitleMetaData.size(), 0);
+    testMKVSubtitles(subtitleMetaData);
 }
 
 /**
  * Test to make sure that the subtitles of an mp4 file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_mp4_subtitles ) {
+BOOST_AUTO_TEST_CASE( test_find_mp4_subtitles )
+{
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::findSubtitleDetails(VIDEO_THREE);
+            transcode::findSubtitleDetails(VIDEO_MP4);
 
-      BOOST_CHECK_EQUAL( subtitleMetaData.size(), 0);
+    testMP4Subtitles(subtitleMetaData);
 }
 
 /**
@@ -83,9 +88,9 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_subtitles ) {
  */
 BOOST_AUTO_TEST_CASE( test_find_audio )
 {
-     (void) transcode::findAudioDetails(VIDEO_ONE);
-     (void) transcode::findAudioDetails(VIDEO_TWO);
-     (void) transcode::findAudioDetails(VIDEO_THREE);
+    (void) transcode::findAudioDetails(VIDEO_AVI);
+    (void) transcode::findAudioDetails(VIDEO_MKV);
+    (void) transcode::findAudioDetails(VIDEO_MP4);
 }
 
 /**
@@ -94,8 +99,8 @@ BOOST_AUTO_TEST_CASE( test_find_audio )
 n*/
 BOOST_AUTO_TEST_CASE( test_find_audio_for_empty_string )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findAudioDetails(""),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW( (void) transcode::findAudioDetails(""),
+            transcode::UtilMediaException);
 }
 
 /**
@@ -104,8 +109,9 @@ BOOST_AUTO_TEST_CASE( test_find_audio_for_empty_string )
  */
 BOOST_AUTO_TEST_CASE( test_find_audio_for_invalid_media_file )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findAudioDetails("file does not exist"),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW(
+            (void) transcode::findAudioDetails("file does not exist"),
+            transcode::UtilMediaException);
 }
 
 /**
@@ -114,44 +120,44 @@ BOOST_AUTO_TEST_CASE( test_find_audio_for_invalid_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_find_audio_for_non_media_file )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findAudioDetails(TEXT_FILE),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW( (void) transcode::findAudioDetails(TEXT_FILE),
+            transcode::UtilMediaException);
 }
 
 /**
  * Test to make sure that the audio streams of an avi file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_avi_audio ) {
+BOOST_AUTO_TEST_CASE( test_find_avi_audio )
+{
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::findAudioDetails(VIDEO_ONE);
+            transcode::findAudioDetails(VIDEO_AVI);
 
-      BOOST_CHECK_EQUAL( audioMetaData.size(), 1);
-      BOOST_CHECK_EQUAL( audioMetaData[0].mimeType, MPG_AUDIO);
+    testAVIAudio(audioMetaData);
 }
 
 /**
  * Test to make sure that the audio streams of an avi file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_mkv_audio ) {
+BOOST_AUTO_TEST_CASE( test_find_mkv_audio )
+{
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::findAudioDetails(VIDEO_TWO);
+            transcode::findAudioDetails(VIDEO_MKV);
 
-      BOOST_CHECK_EQUAL( audioMetaData.size(), 1);
-      BOOST_CHECK_EQUAL( audioMetaData[0].mimeType, MPG_AUDIO);
+    testMKVAudio(audioMetaData);
 }
 
 /**
  * Test to make sure that the audio streams of an avi file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_mp4_audio ) {
+BOOST_AUTO_TEST_CASE( test_find_mp4_audio )
+{
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::findAudioDetails(VIDEO_THREE);
+            transcode::findAudioDetails(VIDEO_MP4);
 
-      BOOST_CHECK_EQUAL( audioMetaData.size(), 1);
-      BOOST_CHECK_EQUAL( audioMetaData[0].mimeType, MPG_AUDIO);
+    testMP4Audio(audioMetaData);
 }
 
 /**
@@ -159,9 +165,9 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_audio ) {
  */
 BOOST_AUTO_TEST_CASE( test_find_video )
 {
-    (void) transcode::findVideoDetails(VIDEO_ONE);
-    (void) transcode::findVideoDetails(VIDEO_TWO);
-    (void) transcode::findVideoDetails(VIDEO_THREE);
+    (void) transcode::findVideoDetails(VIDEO_AVI);
+    (void) transcode::findVideoDetails(VIDEO_MKV);
+    (void) transcode::findVideoDetails(VIDEO_MP4);
 }
 
 /**
@@ -170,8 +176,8 @@ BOOST_AUTO_TEST_CASE( test_find_video )
 n*/
 BOOST_AUTO_TEST_CASE( test_find_video_for_empty_string )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findVideoDetails(""),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW( (void) transcode::findVideoDetails(""),
+            transcode::UtilMediaException);
 }
 
 /**
@@ -180,8 +186,9 @@ BOOST_AUTO_TEST_CASE( test_find_video_for_empty_string )
  */
 BOOST_AUTO_TEST_CASE( test_find_video_for_invalid_media_file )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findVideoDetails("file does not exist"),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW(
+            (void) transcode::findVideoDetails("file does not exist"),
+            transcode::UtilMediaException);
 }
 
 /**
@@ -190,44 +197,44 @@ BOOST_AUTO_TEST_CASE( test_find_video_for_invalid_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_find_video_for_non_media_file )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findVideoDetails(TEXT_FILE),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW( (void) transcode::findVideoDetails(TEXT_FILE),
+            transcode::UtilMediaException);
 }
 
 /**
  * Test to make sure that the video streams of an avi file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_avi_video ) {
+BOOST_AUTO_TEST_CASE( test_find_avi_video )
+{
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::findVideoDetails(VIDEO_ONE);
+            transcode::findVideoDetails(VIDEO_AVI);
 
-      BOOST_CHECK_EQUAL( videoMetaData.size(), 1);
-      BOOST_CHECK_EQUAL( videoMetaData[0].mimeType, DIVX_VIDEO);
+    testAVIVideo(videoMetaData);
 }
 
 /**
  * Test to make sure that the video streams of an avi file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_mkv_video ) {
+BOOST_AUTO_TEST_CASE( test_find_mkv_video )
+{
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::findVideoDetails(VIDEO_TWO);
+            transcode::findVideoDetails(VIDEO_MKV);
 
-      BOOST_CHECK_EQUAL( videoMetaData.size(), 1);
-      BOOST_CHECK_EQUAL( videoMetaData[0].mimeType, H264_VIDEO);
+    testMKVVideo(videoMetaData);
 }
 
 /**
  * Test to make sure that the video streams of an mp4 file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_mp4_video ) {
+BOOST_AUTO_TEST_CASE( test_find_mp4_video )
+{
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::findVideoDetails(VIDEO_THREE);
+            transcode::findVideoDetails(VIDEO_MP4);
 
-      BOOST_CHECK_EQUAL( videoMetaData.size(), 1);
-      BOOST_CHECK_EQUAL( videoMetaData[0].mimeType, H264_VIDEO);
+    testMP4Video(videoMetaData);
 }
 
 /**
@@ -236,9 +243,9 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_video ) {
  */
 BOOST_AUTO_TEST_CASE( test_find_container )
 {
-    (void) transcode::findContainerDetails(VIDEO_ONE);
-    (void) transcode::findContainerDetails(VIDEO_TWO);
-    (void) transcode::findContainerDetails(VIDEO_THREE);
+    (void) transcode::findContainerDetails(VIDEO_AVI);
+    (void) transcode::findContainerDetails(VIDEO_MKV);
+    (void) transcode::findContainerDetails(VIDEO_MP4);
 }
 
 /**
@@ -247,8 +254,8 @@ BOOST_AUTO_TEST_CASE( test_find_container )
 n*/
 BOOST_AUTO_TEST_CASE( test_find_container_for_empty_string )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findContainerDetails(""),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW( (void) transcode::findContainerDetails(""),
+            transcode::UtilMediaException);
 }
 
 /**
@@ -257,8 +264,9 @@ BOOST_AUTO_TEST_CASE( test_find_container_for_empty_string )
  */
 BOOST_AUTO_TEST_CASE( test_find_container_for_invalid_media_file )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findContainerDetails("file does not exist"),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW(
+            (void) transcode::findContainerDetails("file does not exist"),
+            transcode::UtilMediaException);
 }
 
 /**
@@ -267,65 +275,62 @@ BOOST_AUTO_TEST_CASE( test_find_container_for_invalid_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_find_container_for_non_media_file )
 {
-     BOOST_REQUIRE_THROW( (void) transcode::findContainerDetails(TEXT_FILE),
-             transcode::UtilMediaException);
+    BOOST_REQUIRE_THROW( (void) transcode::findContainerDetails(TEXT_FILE),
+            transcode::UtilMediaException);
 }
 
 /**
  * Test to make sure that the container of an avi file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_avi_container ) {
+BOOST_AUTO_TEST_CASE( test_find_avi_container )
+{
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::findContainerDetails(VIDEO_ONE);
+            transcode::findContainerDetails(VIDEO_AVI);
 
     BOOST_CHECK_EQUAL( containerMetaData.mimeType, AVI_CONTAINER);
 
-    BOOST_CHECK_EQUAL( containerMetaData.subtitleDetails.size(), 0);
+    testAVISubtitles(containerMetaData.subtitleDetails);
 
-    BOOST_CHECK_EQUAL( containerMetaData.audioDetails.size(), 1);
-    BOOST_CHECK_EQUAL( containerMetaData.audioDetails[0].mimeType, MPG_AUDIO);
+    testAVIAudio(containerMetaData.audioDetails);
 
-    BOOST_CHECK_EQUAL( containerMetaData.videoDetails.size(), 1);
-    BOOST_CHECK_EQUAL( containerMetaData.videoDetails[0].mimeType, DIVX_VIDEO);
+    testAVIVideo(containerMetaData.videoDetails);
 }
 
 /**
  * Test to make sure that the subtitles of an mkv file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_mkv_container ) {
+BOOST_AUTO_TEST_CASE( test_find_mkv_container )
+{
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::findContainerDetails(VIDEO_TWO);
+            transcode::findContainerDetails(VIDEO_MKV);
 
     BOOST_CHECK_EQUAL( containerMetaData.mimeType, MKV_CONTAINER);
 
-    BOOST_CHECK_EQUAL( containerMetaData.subtitleDetails.size(), 0);
+    testMKVSubtitles(containerMetaData.subtitleDetails);
 
-    BOOST_CHECK_EQUAL( containerMetaData.audioDetails.size(), 1);
-    BOOST_CHECK_EQUAL( containerMetaData.audioDetails[0].mimeType, MPG_AUDIO);
+    testMKVAudio(containerMetaData.audioDetails);
 
-    BOOST_CHECK_EQUAL( containerMetaData.videoDetails.size(), 1);
-    BOOST_CHECK_EQUAL( containerMetaData.videoDetails[0].mimeType, H264_VIDEO);
+    testMKVVideo(containerMetaData.videoDetails);
 }
 
 /**
  * Test to make sure that the subtitles of an mp4 file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_mp4_container ) {
+BOOST_AUTO_TEST_CASE( test_find_mp4_container )
+{
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::findContainerDetails(VIDEO_THREE);
+            transcode::findContainerDetails(VIDEO_MP4);
 
     BOOST_CHECK_EQUAL( containerMetaData.mimeType, MP4_CONTAINER);
 
-    BOOST_CHECK_EQUAL( containerMetaData.subtitleDetails.size(), 0);
+    testMP4Subtitles(containerMetaData.subtitleDetails);
 
-    BOOST_CHECK_EQUAL( containerMetaData.audioDetails.size(), 1);
-    BOOST_CHECK_EQUAL( containerMetaData.audioDetails[0].mimeType, MPG_AUDIO);
+    testMP4Audio(containerMetaData.audioDetails);
 
-    BOOST_CHECK_EQUAL( containerMetaData.videoDetails.size(), 1);
-    BOOST_CHECK_EQUAL( containerMetaData.videoDetails[0].mimeType, H264_VIDEO);
+    testMP4Video(containerMetaData.videoDetails);
 }
 
 /**
@@ -333,9 +338,9 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_container ) {
  */
 BOOST_AUTO_TEST_CASE( test_open_media_files )
 {
-    (void) transcode::findMediaFileDetails(VIDEO_ONE);
-    (void) transcode::findMediaFileDetails(VIDEO_TWO);
-    (void) transcode::findMediaFileDetails(VIDEO_THREE);
+    (void) transcode::findMediaFileDetails(VIDEO_AVI);
+    (void) transcode::findMediaFileDetails(VIDEO_MKV);
+    (void) transcode::findMediaFileDetails(VIDEO_MP4);
 }
 
 /**
@@ -371,64 +376,65 @@ BOOST_AUTO_TEST_CASE( test_open_non_media_file )
 /**
  * Test to make sure that the details of an avi file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_avi_media_file_details ) {
+BOOST_AUTO_TEST_CASE( test_find_avi_media_file_details )
+{
 
     transcode::MediaFileMetaData medaFile = transcode::findMediaFileDetails(
-            VIDEO_ONE);
+            VIDEO_AVI);
 
-    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_ONE_NAME);
+    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_AVI_NAME);
 
-    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_ONE_SIZE);
+    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_AVI_SIZE);
 
     BOOST_CHECK_EQUAL( medaFile.container.mimeType, AVI_CONTAINER);
 
-    BOOST_CHECK_EQUAL( medaFile.container.audioDetails.size(), 1);
-    BOOST_CHECK_EQUAL( medaFile.container.audioDetails[0].mimeType, MPG_AUDIO);
+    testAVISubtitles(medaFile.container.subtitleDetails);
 
-    BOOST_CHECK_EQUAL( medaFile.container.videoDetails.size(), 1);
-    BOOST_CHECK_EQUAL( medaFile.container.videoDetails[0].mimeType, DIVX_VIDEO);
+    testAVIAudio(medaFile.container.audioDetails);
+
+    testAVIVideo(medaFile.container.videoDetails);
 }
 
 /**
  * Test to make sure that the details of an mkv file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_mkv_media_file_details ) {
+BOOST_AUTO_TEST_CASE( test_find_mkv_media_file_details )
+{
 
     transcode::MediaFileMetaData medaFile = transcode::findMediaFileDetails(
-            VIDEO_TWO);
+            VIDEO_MKV);
 
-    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_TWO_NAME);
+    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_MKV_NAME);
 
-    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_TWO_SIZE);
+    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_MKV_SIZE);
 
     BOOST_CHECK_EQUAL( medaFile.container.mimeType, MKV_CONTAINER);
 
-    BOOST_CHECK_EQUAL( medaFile.container.audioDetails.size(), 1);
-    BOOST_CHECK_EQUAL( medaFile.container.audioDetails[0].mimeType, MPG_AUDIO);
+    testMKVSubtitles(medaFile.container.subtitleDetails);
 
-    BOOST_CHECK_EQUAL( medaFile.container.videoDetails.size(), 1);
-    BOOST_CHECK_EQUAL( medaFile.container.videoDetails[0].mimeType,
-            H264_VIDEO);
+    testMKVAudio(medaFile.container.audioDetails);
+
+    testMKVVideo(medaFile.container.videoDetails);
 }
 
 /**
  * Test to make sure that the details of an mp4 file can be found.
  */
-BOOST_AUTO_TEST_CASE( test_find_mp4_media_file_details ) {
+BOOST_AUTO_TEST_CASE( test_find_mp4_media_file_details )
+{
 
     transcode::MediaFileMetaData medaFile = transcode::findMediaFileDetails(
-            VIDEO_THREE);
+            VIDEO_MP4);
 
-    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_THREE_NAME);
+    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_MP4_NAME);
 
-    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_THREE_SIZE);
+    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_MP4_SIZE);
 
     BOOST_CHECK_EQUAL( medaFile.container.mimeType, MP4_CONTAINER);
 
-    BOOST_CHECK_EQUAL( medaFile.container.audioDetails.size(), 1);
-    BOOST_CHECK_EQUAL( medaFile.container.audioDetails[0].mimeType, MPG_AUDIO);
+    testMP4Subtitles(medaFile.container.subtitleDetails);
 
-    BOOST_CHECK_EQUAL( medaFile.container.videoDetails.size(), 1);
-    BOOST_CHECK_EQUAL( medaFile.container.videoDetails[0].mimeType,
-            H264_VIDEO);
+    testMP4Audio(medaFile.container.audioDetails);
+
+    testMP4Video(medaFile.container.videoDetails);
 }
