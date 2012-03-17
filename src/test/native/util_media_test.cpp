@@ -14,6 +14,8 @@ BOOST_AUTO_TEST_CASE( test_find_subtitles )
     (void) transcode::findSubtitleDetails(VIDEO_AVI);
     (void) transcode::findSubtitleDetails(VIDEO_MKV);
     (void) transcode::findSubtitleDetails(VIDEO_MP4);
+    (void) transcode::findSubtitleDetails(VIDEO_OGV);
+    (void) transcode::findSubtitleDetails(VIDEO_FLV);
 }
 
 /**
@@ -84,6 +86,30 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_subtitles )
 }
 
 /**
+ * Test to make sure that the subtitles of an ogv file can be found.
+ */
+BOOST_AUTO_TEST_CASE( test_find_ogv_subtitles )
+{
+
+    std::vector<transcode::SubtitleMetaData> subtitleMetaData =
+            transcode::findSubtitleDetails(VIDEO_OGV);
+
+    testOGVSubtitles(subtitleMetaData);
+}
+
+/**
+ * Test to make sure that the subtitles of an flv file can be found.
+ */
+BOOST_AUTO_TEST_CASE( test_find_flv_subtitles )
+{
+
+    std::vector<transcode::SubtitleMetaData> subtitleMetaData =
+            transcode::findSubtitleDetails(VIDEO_FLV);
+
+    testFLVSubtitles(subtitleMetaData);
+}
+
+/**
  * Test to make sure that audio can be found for all the test media files.
  */
 BOOST_AUTO_TEST_CASE( test_find_audio )
@@ -91,6 +117,8 @@ BOOST_AUTO_TEST_CASE( test_find_audio )
     (void) transcode::findAudioDetails(VIDEO_AVI);
     (void) transcode::findAudioDetails(VIDEO_MKV);
     (void) transcode::findAudioDetails(VIDEO_MP4);
+    (void) transcode::findAudioDetails(VIDEO_OGV);
+    (void) transcode::findAudioDetails(VIDEO_FLV);
 }
 
 /**
@@ -137,7 +165,7 @@ BOOST_AUTO_TEST_CASE( test_find_avi_audio )
 }
 
 /**
- * Test to make sure that the audio streams of an avi file can be found.
+ * Test to make sure that the audio streams of an mkv file can be found.
  */
 BOOST_AUTO_TEST_CASE( test_find_mkv_audio )
 {
@@ -149,7 +177,7 @@ BOOST_AUTO_TEST_CASE( test_find_mkv_audio )
 }
 
 /**
- * Test to make sure that the audio streams of an avi file can be found.
+ * Test to make sure that the audio streams of an mp4 file can be found.
  */
 BOOST_AUTO_TEST_CASE( test_find_mp4_audio )
 {
@@ -161,6 +189,30 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_audio )
 }
 
 /**
+ * Test to make sure that the audio streams of an ogv file can be found.
+ */
+BOOST_AUTO_TEST_CASE( test_find_ogv_audio )
+{
+
+    std::vector<transcode::AudioMetaData> audioMetaData =
+            transcode::findAudioDetails(VIDEO_OGV);
+
+    testOGVAudio(audioMetaData);
+}
+
+/**
+ * Test to make sure that the audio streams of an flv file can be found.
+ */
+BOOST_AUTO_TEST_CASE( test_find_flv_audio )
+{
+
+    std::vector<transcode::AudioMetaData> audioMetaData =
+            transcode::findAudioDetails(VIDEO_FLV);
+
+    testFLVAudio(audioMetaData);
+}
+
+/**
  * Test to make sure that video can be found for all the test media files.
  */
 BOOST_AUTO_TEST_CASE( test_find_video )
@@ -168,6 +220,8 @@ BOOST_AUTO_TEST_CASE( test_find_video )
     (void) transcode::findVideoDetails(VIDEO_AVI);
     (void) transcode::findVideoDetails(VIDEO_MKV);
     (void) transcode::findVideoDetails(VIDEO_MP4);
+    (void) transcode::findVideoDetails(VIDEO_OGV);
+    (void) transcode::findVideoDetails(VIDEO_FLV);
 }
 
 /**
@@ -238,6 +292,30 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_video )
 }
 
 /**
+ * Test to make sure that the video streams of an ogv file can be found.
+ */
+BOOST_AUTO_TEST_CASE( test_find_ogv_video )
+{
+
+    std::vector<transcode::VideoMetaData> videoMetaData =
+            transcode::findVideoDetails(VIDEO_OGV);
+
+    testOGVVideo(videoMetaData);
+}
+
+/**
+ * Test to make sure that the video streams of an flv file can be found.
+ */
+BOOST_AUTO_TEST_CASE( test_find_flv_video )
+{
+
+    std::vector<transcode::VideoMetaData> videoMetaData =
+            transcode::findVideoDetails(VIDEO_FLV);
+
+    testFLVVideo(videoMetaData);
+}
+
+/**
  * Test to make sure that the container can be found for all the test
  * media files.
  */
@@ -246,6 +324,8 @@ BOOST_AUTO_TEST_CASE( test_find_container )
     (void) transcode::findContainerDetails(VIDEO_AVI);
     (void) transcode::findContainerDetails(VIDEO_MKV);
     (void) transcode::findContainerDetails(VIDEO_MP4);
+    (void) transcode::findContainerDetails(VIDEO_OGV);
+    (void) transcode::findContainerDetails(VIDEO_FLV);
 }
 
 /**
@@ -334,6 +414,42 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_container )
 }
 
 /**
+ * Test to make sure that the subtitles of an ogv file can be found.
+ */
+BOOST_AUTO_TEST_CASE( test_find_ogv_container )
+{
+
+    transcode::ContainerMetaData containerMetaData =
+            transcode::findContainerDetails(VIDEO_OGV);
+
+    BOOST_CHECK_EQUAL( containerMetaData.mimeType, OGV_CONTAINER);
+
+    testOGVSubtitles(containerMetaData.subtitleDetails);
+
+    testOGVAudio(containerMetaData.audioDetails);
+
+    testOGVVideo(containerMetaData.videoDetails);
+}
+
+/**
+ * Test to make sure that the subtitles of an flv file can be found.
+ */
+BOOST_AUTO_TEST_CASE( test_find_flv_container )
+{
+
+    transcode::ContainerMetaData containerMetaData =
+            transcode::findContainerDetails(VIDEO_FLV);
+
+    BOOST_CHECK_EQUAL( containerMetaData.mimeType, FLV_CONTAINER);
+
+    testFLVSubtitles(containerMetaData.subtitleDetails);
+
+    testFLVAudio(containerMetaData.audioDetails);
+
+    testFLVVideo(containerMetaData.videoDetails);
+}
+
+/**
  * Test to make sure that the all the test media files can be opened.
  */
 BOOST_AUTO_TEST_CASE( test_open_media_files )
@@ -341,6 +457,8 @@ BOOST_AUTO_TEST_CASE( test_open_media_files )
     (void) transcode::findMediaFileDetails(VIDEO_AVI);
     (void) transcode::findMediaFileDetails(VIDEO_MKV);
     (void) transcode::findMediaFileDetails(VIDEO_MP4);
+    (void) transcode::findMediaFileDetails(VIDEO_OGV);
+    (void) transcode::findMediaFileDetails(VIDEO_FLV);
 }
 
 /**
@@ -437,4 +555,48 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_media_file_details )
     testMP4Audio(medaFile.container.audioDetails);
 
     testMP4Video(medaFile.container.videoDetails);
+}
+
+/**
+ * Test to make sure that the details of an ogv file can be found.
+ */
+BOOST_AUTO_TEST_CASE( test_find_ogv_media_file_details )
+{
+
+    transcode::MediaFileMetaData medaFile = transcode::findMediaFileDetails(
+            VIDEO_OGV);
+
+    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_OGV_NAME);
+
+    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_OGV_SIZE);
+
+    BOOST_CHECK_EQUAL( medaFile.container.mimeType, OGV_CONTAINER);
+
+    testOGVSubtitles(medaFile.container.subtitleDetails);
+
+    testOGVAudio(medaFile.container.audioDetails);
+
+    testOGVVideo(medaFile.container.videoDetails);
+}
+
+/**
+ * Test to make sure that the details of an flv file can be found.
+ */
+BOOST_AUTO_TEST_CASE( test_find_flv_media_file_details )
+{
+
+    transcode::MediaFileMetaData medaFile = transcode::findMediaFileDetails(
+            VIDEO_FLV);
+
+    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_FLV_NAME);
+
+    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_FLV_SIZE);
+
+    BOOST_CHECK_EQUAL( medaFile.container.mimeType, FLV_CONTAINER);
+
+    testFLVSubtitles(medaFile.container.subtitleDetails);
+
+    testFLVAudio(medaFile.container.audioDetails);
+
+    testFLVVideo(medaFile.container.videoDetails);
 }

@@ -12,7 +12,7 @@ const std::string VIDEO_AVI = "../../../target/test-classes/lib-test/test.avi";
 const std::string VIDEO_MKV = "../../../target/test-classes/lib-test/test.mkv";
 const std::string VIDEO_MP4 = "../../../target/test-classes/lib-test/test.mp4";
 const std::string VIDEO_OGV = "../../../target/test-classes/lib-test/test.ogv";
-const std::string VIDEO_FLV = "../../../target/test-classes/lib-test/test.FLV";
+const std::string VIDEO_FLV = "../../../target/test-classes/lib-test/test.flv";
 const std::string INVALID_FILE = "file does not exist";
 const std::string TEXT_FILE = "../../../target/test-classes/lib-test/test.txt";
 
@@ -40,6 +40,7 @@ const std::string FLV_CONTAINER = "video/x-flv";
 // The audio types that will be tested.
 const std::string MPG_AUDIO = "audio/mpeg";
 const std::string AC3_AUDIO = "audio/x-ac3";
+const std::string VORBIS_AUDIO = "audio/x-vorbis";
 
 // The video types that will be tested.
 const std::string DIVX_VIDEO = "video/x-divx";
@@ -51,6 +52,7 @@ const std::string THEORA_VIDEO = "video/x-theora";
 const int VIDEO_WIDTH = 1280;
 const int VIDEO_HEIGHT = 544;
 const int VIDEO_FRAME_RATE = 0;
+const int VIDEO_FLV_FRAME_RATE = 1;
 
 // The language types that will be tested.
 const std::string LANG_GER = "ger";
@@ -171,7 +173,7 @@ static void testMP4Audio(std::vector<transcode::AudioMetaData> audioMetaData) {
 static void testOGVAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
 
     BOOST_CHECK_EQUAL( audioMetaData.size(), 1);
-    BOOST_CHECK_EQUAL( audioMetaData[0].mimeType, MPG_AUDIO);
+    BOOST_CHECK_EQUAL( audioMetaData[0].mimeType, VORBIS_AUDIO);
 }
 
 /**
@@ -254,7 +256,7 @@ static void testFLVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
     BOOST_CHECK_EQUAL( videoMetaData[0].mimeType, FLV1_VIDEO);
     BOOST_CHECK_EQUAL( videoMetaData[0].width, VIDEO_WIDTH);
     BOOST_CHECK_EQUAL( videoMetaData[0].height, VIDEO_HEIGHT);
-    BOOST_CHECK_EQUAL( videoMetaData[0].frameRate, VIDEO_FRAME_RATE);
+    BOOST_CHECK_EQUAL( videoMetaData[0].frameRate, VIDEO_FLV_FRAME_RATE);
 }
 
 #endif /* __TEST_UTILS_H__ */
