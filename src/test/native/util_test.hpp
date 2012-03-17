@@ -259,4 +259,164 @@ static void testFLVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
     BOOST_CHECK_EQUAL( videoMetaData[0].frameRate, VIDEO_FLV_FRAME_RATE);
 }
 
+/**
+ * Helper function for testing the container metadata of the AVI file.
+ *
+ * @param containerMetaData - the ContainerMetaData struct to be tested.
+ */
+static void testAVIContainer(transcode::ContainerMetaData containerMetaData) {
+
+    BOOST_CHECK_EQUAL( containerMetaData.mimeType, AVI_CONTAINER);
+
+    testAVISubtitles(containerMetaData.subtitleDetails);
+
+    testAVIAudio(containerMetaData.audioDetails);
+
+    testAVIVideo(containerMetaData.videoDetails);
+}
+
+/**
+ * Helper function for testing the container metadata of the MKV file.
+ *
+ * @param containerMetaData - the ContainerMetaData struct to be tested.
+ */
+static void testMKVContainer(transcode::ContainerMetaData containerMetaData) {
+
+    BOOST_CHECK_EQUAL( containerMetaData.mimeType, MKV_CONTAINER);
+
+    testMKVSubtitles(containerMetaData.subtitleDetails);
+
+    testMKVAudio(containerMetaData.audioDetails);
+
+    testMKVVideo(containerMetaData.videoDetails);
+}
+
+/**
+ * Helper function for testing the container metadata of the MP4 file.
+ *
+ * @param containerMetaData - the ContainerMetaData struct to be tested.
+ */
+static void testMP4Container(transcode::ContainerMetaData containerMetaData) {
+
+    BOOST_CHECK_EQUAL( containerMetaData.mimeType, MP4_CONTAINER);
+
+    testMP4Subtitles(containerMetaData.subtitleDetails);
+
+    testMP4Audio(containerMetaData.audioDetails);
+
+    testMP4Video(containerMetaData.videoDetails);
+}
+
+/**
+ * Helper function for testing the container metadata of the OGV file.
+ *
+ * @param containerMetaData - the ContainerMetaData struct to be tested.
+ */
+static void testOGVContainer(transcode::ContainerMetaData containerMetaData) {
+
+    BOOST_CHECK_EQUAL( containerMetaData.mimeType, OGV_CONTAINER);
+
+    testOGVSubtitles(containerMetaData.subtitleDetails);
+
+    testOGVAudio(containerMetaData.audioDetails);
+
+    testOGVVideo(containerMetaData.videoDetails);
+}
+
+/**
+ * Helper function for testing the container metadata of the FLV file.
+ *
+ * @param containerMetaData - the ContainerMetaData struct to be tested.
+ */
+static void testFLVContainer(transcode::ContainerMetaData containerMetaData) {
+
+    BOOST_CHECK_EQUAL( containerMetaData.mimeType, FLV_CONTAINER);
+
+    testFLVSubtitles(containerMetaData.subtitleDetails);
+
+    testFLVAudio(containerMetaData.audioDetails);
+
+    testFLVVideo(containerMetaData.videoDetails);
+}
+
+/**
+ * Helper function for testing the media file metadata of the AVI file.
+ *
+ * @param medaFile - the MediaFileMetaData struct to be tested.
+ */
+static void testAVIMediaFile(transcode::MediaFileMetaData medaFile) {
+
+    BOOST_CHECK_EQUAL( medaFile.path, VIDEO_AVI);
+
+    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_AVI_NAME);
+
+    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_AVI_SIZE);
+
+    testAVIContainer(medaFile.container);
+}
+
+/**
+ * Helper function for testing the media file metadata of the MKV file.
+ *
+ * @param medaFile - the MediaFileMetaData struct to be tested.
+ */
+static void testMKVMediaFile(transcode::MediaFileMetaData medaFile) {
+
+    BOOST_CHECK_EQUAL( medaFile.path, VIDEO_MKV);
+
+    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_MKV_NAME);
+
+    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_MKV_SIZE);
+
+    testMKVContainer(medaFile.container);
+}
+
+/**
+ * Helper function for testing the media file metadata of the MP4 file.
+ *
+ * @param medaFile - the MediaFileMetaData struct to be tested.
+ */
+static void testMP4MediaFile(transcode::MediaFileMetaData medaFile) {
+
+    BOOST_CHECK_EQUAL( medaFile.path, VIDEO_MP4);
+
+    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_MP4_NAME);
+
+    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_MP4_SIZE);
+
+    testMP4Container(medaFile.container);
+}
+
+/**
+ * Helper function for testing the media file metadata of the OGV file.
+ *
+ * @param medaFile - the MediaFileMetaData struct to be tested.
+ */
+static void testOGVMediaFile(transcode::MediaFileMetaData medaFile) {
+
+    BOOST_CHECK_EQUAL( medaFile.path, VIDEO_OGV);
+
+    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_OGV_NAME);
+
+    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_OGV_SIZE);
+
+    testOGVContainer(medaFile.container);
+}
+
+/**
+ * Helper function for testing the media file metadata of the FLV file.
+ *
+ * @param medaFile - the MediaFileMetaData struct to be tested.
+ */
+static void testFLVMediaFile(transcode::MediaFileMetaData medaFile) {
+
+    BOOST_CHECK_EQUAL( medaFile.path, VIDEO_FLV);
+
+    BOOST_CHECK_EQUAL( medaFile.name, VIDEO_FLV_NAME);
+
+    BOOST_CHECK_EQUAL( medaFile.size, VIDEO_FLV_SIZE);
+
+    testFLVContainer(medaFile.container);
+}
+
 #endif /* __TEST_UTILS_H__ */

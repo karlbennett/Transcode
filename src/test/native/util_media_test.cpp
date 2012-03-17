@@ -368,13 +368,7 @@ BOOST_AUTO_TEST_CASE( test_find_avi_container )
     transcode::ContainerMetaData containerMetaData =
             transcode::findContainerDetails(VIDEO_AVI);
 
-    BOOST_CHECK_EQUAL( containerMetaData.mimeType, AVI_CONTAINER);
-
-    testAVISubtitles(containerMetaData.subtitleDetails);
-
-    testAVIAudio(containerMetaData.audioDetails);
-
-    testAVIVideo(containerMetaData.videoDetails);
+    testAVIContainer(containerMetaData);
 }
 
 /**
@@ -386,13 +380,7 @@ BOOST_AUTO_TEST_CASE( test_find_mkv_container )
     transcode::ContainerMetaData containerMetaData =
             transcode::findContainerDetails(VIDEO_MKV);
 
-    BOOST_CHECK_EQUAL( containerMetaData.mimeType, MKV_CONTAINER);
-
-    testMKVSubtitles(containerMetaData.subtitleDetails);
-
-    testMKVAudio(containerMetaData.audioDetails);
-
-    testMKVVideo(containerMetaData.videoDetails);
+    testMKVContainer(containerMetaData);
 }
 
 /**
@@ -404,13 +392,7 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_container )
     transcode::ContainerMetaData containerMetaData =
             transcode::findContainerDetails(VIDEO_MP4);
 
-    BOOST_CHECK_EQUAL( containerMetaData.mimeType, MP4_CONTAINER);
-
-    testMP4Subtitles(containerMetaData.subtitleDetails);
-
-    testMP4Audio(containerMetaData.audioDetails);
-
-    testMP4Video(containerMetaData.videoDetails);
+    testMP4Container(containerMetaData);
 }
 
 /**
@@ -422,13 +404,7 @@ BOOST_AUTO_TEST_CASE( test_find_ogv_container )
     transcode::ContainerMetaData containerMetaData =
             transcode::findContainerDetails(VIDEO_OGV);
 
-    BOOST_CHECK_EQUAL( containerMetaData.mimeType, OGV_CONTAINER);
-
-    testOGVSubtitles(containerMetaData.subtitleDetails);
-
-    testOGVAudio(containerMetaData.audioDetails);
-
-    testOGVVideo(containerMetaData.videoDetails);
+    testOGVContainer(containerMetaData);
 }
 
 /**
@@ -440,13 +416,7 @@ BOOST_AUTO_TEST_CASE( test_find_flv_container )
     transcode::ContainerMetaData containerMetaData =
             transcode::findContainerDetails(VIDEO_FLV);
 
-    BOOST_CHECK_EQUAL( containerMetaData.mimeType, FLV_CONTAINER);
-
-    testFLVSubtitles(containerMetaData.subtitleDetails);
-
-    testFLVAudio(containerMetaData.audioDetails);
-
-    testFLVVideo(containerMetaData.videoDetails);
+    testFLVContainer(containerMetaData);
 }
 
 /**
@@ -504,13 +474,7 @@ BOOST_AUTO_TEST_CASE( test_find_avi_media_file_details )
 
     BOOST_CHECK_EQUAL( medaFile.size, VIDEO_AVI_SIZE);
 
-    BOOST_CHECK_EQUAL( medaFile.container.mimeType, AVI_CONTAINER);
-
-    testAVISubtitles(medaFile.container.subtitleDetails);
-
-    testAVIAudio(medaFile.container.audioDetails);
-
-    testAVIVideo(medaFile.container.videoDetails);
+    testAVIContainer(medaFile.container);
 }
 
 /**
