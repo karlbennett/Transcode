@@ -8,8 +8,6 @@ extern "C" {
 #include "libavformat/avformat.h"
 }
 
-class TestObject {};
-
 AVFormatContext *aviFormatContext = NULL;
 AVFormatContext *mkvFormatContext = NULL;
 AVFormatContext *mp4FormatContext = NULL;
