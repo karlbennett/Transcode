@@ -15,6 +15,8 @@ extern "C" {
 #include <metadata.hpp>
 #include <util/util_standard.hpp>
 
+#include <iostream>
+
 #include <string>
 #include <vector>
 #include <map>
@@ -194,14 +196,7 @@ private:
      * The FFMPEG initialisation is carried out here, it should only ever happen
      * once.
      */
-    FfmpegSingleton() {
-
-        // Initialise the ffmpeg libav library so we can use it to inspect
-        // the media file.
-        avcodec_init();
-        avcodec_register_all();
-        av_register_all();
-    }
+    FfmpegSingleton();
 
     FfmpegSingleton(FfmpegSingleton const&); // Should not be implemented.
 
@@ -293,6 +288,18 @@ template<typename T> std::vector<T> extractDetails(
     return details;
 }
 
+FfmpegSingleton::FfmpegSingleton() {
+
+        // Initialise the ffmpeg libav library so we can use it to inspect
+        // the media file.
+        avcodec_init();
+        avcodec_register_all();
+        av_register_all();
+
+        // Set the log level to quiet to stop any warnings.
+        av_log_set_level(AV_LOG_QUIET);
+}
+
 std::string FfmpegSingleton::ffmpegErrorMessage(int errorCode) const {
 
     size_t bufferSize = 1024;
@@ -315,6 +322,14 @@ AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
             NULL);
 
     // If an error code was returned throw an appropriate exception.
+    if (0 > errorCode) {
+        throw FFMPEGException(errorCode);
+    }
+
+    // Have a double try at extracting the info from the media file because
+    // sometimes opening it is not enough.
+    errorCode = av_find_stream_info(videoFile);
+
     if (0 > errorCode) {
         throw FFMPEGException(errorCode);
     }
