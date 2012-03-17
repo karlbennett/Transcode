@@ -29,7 +29,7 @@ LIB_TEST_DIR = $(TEST_CLASSES_DIR)lib-test/
 CCC = g++
 
 # The required header files for the native code.
-INCLUDES = -I/usr/include/ -I$(SRC_DIR) -I./
+INCLUDES = -D__STDC_CONSTANT_MACROS -I/usr/include/ -I$(SRC_DIR) -I./
 
 LIBS = -L/usr/lib/i386-linux-gnu -L/usr/lib/ -L$(LIB_DIR) -lboost_test_exec_monitor \
 -lavformat -lavcodec -lavutil -lboost_filesystem -lutil_file -lutil_ffmpeg -lutil_media_ffmpeg
