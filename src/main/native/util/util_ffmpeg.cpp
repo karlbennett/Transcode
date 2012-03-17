@@ -65,6 +65,7 @@ static std::map<CodecID, std::string> initialiseCodecToMimeType() {
     codecToMimeType[CODEC_ID_MOV_TEXT] = "text/plain";
     codecToMimeType[CODEC_ID_HDMV_PGS_SUBTITLE] = "application/pgs";
     codecToMimeType[CODEC_ID_DVB_TELETEXT] = "application/dvb";
+    codecToMimeType[CODEC_ID_FLV1] = "video/x-svq";
 
     return codecToMimeType;
 }
@@ -80,6 +81,7 @@ static std::map<std::string, std::string> initialiseNameToMimeType() {
     nameToMimeType["ogg"] = "application/ogg";
     nameToMimeType["mov,mp4,m4a,3gp,3g2,mj2"] = "video/quicktime";
     nameToMimeType["wav"] = "audio/x-wav";
+    nameToMimeType["flv"] = "video/x-flv";
 
     return nameToMimeType;
 }
@@ -95,6 +97,54 @@ const std::map<CodecID, std::string> CODEC_TO_MIMETYPE =
  */
 const std::map<std::string, std::string> NAME_TO_MIMETYPE =
         initialiseNameToMimeType();
+
+/**
+ * Find the audio or video mediatype for the provided codec id.
+ *
+ * @param codecId - the codec id that will be used to find the mimetype.
+ * @return the mimetype string related to the provided codec id.
+ * @throws transcode::utils::FFMPEGException if a mimetype cannot be found.
+ */
+static std::string findAVMimeType(const CodecID& codecId)
+        throw (transcode::utils::FFMPEGException) {
+
+    std::string mimeType = transcode::utils::get(helper::CODEC_TO_MIMETYPE,
+            codecId);
+
+    if (std::string() == mimeType) {
+
+        std::stringstream errorMessage;
+
+        errorMessage << "Could not find codec mimetype for codec ID: "
+                << codecId << std::endl;
+
+        throw transcode::utils::FFMPEGException(errorMessage.str());
+    }
+
+    return mimeType;
+}
+
+/**
+ * Find the container mediatype for the provided codec id.
+ *
+ * @param name - the simple container name to be used to find the container
+ *          mimetype.
+ * @return the mimetype string related to the provided container name.
+ * @throws transcode::utils::FFMPEGException if a mimetype cannot be found.
+ */
+static std::string findContainerMimeType(const std::string& name) {
+
+    std::string mimeType = transcode::utils::get(helper::NAME_TO_MIMETYPE,
+            name);
+
+    if (std::string() == mimeType) {
+
+        throw transcode::utils::FFMPEGException(
+                "Could not find container mimetype for name: " + name);
+    }
+
+    return mimeType;
+}
 }
 
 namespace callback {
@@ -123,15 +173,15 @@ static std::string extractLanguage(const AVStream& stream) {
  *
  * @return a subtitle details struct populated from values within the provided codec.
  */
-static transcode::SubtitleMetaData extractSubtitleDetail(const AVStream& stream) {
+static transcode::SubtitleMetaData extractSubtitleDetail(
+        const AVStream& stream) {
 
     AVCodecContext *codec = stream.codec;
 
     std::string language = extractLanguage(stream);
 
     transcode::SubtitleMetaData subtitleDetail(
-            transcode::utils::get(helper::CODEC_TO_MIMETYPE, codec->codec_id),
-            language);
+            helper::findAVMimeType(codec->codec_id), language);
 
     return subtitleDetail;
 }
@@ -150,8 +200,8 @@ static transcode::AudioMetaData extractAudioDetail(const AVStream& stream) {
     std::string language = extractLanguage(stream);
 
     transcode::AudioMetaData audioDetail(
-            transcode::utils::get(helper::CODEC_TO_MIMETYPE, codec->codec_id),
-            language, codec->bit_rate, codec->channels);
+            helper::findAVMimeType(codec->codec_id), language, codec->bit_rate,
+            codec->channels);
 
     return audioDetail;
 }
@@ -168,8 +218,8 @@ static transcode::VideoMetaData extractVideoDetail(const AVStream& stream) {
     AVCodecContext *codec = stream.codec;
 
     transcode::VideoMetaData videoDetail(
-            transcode::utils::get(helper::CODEC_TO_MIMETYPE, codec->codec_id),
-            codec->width, codec->height, codec->frame_number);
+            helper::findAVMimeType(codec->codec_id), codec->width,
+            codec->height, codec->frame_number);
 
     return videoDetail;
 }
@@ -221,7 +271,8 @@ public:
     std::vector<VideoMetaData> extractVideoDetails(
             const AVFormatContext *videoFile) const;
 
-    ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile) const;
+    ContainerMetaData buildContainerDetail(
+            const AVFormatContext *videoFile) const;
 
     void closeCodecs(AVFormatContext *videoFile) const throw (FFMPEGException);
 };
@@ -290,14 +341,14 @@ template<typename T> std::vector<T> extractDetails(
 
 FfmpegSingleton::FfmpegSingleton() {
 
-        // Initialise the ffmpeg libav library so we can use it to inspect
-        // the media file.
-        avcodec_init();
-        avcodec_register_all();
-        av_register_all();
+    // Initialise the ffmpeg libav library so we can use it to inspect
+    // the media file.
+    avcodec_init();
+    avcodec_register_all();
+    av_register_all();
 
-        // Set the log level to quiet to stop any warnings.
-        av_log_set_level(AV_LOG_QUIET);
+    // Set the log level to quiet to stop any warnings.
+    av_log_set_level(AV_LOG_QUIET);
 }
 
 std::string FfmpegSingleton::ffmpegErrorMessage(int errorCode) const {
@@ -369,7 +420,7 @@ ContainerMetaData FfmpegSingleton::buildContainerDetail(
     }
 
     // Find the mime type for the media files container.
-    std::string containerMimeType = get(helper::NAME_TO_MIMETYPE,
+    std::string containerMimeType = helper::findContainerMimeType(
             std::string(inputFormat->name));
     // Find the description for the media files container.
     std::string description = inputFormat->long_name;
