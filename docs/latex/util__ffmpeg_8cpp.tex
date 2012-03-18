@@ -1,0 +1,89 @@
+\hypertarget{util__ffmpeg_8cpp}{
+\section{src/main/native/util/util\_\-ffmpeg.cpp File Reference}
+\label{util__ffmpeg_8cpp}\index{src/main/native/util/util\_\-ffmpeg.cpp@{src/main/native/util/util\_\-ffmpeg.cpp}}
+}
+
+
+The implementation for the \hyperlink{util__ffmpeg_8hpp}{util\_\-ffmpeg.hpp} functions.  
+
+
+{\ttfamily \#include \char`\"{}libavformat/avformat.h\char`\"{}}\par
+{\ttfamily \#include \char`\"{}libavcodec/avcodec.h\char`\"{}}\par
+{\ttfamily \#include \char`\"{}libavutil/error.h\char`\"{}}\par
+{\ttfamily \#include $<$util/util\_\-ffmpeg.hpp$>$}\par
+{\ttfamily \#include $<$metadata.hpp$>$}\par
+{\ttfamily \#include $<$util/util\_\-standard.hpp$>$}\par
+{\ttfamily \#include $<$iostream$>$}\par
+{\ttfamily \#include $<$string$>$}\par
+{\ttfamily \#include $<$vector$>$}\par
+{\ttfamily \#include $<$map$>$}\par
+{\ttfamily \#include $<$sstream$>$}\par
+{\ttfamily \#include $<$tr1/functional$>$}\par
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classtranscode_1_1util_1_1FfmpegSingleton}{transcode::util::FfmpegSingleton}
+\begin{DoxyCompactList}\small\item\em A singleton class that provides all the implementations for the FFMPEG functions. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \hyperlink{namespacehelper}{helper}
+
+
+\begin{DoxyCompactList}\small\item\em Helper namespace, all helper functions and classes are found here. \item\end{DoxyCompactList}
+
+\item 
+namespace \hyperlink{namespacecallback}{callback}
+
+
+\begin{DoxyCompactList}\small\item\em Callback namespace, all callback functions are found here. \item\end{DoxyCompactList}
+
+\item 
+namespace \hyperlink{namespacetranscode}{transcode}
+
+
+\begin{DoxyCompactList}\small\item\em Transcode namespace, all the top level transcode functions and classes are in this namespace. \item\end{DoxyCompactList}
+
+\item 
+namespace \hyperlink{namespacetranscode_1_1util}{transcode::util}
+
+
+\begin{DoxyCompactList}\small\item\em Util namespace, all the utility functions and classes are found within this namespace. \item\end{DoxyCompactList}
+
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\std::vector$<$ T $>$ \hyperlink{namespacetranscode_1_1util_afaf550997dea9058e5331e14100dcecc}{transcode::util::extractMetaData} (const AVFormatContext $\ast$videoFile, AVMediaType mediatype, std::tr1::function$<$ T(const AVStream \&)$>$ metadataCallback)
+\begin{DoxyCompactList}\small\item\em Extract the media meta data of the given type from the libav AVFormatContext struct using the provided get meta data function. \item\end{DoxyCompactList}\item 
+std::string \hyperlink{namespacetranscode_1_1util_ac43b28725fca57894665f5775b42111a}{transcode::util::ffmpegErrorMessage} (int errorCode)
+\begin{DoxyCompactList}\small\item\em Below is the implementation of the public API functions. \item\end{DoxyCompactList}\item 
+AVFormatContext $\ast$ \hyperlink{namespacetranscode_1_1util_a65511e44b87092eba02246dd0a6fe103}{transcode::util::retrieveAVFormatContext} (const std::string \&filePath)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Retrieve the AVFormatContext for the provided media file. \item\end{DoxyCompactList}\item 
+std::vector$<$ SubtitleMetaData $>$ \hyperlink{namespacetranscode_1_1util_a5d54bc962ed8a3ce2d592355e476bcdd}{transcode::util::extractSubtitleDetails} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Extract the subtitle details from the provided libav AVFormatContext. \item\end{DoxyCompactList}\item 
+std::vector$<$ AudioMetaData $>$ \hyperlink{namespacetranscode_1_1util_a77ca59f993d80e7f19ea20fdc6143222}{transcode::util::extractAudioDetails} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Extract the audio detail from the provided libav AVFormatContext. \item\end{DoxyCompactList}\item 
+std::vector$<$ VideoMetaData $>$ \hyperlink{namespacetranscode_1_1util_a5755318eb50f620cdc071c7ad23cfff7}{transcode::util::extractVideoDetails} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Extract the video detail from the provided libav AVFormatContext. \item\end{DoxyCompactList}\item 
+ContainerMetaData \hyperlink{namespacetranscode_1_1util_a38d01175f2cce57e6578e5e46cb385e0}{transcode::util::buildContainerDetail} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Build a ContainerDetail struct out of the details in the provided AVFormatContext. \item\end{DoxyCompactList}\item 
+void \hyperlink{namespacetranscode_1_1util_ac6274ea5d31808dd2930981770a3946b}{transcode::util::closeCodecs} (AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Close any codecs that are related to the provided AVFormatContext. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const std::map$<$ CodecID, std::string $>$ \hyperlink{namespacehelper_af150f7275a50533efd1065e69614c1b7}{helper::CODEC\_\-TO\_\-MIMETYPE}
+\begin{DoxyCompactList}\small\item\em The map that is used to look up mime types from libav CodecID's. \item\end{DoxyCompactList}\item 
+const std::map$<$ std::string, std::string $>$ \hyperlink{namespacehelper_ac0fdcb6f95d20f10e1ee9e9f8c9bd723}{helper::NAME\_\-TO\_\-MIMETYPE}
+\begin{DoxyCompactList}\small\item\em The map that is used to look up mime types from libav container names. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The implementation for the \hyperlink{util__ffmpeg_8hpp}{util\_\-ffmpeg.hpp} functions. The majority of the implementation is contained within the \{\begin{DoxySeeAlso}{See also}
+transcode::utils::FfmpegSingleton\} class. 
+\end{DoxySeeAlso}
+
+
+Definition in file \hyperlink{util__ffmpeg_8cpp_source}{util\_\-ffmpeg.cpp}.
+

@@ -1,0 +1,188 @@
+\hypertarget{classtranscode_1_1util_1_1File}{
+\section{transcode::util::File Class Reference}
+\label{classtranscode_1_1util_1_1File}\index{transcode::util::File@{transcode::util::File}}
+}
+
+
+A class that represents a file on the file system, it can be used to access meta data about the file.  
+
+
+
+
+{\ttfamily \#include $<$util\_\-file.hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classtranscode_1_1util_1_1File_ad459dd3cc090abbbb220a87f1909d7f9}{File} ()
+\begin{DoxyCompactList}\small\item\em Instantiate an empty \hyperlink{classtranscode_1_1util_1_1File}{File} object. \item\end{DoxyCompactList}\item 
+\hyperlink{classtranscode_1_1util_1_1File_a60d3a3b965968122d87e319c8181c866}{File} (std::string path)  throw (FileException)
+\begin{DoxyCompactList}\small\item\em Instantiate a new \hyperlink{classtranscode_1_1util_1_1File}{File} object that will be populated from the meta data of the file at the provided path. \item\end{DoxyCompactList}\item 
+std::string \hyperlink{classtranscode_1_1util_1_1File_a80cc652ec8b51ecac79dfcf469ae3c2f}{getName} () const 
+\begin{DoxyCompactList}\small\item\em Get the name of the related file minus the path. \item\end{DoxyCompactList}\item 
+std::string \hyperlink{classtranscode_1_1util_1_1File_a22b68c8fa9d48982164da648c18c4f09}{getPath} () const 
+\begin{DoxyCompactList}\small\item\em Get the full path of the file that was used to create this object. \item\end{DoxyCompactList}\item 
+std::string \hyperlink{classtranscode_1_1util_1_1File_a839681fa33d88cd41aeedef33eccef35}{getAbsolutePath} () const 
+\begin{DoxyCompactList}\small\item\em Get the absolute path of the file. \item\end{DoxyCompactList}\item 
+std::string \hyperlink{classtranscode_1_1util_1_1File_ab5f643ce545eed3914dbb7507211235b}{getRelativePath} () const 
+\begin{DoxyCompactList}\small\item\em Get the relative path of the file to the current running directory. \item\end{DoxyCompactList}\item 
+unsigned long \hyperlink{classtranscode_1_1util_1_1File_aaf1d1302f91e67f5953fa2964c2dd8af}{getSize} () const 
+\begin{DoxyCompactList}\small\item\em Get the size of the related file in bytes. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A class that represents a file on the file system, it can be used to access meta data about the file. 
+
+Definition at line 66 of file util\_\-file.hpp.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classtranscode_1_1util_1_1File_ad459dd3cc090abbbb220a87f1909d7f9}{
+\index{transcode::util::File@{transcode::util::File}!File@{File}}
+\index{File@{File}!transcode::util::File@{transcode::util::File}}
+\subsubsection[{File}]{\setlength{\rightskip}{0pt plus 5cm}transcode::util::File::File (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1File_ad459dd3cc090abbbb220a87f1909d7f9}
+
+
+Instantiate an empty \hyperlink{classtranscode_1_1util_1_1File}{File} object. 
+
+
+
+Definition at line 80 of file util\_\-file.hpp.
+
+\hypertarget{classtranscode_1_1util_1_1File_a60d3a3b965968122d87e319c8181c866}{
+\index{transcode::util::File@{transcode::util::File}!File@{File}}
+\index{File@{File}!transcode::util::File@{transcode::util::File}}
+\subsubsection[{File}]{\setlength{\rightskip}{0pt plus 5cm}transcode::util::File::File (
+\begin{DoxyParamCaption}
+\item[{std::string}]{path}
+\end{DoxyParamCaption}
+)  throw ({\bf FileException})}}
+\label{classtranscode_1_1util_1_1File_a60d3a3b965968122d87e319c8181c866}
+
+
+Instantiate a new \hyperlink{classtranscode_1_1util_1_1File}{File} object that will be populated from the meta data of the file at the provided path. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & -\/ the path to the file that will be inspected. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 34 of file util\_\-file.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classtranscode_1_1util_1_1File_a839681fa33d88cd41aeedef33eccef35}{
+\index{transcode::util::File@{transcode::util::File}!getAbsolutePath@{getAbsolutePath}}
+\index{getAbsolutePath@{getAbsolutePath}!transcode::util::File@{transcode::util::File}}
+\subsubsection[{getAbsolutePath}]{\setlength{\rightskip}{0pt plus 5cm}std::string transcode::util::File::getAbsolutePath (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1File_a839681fa33d88cd41aeedef33eccef35}
+
+
+Get the absolute path of the file. 
+
+\begin{DoxyReturn}{Returns}
+the absolute path of the file. 
+\end{DoxyReturn}
+
+
+Definition at line 121 of file util\_\-file.hpp.
+
+\hypertarget{classtranscode_1_1util_1_1File_a80cc652ec8b51ecac79dfcf469ae3c2f}{
+\index{transcode::util::File@{transcode::util::File}!getName@{getName}}
+\index{getName@{getName}!transcode::util::File@{transcode::util::File}}
+\subsubsection[{getName}]{\setlength{\rightskip}{0pt plus 5cm}std::string transcode::util::File::getName (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1File_a80cc652ec8b51ecac79dfcf469ae3c2f}
+
+
+Get the name of the related file minus the path. 
+
+\begin{DoxyReturn}{Returns}
+the name of the file. 
+\end{DoxyReturn}
+
+
+Definition at line 101 of file util\_\-file.hpp.
+
+\hypertarget{classtranscode_1_1util_1_1File_a22b68c8fa9d48982164da648c18c4f09}{
+\index{transcode::util::File@{transcode::util::File}!getPath@{getPath}}
+\index{getPath@{getPath}!transcode::util::File@{transcode::util::File}}
+\subsubsection[{getPath}]{\setlength{\rightskip}{0pt plus 5cm}std::string transcode::util::File::getPath (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1File_a22b68c8fa9d48982164da648c18c4f09}
+
+
+Get the full path of the file that was used to create this object. 
+
+\begin{DoxyReturn}{Returns}
+the path of the file. 
+\end{DoxyReturn}
+
+
+Definition at line 111 of file util\_\-file.hpp.
+
+\hypertarget{classtranscode_1_1util_1_1File_ab5f643ce545eed3914dbb7507211235b}{
+\index{transcode::util::File@{transcode::util::File}!getRelativePath@{getRelativePath}}
+\index{getRelativePath@{getRelativePath}!transcode::util::File@{transcode::util::File}}
+\subsubsection[{getRelativePath}]{\setlength{\rightskip}{0pt plus 5cm}std::string transcode::util::File::getRelativePath (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1File_ab5f643ce545eed3914dbb7507211235b}
+
+
+Get the relative path of the file to the current running directory. 
+
+\begin{DoxyReturn}{Returns}
+the relative path of the file. 
+\end{DoxyReturn}
+
+
+Definition at line 131 of file util\_\-file.hpp.
+
+\hypertarget{classtranscode_1_1util_1_1File_aaf1d1302f91e67f5953fa2964c2dd8af}{
+\index{transcode::util::File@{transcode::util::File}!getSize@{getSize}}
+\index{getSize@{getSize}!transcode::util::File@{transcode::util::File}}
+\subsubsection[{getSize}]{\setlength{\rightskip}{0pt plus 5cm}unsigned long transcode::util::File::getSize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1File_aaf1d1302f91e67f5953fa2964c2dd8af}
+
+
+Get the size of the related file in bytes. 
+
+\begin{DoxyReturn}{Returns}
+the size of the file. 
+\end{DoxyReturn}
+
+
+Definition at line 141 of file util\_\-file.hpp.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+src/main/native/util/\hyperlink{util__file_8hpp}{util\_\-file.hpp}\item 
+src/main/native/util/\hyperlink{util__file_8cpp}{util\_\-file.cpp}\end{DoxyCompactItemize}

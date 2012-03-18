@@ -1,0 +1,489 @@
+\hypertarget{namespacetranscode_1_1util}{
+\section{transcode::util Namespace Reference}
+\label{namespacetranscode_1_1util}\index{transcode::util@{transcode::util}}
+}
+
+
+Util namespace, all the utility functions and classes are found within this namespace.  
+
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classtranscode_1_1util_1_1FfmpegSingleton}{FfmpegSingleton}
+\begin{DoxyCompactList}\small\item\em A singleton class that provides all the implementations for the FFMPEG functions. \item\end{DoxyCompactList}\item 
+class \hyperlink{classtranscode_1_1util_1_1FFMPEGException}{FFMPEGException}
+\begin{DoxyCompactList}\small\item\em Exception that is thrown if something goes wrong with the FFMPEG library. \item\end{DoxyCompactList}\item 
+class \hyperlink{classtranscode_1_1util_1_1FileException}{FileException}
+\item 
+class \hyperlink{classtranscode_1_1util_1_1File}{File}
+\begin{DoxyCompactList}\small\item\em A class that represents a file on the file system, it can be used to access meta data about the file. \item\end{DoxyCompactList}\item 
+class \hyperlink{classtranscode_1_1util_1_1UtilMediaException}{UtilMediaException}
+\begin{DoxyCompactList}\small\item\em An exception that is thrown from within the MediaUtils functions. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\std::vector$<$ T $>$ \hyperlink{namespacetranscode_1_1util_afaf550997dea9058e5331e14100dcecc}{extractMetaData} (const AVFormatContext $\ast$videoFile, AVMediaType mediatype, std::tr1::function$<$ T(const AVStream \&)$>$ metadataCallback)
+\begin{DoxyCompactList}\small\item\em Extract the media meta data of the given type from the libav AVFormatContext struct using the provided get meta data function. \item\end{DoxyCompactList}\item 
+std::string \hyperlink{namespacetranscode_1_1util_ac43b28725fca57894665f5775b42111a}{ffmpegErrorMessage} (int errorCode)
+\begin{DoxyCompactList}\small\item\em Below is the implementation of the public API functions. \item\end{DoxyCompactList}\item 
+AVFormatContext $\ast$ \hyperlink{namespacetranscode_1_1util_a65511e44b87092eba02246dd0a6fe103}{retrieveAVFormatContext} (const std::string \&filePath)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Retrieve the AVFormatContext for the provided media file. \item\end{DoxyCompactList}\item 
+std::vector$<$ \hyperlink{structtranscode_1_1SubtitleMetaData}{SubtitleMetaData} $>$ \hyperlink{namespacetranscode_1_1util_a5d54bc962ed8a3ce2d592355e476bcdd}{extractSubtitleDetails} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Extract the subtitle details from the provided libav AVFormatContext. \item\end{DoxyCompactList}\item 
+std::vector$<$ \hyperlink{structtranscode_1_1AudioMetaData}{AudioMetaData} $>$ \hyperlink{namespacetranscode_1_1util_a77ca59f993d80e7f19ea20fdc6143222}{extractAudioDetails} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Extract the audio detail from the provided libav AVFormatContext. \item\end{DoxyCompactList}\item 
+std::vector$<$ \hyperlink{structtranscode_1_1VideoMetaData}{VideoMetaData} $>$ \hyperlink{namespacetranscode_1_1util_a5755318eb50f620cdc071c7ad23cfff7}{extractVideoDetails} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Extract the video detail from the provided libav AVFormatContext. \item\end{DoxyCompactList}\item 
+\hyperlink{structtranscode_1_1ContainerMetaData}{ContainerMetaData} \hyperlink{namespacetranscode_1_1util_a38d01175f2cce57e6578e5e46cb385e0}{buildContainerDetail} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Build a ContainerDetail struct out of the details in the provided AVFormatContext. \item\end{DoxyCompactList}\item 
+void \hyperlink{namespacetranscode_1_1util_ac6274ea5d31808dd2930981770a3946b}{closeCodecs} (AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Close any codecs that are related to the provided AVFormatContext. \item\end{DoxyCompactList}\item 
+std::vector$<$ \hyperlink{structtranscode_1_1SubtitleMetaData}{SubtitleMetaData} $>$ \hyperlink{namespacetranscode_1_1util_a90c8a8e7393c1d9f8db003a2cad1efba}{findSubtitleMetaData} (const std::string \&filePath)  throw (UtilMediaException)
+\begin{DoxyCompactList}\small\item\em Find the subtitle meta data for the media file at the provided path. \item\end{DoxyCompactList}\item 
+std::vector$<$ \hyperlink{structtranscode_1_1AudioMetaData}{AudioMetaData} $>$ \hyperlink{namespacetranscode_1_1util_ad4c7b1a0e312ed159481b9ce476aae6f}{findAudioMetaData} (const std::string \&filePath)  throw (UtilMediaException)
+\begin{DoxyCompactList}\small\item\em Find the audio meta data for the media file at the provided path. \item\end{DoxyCompactList}\item 
+std::vector$<$ \hyperlink{structtranscode_1_1VideoMetaData}{VideoMetaData} $>$ \hyperlink{namespacetranscode_1_1util_a50b2171ced48530874981579e184cd2f}{findVideoMetaData} (const std::string \&filePath)  throw (UtilMediaException)
+\begin{DoxyCompactList}\small\item\em Find the video meta data for the media file at the provided path. \item\end{DoxyCompactList}\item 
+\hyperlink{structtranscode_1_1ContainerMetaData}{ContainerMetaData} \hyperlink{namespacetranscode_1_1util_aca52b690775495a84c8f13094d2de8bf}{findContainerMetaData} (const std::string \&filePath)  throw (UtilMediaException)
+\begin{DoxyCompactList}\small\item\em Find the container meta data for the media file at the provided path. \item\end{DoxyCompactList}\item 
+\hyperlink{structtranscode_1_1MediaFileMetaData}{MediaFileMetaData} \hyperlink{namespacetranscode_1_1util_a66d32ba3f1d1db41872f86838109695b}{findMediaFileMetaData} (const std::string \&filePath)  throw (UtilMediaException)
+\begin{DoxyCompactList}\small\item\em Find the meta data for the media file at the provided path. \item\end{DoxyCompactList}\item 
+{\footnotesize template$<$typename K , typename V $>$ }\\V \hyperlink{namespacetranscode_1_1util_a250303dbe84b229a60d951d9004d4464}{get} (const std::map$<$ K, V $>$ \&map, const K \&key)
+\begin{DoxyCompactList}\small\item\em Convenience template to make it easier to get the value out of a constant map. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespacetranscode_1_1util_a77b6a70cbe66d3c133266d586a923923}{
+const std::string {\bfseries UNKNOWN} = \char`\"{}Unknown\char`\"{}}
+\label{namespacetranscode_1_1util_a77b6a70cbe66d3c133266d586a923923}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Util namespace, all the utility functions and classes are found within this namespace. Util namespace, all the untility functions and classes are found within this namespace.
+
+You might find something useful here but hopefully everything in the \{\begin{DoxySeeAlso}{See also}
+\hyperlink{namespacetranscode}{transcode}\} namespace should provide what you need so you shouldn't have to look in here. 
+\end{DoxySeeAlso}
+
+
+\subsection{Function Documentation}
+\hypertarget{namespacetranscode_1_1util_a38d01175f2cce57e6578e5e46cb385e0}{
+\index{transcode::util@{transcode::util}!buildContainerDetail@{buildContainerDetail}}
+\index{buildContainerDetail@{buildContainerDetail}!transcode::util@{transcode::util}}
+\subsubsection[{buildContainerDetail}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ContainerMetaData} transcode::util::buildContainerDetail (
+\begin{DoxyParamCaption}
+\item[{const AVFormatContext $\ast$}]{videoFile}
+\end{DoxyParamCaption}
+)  throw ({\bf FFMPEGException})}}
+\label{namespacetranscode_1_1util_a38d01175f2cce57e6578e5e46cb385e0}
+
+
+Build a ContainerDetail struct out of the details in the provided AVFormatContext. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em videoFile} & -\/ the AVFormatContext that contains the details to be used to populate the ContainerDetail.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a populated ContainerDetail struct. 
+\end{DoxyReturn}
+
+
+Definition at line 529 of file util\_\-ffmpeg.cpp.
+
+
+
+Referenced by findContainerMetaData(), and findMediaFileMetaData().
+
+\hypertarget{namespacetranscode_1_1util_ac6274ea5d31808dd2930981770a3946b}{
+\index{transcode::util@{transcode::util}!closeCodecs@{closeCodecs}}
+\index{closeCodecs@{closeCodecs}!transcode::util@{transcode::util}}
+\subsubsection[{closeCodecs}]{\setlength{\rightskip}{0pt plus 5cm}void transcode::util::closeCodecs (
+\begin{DoxyParamCaption}
+\item[{AVFormatContext $\ast$}]{videoFile}
+\end{DoxyParamCaption}
+)  throw ({\bf FFMPEGException})}}
+\label{namespacetranscode_1_1util_ac6274ea5d31808dd2930981770a3946b}
+
+
+Close any codecs that are related to the provided AVFormatContext. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em videoFile} & -\/ the AVFormatContext that will have all it's codecs closed. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 535 of file util\_\-ffmpeg.cpp.
+
+
+
+Referenced by findMediaFileMetaData().
+
+\hypertarget{namespacetranscode_1_1util_a77ca59f993d80e7f19ea20fdc6143222}{
+\index{transcode::util@{transcode::util}!extractAudioDetails@{extractAudioDetails}}
+\index{extractAudioDetails@{extractAudioDetails}!transcode::util@{transcode::util}}
+\subsubsection[{extractAudioDetails}]{\setlength{\rightskip}{0pt plus 5cm}std::vector$<$ {\bf AudioMetaData} $>$ transcode::util::extractAudioDetails (
+\begin{DoxyParamCaption}
+\item[{const AVFormatContext $\ast$}]{videoFile}
+\end{DoxyParamCaption}
+)  throw ({\bf FFMPEGException})}}
+\label{namespacetranscode_1_1util_a77ca59f993d80e7f19ea20fdc6143222}
+
+
+Extract the audio detail from the provided libav AVFormatContext. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em videoFile} & -\/ the av context that contains the media file details.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a vector containing audio detail structs populated from values within the media file. 
+\end{DoxyReturn}
+
+
+Definition at line 517 of file util\_\-ffmpeg.cpp.
+
+
+
+Referenced by findAudioMetaData().
+
+\hypertarget{namespacetranscode_1_1util_afaf550997dea9058e5331e14100dcecc}{
+\index{transcode::util@{transcode::util}!extractMetaData@{extractMetaData}}
+\index{extractMetaData@{extractMetaData}!transcode::util@{transcode::util}}
+\subsubsection[{extractMetaData}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ std::vector$<$T$>$ transcode::util::extractMetaData (
+\begin{DoxyParamCaption}
+\item[{const AVFormatContext $\ast$}]{videoFile, }
+\item[{AVMediaType}]{mediatype, }
+\item[{std::tr1::function$<$ T(const AVStream \&)$>$}]{metadataCallback}
+\end{DoxyParamCaption}
+)}}
+\label{namespacetranscode_1_1util_afaf550997dea9058e5331e14100dcecc}
+
+
+Extract the media meta data of the given type from the libav AVFormatContext struct using the provided get meta data function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em videoFile} & -\/ the av format context that contains the audio meta data to extract. \\
+\hline
+{\em mediaType} & -\/ the type of media stream that should have it's codec inspected. \\
+\hline
+{\em metadataCallback} & -\/ the function to use to get the correct meta data out of the codec.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a vector containing all the extracted meta data. 
+\end{DoxyReturn}
+
+
+Definition at line 332 of file util\_\-ffmpeg.cpp.
+
+\hypertarget{namespacetranscode_1_1util_a5d54bc962ed8a3ce2d592355e476bcdd}{
+\index{transcode::util@{transcode::util}!extractSubtitleDetails@{extractSubtitleDetails}}
+\index{extractSubtitleDetails@{extractSubtitleDetails}!transcode::util@{transcode::util}}
+\subsubsection[{extractSubtitleDetails}]{\setlength{\rightskip}{0pt plus 5cm}std::vector$<$ {\bf SubtitleMetaData} $>$ transcode::util::extractSubtitleDetails (
+\begin{DoxyParamCaption}
+\item[{const AVFormatContext $\ast$}]{videoFile}
+\end{DoxyParamCaption}
+)  throw ({\bf FFMPEGException})}}
+\label{namespacetranscode_1_1util_a5d54bc962ed8a3ce2d592355e476bcdd}
+
+
+Extract the subtitle details from the provided libav AVFormatContext. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em videoFile} & -\/ the av context that contains the media file details.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a vector containing subtitle detail structs populated from values within the media file. 
+\end{DoxyReturn}
+
+
+Definition at line 511 of file util\_\-ffmpeg.cpp.
+
+
+
+Referenced by findSubtitleMetaData().
+
+\hypertarget{namespacetranscode_1_1util_a5755318eb50f620cdc071c7ad23cfff7}{
+\index{transcode::util@{transcode::util}!extractVideoDetails@{extractVideoDetails}}
+\index{extractVideoDetails@{extractVideoDetails}!transcode::util@{transcode::util}}
+\subsubsection[{extractVideoDetails}]{\setlength{\rightskip}{0pt plus 5cm}std::vector$<$ {\bf VideoMetaData} $>$ transcode::util::extractVideoDetails (
+\begin{DoxyParamCaption}
+\item[{const AVFormatContext $\ast$}]{videoFile}
+\end{DoxyParamCaption}
+)  throw ({\bf FFMPEGException})}}
+\label{namespacetranscode_1_1util_a5755318eb50f620cdc071c7ad23cfff7}
+
+
+Extract the video detail from the provided libav AVFormatContext. 
+
+@param videoFile -\/ the av context that contains the media file details.
+
+\begin{DoxyReturn}{Returns}
+a vector containing video detail structs populated from values within the media file. 
+\end{DoxyReturn}
+
+
+Definition at line 523 of file util\_\-ffmpeg.cpp.
+
+
+
+Referenced by findVideoMetaData().
+
+\hypertarget{namespacetranscode_1_1util_ac43b28725fca57894665f5775b42111a}{
+\index{transcode::util@{transcode::util}!ffmpegErrorMessage@{ffmpegErrorMessage}}
+\index{ffmpegErrorMessage@{ffmpegErrorMessage}!transcode::util@{transcode::util}}
+\subsubsection[{ffmpegErrorMessage}]{\setlength{\rightskip}{0pt plus 5cm}std::string transcode::util::ffmpegErrorMessage (
+\begin{DoxyParamCaption}
+\item[{int}]{errorCode}
+\end{DoxyParamCaption}
+)}}
+\label{namespacetranscode_1_1util_ac43b28725fca57894665f5775b42111a}
+
+
+Below is the implementation of the public API functions. 
+
+Get the FFMPEG message for the provided error code.
+
+
+\begin{DoxyParams}{Parameters}
+{\em errorCode} & -\/ the FFMPEG error code.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the error message that relates to the provided error code. 
+\end{DoxyReturn}
+
+
+Definition at line 500 of file util\_\-ffmpeg.cpp.
+
+\hypertarget{namespacetranscode_1_1util_ad4c7b1a0e312ed159481b9ce476aae6f}{
+\index{transcode::util@{transcode::util}!findAudioMetaData@{findAudioMetaData}}
+\index{findAudioMetaData@{findAudioMetaData}!transcode::util@{transcode::util}}
+\subsubsection[{findAudioMetaData}]{\setlength{\rightskip}{0pt plus 5cm}std::vector$<$ {\bf AudioMetaData} $>$ transcode::util::findAudioMetaData (
+\begin{DoxyParamCaption}
+\item[{const std::string \&}]{filePath}
+\end{DoxyParamCaption}
+)  throw ({\bf UtilMediaException})}}
+\label{namespacetranscode_1_1util_ad4c7b1a0e312ed159481b9ce476aae6f}
+
+
+Find the audio meta data for the media file at the provided path. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filePath} & -\/ the path to the file that will have it's details inspected.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the audio meta data for the provided media file if possible. 
+\end{DoxyReturn}
+
+
+Definition at line 141 of file util\_\-media\_\-ffmpeg.cpp.
+
+
+
+References extractAudioDetails(), and findAudioMetaData().
+
+
+
+Referenced by findAudioMetaData().
+
+\hypertarget{namespacetranscode_1_1util_aca52b690775495a84c8f13094d2de8bf}{
+\index{transcode::util@{transcode::util}!findContainerMetaData@{findContainerMetaData}}
+\index{findContainerMetaData@{findContainerMetaData}!transcode::util@{transcode::util}}
+\subsubsection[{findContainerMetaData}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ContainerMetaData} transcode::util::findContainerMetaData (
+\begin{DoxyParamCaption}
+\item[{const std::string \&}]{filePath}
+\end{DoxyParamCaption}
+)  throw ({\bf UtilMediaException})}}
+\label{namespacetranscode_1_1util_aca52b690775495a84c8f13094d2de8bf}
+
+
+Find the container meta data for the media file at the provided path. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filePath} & -\/ the path to the file that will have it's details inspected.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the container meta data for the provided media file if possible. 
+\end{DoxyReturn}
+
+
+Definition at line 159 of file util\_\-media\_\-ffmpeg.cpp.
+
+
+
+References buildContainerDetail(), and findContainerMetaData().
+
+
+
+Referenced by findContainerMetaData().
+
+\hypertarget{namespacetranscode_1_1util_a66d32ba3f1d1db41872f86838109695b}{
+\index{transcode::util@{transcode::util}!findMediaFileMetaData@{findMediaFileMetaData}}
+\index{findMediaFileMetaData@{findMediaFileMetaData}!transcode::util@{transcode::util}}
+\subsubsection[{findMediaFileMetaData}]{\setlength{\rightskip}{0pt plus 5cm}{\bf MediaFileMetaData} transcode::util::findMediaFileMetaData (
+\begin{DoxyParamCaption}
+\item[{const std::string \&}]{filePath}
+\end{DoxyParamCaption}
+)  throw ({\bf UtilMediaException})}}
+\label{namespacetranscode_1_1util_a66d32ba3f1d1db41872f86838109695b}
+
+
+Find the meta data for the media file at the provided path. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filePath} & -\/ the path to the file that will have it's details inspected.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the meta data for the provided media file if possible. 
+\end{DoxyReturn}
+
+
+Definition at line 168 of file util\_\-media\_\-ffmpeg.cpp.
+
+
+
+References buildContainerDetail(), closeCodecs(), helper::extractCheckedMetaData(), and findMediaFileMetaData().
+
+
+
+Referenced by findMediaFileMetaData().
+
+\hypertarget{namespacetranscode_1_1util_a90c8a8e7393c1d9f8db003a2cad1efba}{
+\index{transcode::util@{transcode::util}!findSubtitleMetaData@{findSubtitleMetaData}}
+\index{findSubtitleMetaData@{findSubtitleMetaData}!transcode::util@{transcode::util}}
+\subsubsection[{findSubtitleMetaData}]{\setlength{\rightskip}{0pt plus 5cm}std::vector$<$ {\bf SubtitleMetaData} $>$ transcode::util::findSubtitleMetaData (
+\begin{DoxyParamCaption}
+\item[{const std::string \&}]{filePath}
+\end{DoxyParamCaption}
+)  throw ({\bf UtilMediaException})}}
+\label{namespacetranscode_1_1util_a90c8a8e7393c1d9f8db003a2cad1efba}
+
+
+Find the subtitle meta data for the media file at the provided path. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filePath} & -\/ the path to the file that will have it's details inspected.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the subtitle meta data for the provided media file if possible. 
+\end{DoxyReturn}
+
+
+Definition at line 132 of file util\_\-media\_\-ffmpeg.cpp.
+
+
+
+References extractSubtitleDetails(), and findSubtitleMetaData().
+
+
+
+Referenced by findSubtitleMetaData().
+
+\hypertarget{namespacetranscode_1_1util_a50b2171ced48530874981579e184cd2f}{
+\index{transcode::util@{transcode::util}!findVideoMetaData@{findVideoMetaData}}
+\index{findVideoMetaData@{findVideoMetaData}!transcode::util@{transcode::util}}
+\subsubsection[{findVideoMetaData}]{\setlength{\rightskip}{0pt plus 5cm}std::vector$<$ {\bf VideoMetaData} $>$ transcode::util::findVideoMetaData (
+\begin{DoxyParamCaption}
+\item[{const std::string \&}]{filePath}
+\end{DoxyParamCaption}
+)  throw ({\bf UtilMediaException})}}
+\label{namespacetranscode_1_1util_a50b2171ced48530874981579e184cd2f}
+
+
+Find the video meta data for the media file at the provided path. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filePath} & -\/ the path to the file that will have it's details inspected.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the video meta data for the provided media file if possible. 
+\end{DoxyReturn}
+
+
+Definition at line 150 of file util\_\-media\_\-ffmpeg.cpp.
+
+
+
+References extractVideoDetails(), and findVideoMetaData().
+
+
+
+Referenced by findVideoMetaData().
+
+\hypertarget{namespacetranscode_1_1util_a250303dbe84b229a60d951d9004d4464}{
+\index{transcode::util@{transcode::util}!get@{get}}
+\index{get@{get}!transcode::util@{transcode::util}}
+\subsubsection[{get}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename K , typename V $>$ V transcode::util::get (
+\begin{DoxyParamCaption}
+\item[{const std::map$<$ K, V $>$ \&}]{map, }
+\item[{const K \&}]{key}
+\end{DoxyParamCaption}
+)}}
+\label{namespacetranscode_1_1util_a250303dbe84b229a60d951d9004d4464}
+
+
+Convenience template to make it easier to get the value out of a constant map. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em map} & -\/ the map to get the value out of. \\
+\hline
+{\em key} & -\/ the key of the value in the map that we wish to get.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the value from the const map that is related to the provided key if it exists, otherwise return an empty instance of the value type. 
+\end{DoxyReturn}
+
+
+Definition at line 42 of file util\_\-standard.hpp.
+
+\hypertarget{namespacetranscode_1_1util_a65511e44b87092eba02246dd0a6fe103}{
+\index{transcode::util@{transcode::util}!retrieveAVFormatContext@{retrieveAVFormatContext}}
+\index{retrieveAVFormatContext@{retrieveAVFormatContext}!transcode::util@{transcode::util}}
+\subsubsection[{retrieveAVFormatContext}]{\setlength{\rightskip}{0pt plus 5cm}AVFormatContext $\ast$ transcode::util::retrieveAVFormatContext (
+\begin{DoxyParamCaption}
+\item[{const std::string \&}]{filePath}
+\end{DoxyParamCaption}
+)  throw ({\bf FFMPEGException})}}
+\label{namespacetranscode_1_1util_a65511e44b87092eba02246dd0a6fe103}
+
+
+Retrieve the AVFormatContext for the provided media file. 
+
+This can then be used to extract the files meta data and media streams.
+
+
+\begin{DoxyParams}{Parameters}
+{\em filePath} & -\/ the path to the media file.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the AVFormatContext for the provided media file. 
+\end{DoxyReturn}
+
+
+Definition at line 505 of file util\_\-ffmpeg.cpp.
+

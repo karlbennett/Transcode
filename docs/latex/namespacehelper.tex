@@ -1,0 +1,98 @@
+\hypertarget{namespacehelper}{
+\section{helper Namespace Reference}
+\label{namespacehelper}\index{helper@{helper}}
+}
+
+
+Helper namespace, all helper functions and classes are found here.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\T \hyperlink{namespacehelper_ac4210385b9f91f63e6a6c73cd4f15935}{extractCheckedMetaData} (const AVFormatContext $\ast$formatContext, std::tr1::function$<$ T(const AVFormatContext $\ast$)$>$ detailsCallback)  throw (transcode::util::UtilMediaException)
+\begin{DoxyCompactList}\small\item\em Helper template used to wrap an extract meta data function so that it's exception can be converted to a UtilMediaException. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const std::map$<$ CodecID, std::string $>$ \hyperlink{namespacehelper_af150f7275a50533efd1065e69614c1b7}{CODEC\_\-TO\_\-MIMETYPE}
+\begin{DoxyCompactList}\small\item\em The map that is used to look up mime types from libav CodecID's. \item\end{DoxyCompactList}\item 
+const std::map$<$ std::string, std::string $>$ \hyperlink{namespacehelper_ac0fdcb6f95d20f10e1ee9e9f8c9bd723}{NAME\_\-TO\_\-MIMETYPE}
+\begin{DoxyCompactList}\small\item\em The map that is used to look up mime types from libav container names. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Helper namespace, all helper functions and classes are found here. 
+
+\subsection{Function Documentation}
+\hypertarget{namespacehelper_ac4210385b9f91f63e6a6c73cd4f15935}{
+\index{helper@{helper}!extractCheckedMetaData@{extractCheckedMetaData}}
+\index{extractCheckedMetaData@{extractCheckedMetaData}!helper@{helper}}
+\subsubsection[{extractCheckedMetaData}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ T helper::extractCheckedMetaData (
+\begin{DoxyParamCaption}
+\item[{const AVFormatContext $\ast$}]{formatContext, }
+\item[{std::tr1::function$<$ T(const AVFormatContext $\ast$)$>$}]{detailsCallback}
+\end{DoxyParamCaption}
+)  throw ({\bf transcode::util::UtilMediaException})}}
+\label{namespacehelper_ac4210385b9f91f63e6a6c73cd4f15935}
+
+
+Helper template used to wrap an extract meta data function so that it's exception can be converted to a UtilMediaException. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em formatContext} & -\/ the format context that will be passed to the extract meta data function. \\
+\hline
+{\em detailsCallback} & -\/ the function that will be called with the format context.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a populated construct of the requested type. 
+\end{DoxyReturn}
+
+
+Definition at line 97 of file util\_\-media\_\-ffmpeg.cpp.
+
+
+
+Referenced by transcode::util::findMediaFileMetaData().
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{namespacehelper_af150f7275a50533efd1065e69614c1b7}{
+\index{helper@{helper}!CODEC\_\-TO\_\-MIMETYPE@{CODEC\_\-TO\_\-MIMETYPE}}
+\index{CODEC\_\-TO\_\-MIMETYPE@{CODEC\_\-TO\_\-MIMETYPE}!helper@{helper}}
+\subsubsection[{CODEC\_\-TO\_\-MIMETYPE}]{\setlength{\rightskip}{0pt plus 5cm}const std::map$<$CodecID, std::string$>$ {\bf helper::CODEC\_\-TO\_\-MIMETYPE}}}
+\label{namespacehelper_af150f7275a50533efd1065e69614c1b7}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+
+        initialiseCodecToMimeType()
+\end{DoxyCode}
+
+
+The map that is used to look up mime types from libav CodecID's. 
+
+
+
+Definition at line 103 of file util\_\-ffmpeg.cpp.
+
+\hypertarget{namespacehelper_ac0fdcb6f95d20f10e1ee9e9f8c9bd723}{
+\index{helper@{helper}!NAME\_\-TO\_\-MIMETYPE@{NAME\_\-TO\_\-MIMETYPE}}
+\index{NAME\_\-TO\_\-MIMETYPE@{NAME\_\-TO\_\-MIMETYPE}!helper@{helper}}
+\subsubsection[{NAME\_\-TO\_\-MIMETYPE}]{\setlength{\rightskip}{0pt plus 5cm}const std::map$<$std::string, std::string$>$ {\bf helper::NAME\_\-TO\_\-MIMETYPE}}}
+\label{namespacehelper_ac0fdcb6f95d20f10e1ee9e9f8c9bd723}
+{\bfseries Initial value:}
+\begin{DoxyCode}
+
+        initialiseNameToMimeType()
+\end{DoxyCode}
+
+
+The map that is used to look up mime types from libav container names. 
+
+
+
+Definition at line 109 of file util\_\-ffmpeg.cpp.
+

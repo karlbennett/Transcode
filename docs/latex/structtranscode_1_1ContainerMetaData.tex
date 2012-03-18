@@ -1,0 +1,96 @@
+\hypertarget{structtranscode_1_1ContainerMetaData}{
+\section{transcode::ContainerMetaData Struct Reference}
+\label{structtranscode_1_1ContainerMetaData}\index{transcode::ContainerMetaData@{transcode::ContainerMetaData}}
+}
+
+
+Struct to hold all the common attributes for a container media type.  
+
+
+
+
+{\ttfamily \#include $<$metadata.hpp$>$}
+
+Inheritance diagram for transcode::ContainerMetaData:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{structtranscode_1_1ContainerMetaData}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{structtranscode_1_1ContainerMetaData_aaecda8bf6a1ebdaaff17275967b5fb40}{ContainerMetaData} (const std::string \&mimeType, const std::string \&desc, const std::vector$<$ \hyperlink{structtranscode_1_1SubtitleMetaData}{SubtitleMetaData} $>$ \&subDets, const std::vector$<$ \hyperlink{structtranscode_1_1AudioMetaData}{AudioMetaData} $>$ \&audioDets, const std::vector$<$ \hyperlink{structtranscode_1_1VideoMetaData}{VideoMetaData} $>$ \&videoDets)
+\begin{DoxyCompactList}\small\item\em Construct a new ContainerDetails struct with the provided mimetype, description, audio, and video details. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{structtranscode_1_1ContainerMetaData_a77a95be207cb93b3299b16b22ab37435}{
+std::string {\bfseries description}}
+\label{structtranscode_1_1ContainerMetaData_a77a95be207cb93b3299b16b22ab37435}
+
+\item 
+\hypertarget{structtranscode_1_1ContainerMetaData_abb6c46a666a473437c91383be3cf0a11}{
+std::vector$<$ \hyperlink{structtranscode_1_1SubtitleMetaData}{SubtitleMetaData} $>$ {\bfseries subtitleDetails}}
+\label{structtranscode_1_1ContainerMetaData_abb6c46a666a473437c91383be3cf0a11}
+
+\item 
+\hypertarget{structtranscode_1_1ContainerMetaData_a3c2ee6eac7be55cb351ae3a9ce0d269e}{
+std::vector$<$ \hyperlink{structtranscode_1_1AudioMetaData}{AudioMetaData} $>$ {\bfseries audioDetails}}
+\label{structtranscode_1_1ContainerMetaData_a3c2ee6eac7be55cb351ae3a9ce0d269e}
+
+\item 
+\hypertarget{structtranscode_1_1ContainerMetaData_a301022de11561b8078dd7869be16884e}{
+std::vector$<$ \hyperlink{structtranscode_1_1VideoMetaData}{VideoMetaData} $>$ {\bfseries videoDetails}}
+\label{structtranscode_1_1ContainerMetaData_a301022de11561b8078dd7869be16884e}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Struct to hold all the common attributes for a container media type. 
+
+Definition at line 122 of file metadata.hpp.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{structtranscode_1_1ContainerMetaData_aaecda8bf6a1ebdaaff17275967b5fb40}{
+\index{transcode::ContainerMetaData@{transcode::ContainerMetaData}!ContainerMetaData@{ContainerMetaData}}
+\index{ContainerMetaData@{ContainerMetaData}!transcode::ContainerMetaData@{transcode::ContainerMetaData}}
+\subsubsection[{ContainerMetaData}]{\setlength{\rightskip}{0pt plus 5cm}transcode::ContainerMetaData::ContainerMetaData (
+\begin{DoxyParamCaption}
+\item[{const std::string \&}]{mimeType, }
+\item[{const std::string \&}]{desc, }
+\item[{const std::vector$<$ {\bf SubtitleMetaData} $>$ \&}]{subDets, }
+\item[{const std::vector$<$ {\bf AudioMetaData} $>$ \&}]{audioDets, }
+\item[{const std::vector$<$ {\bf VideoMetaData} $>$ \&}]{videoDets}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{structtranscode_1_1ContainerMetaData_aaecda8bf6a1ebdaaff17275967b5fb40}
+
+
+Construct a new ContainerDetails struct with the provided mimetype, description, audio, and video details. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mimeType} & -\/ the mimeType for this ContainerDetails struct. \\
+\hline
+{\em desc} & -\/ a description of this container. \\
+\hline
+{\em subDets} & -\/ a list of subtitle details related to the subtitle streams contained within this container. \\
+\hline
+{\em audioDets} & -\/ a list of audio details related to the audio streams contained within this container. \\
+\hline
+{\em videoDets} & -\/ a list of video details related to the video streams contained within this container. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 150 of file metadata.hpp.
+
+
+
+The documentation for this struct was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+src/main/native/metadata.hpp\end{DoxyCompactItemize}

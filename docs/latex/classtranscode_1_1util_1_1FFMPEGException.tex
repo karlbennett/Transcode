@@ -1,0 +1,156 @@
+\hypertarget{classtranscode_1_1util_1_1FFMPEGException}{
+\section{transcode::util::FFMPEGException Class Reference}
+\label{classtranscode_1_1util_1_1FFMPEGException}\index{transcode::util::FFMPEGException@{transcode::util::FFMPEGException}}
+}
+
+
+Exception that is thrown if something goes wrong with the FFMPEG library.  
+
+
+
+
+{\ttfamily \#include $<$util\_\-ffmpeg.hpp$>$}
+
+Inheritance diagram for transcode::util::FFMPEGException:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classtranscode_1_1util_1_1FFMPEGException}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classtranscode_1_1util_1_1FFMPEGException_a3e18fe9f063f97e2bcf3780fd957a8ba}{FFMPEGException} ()  throw ()
+\begin{DoxyCompactList}\small\item\em Default constructor, set message to empty string and error code to 0. \item\end{DoxyCompactList}\item 
+\hyperlink{classtranscode_1_1util_1_1FFMPEGException_ae593dd23fbd854835a78f4adc2c70f90}{FFMPEGException} (const std::string \&msg)  throw ()
+\begin{DoxyCompactList}\small\item\em Instantiate a new \hyperlink{classtranscode_1_1util_1_1FFMPEGException}{FFMPEGException} with the provided error message and set the error code to 0. \item\end{DoxyCompactList}\item 
+\hyperlink{classtranscode_1_1util_1_1FFMPEGException_a07fe05c4f009f2838f9a9e18ff99e607}{FFMPEGException} (const int \&ec)  throw ()
+\begin{DoxyCompactList}\small\item\em Instantiate a new \hyperlink{classtranscode_1_1util_1_1FFMPEGException}{FFMPEGException} with the provided error code and the message set automatically from the error code. \item\end{DoxyCompactList}\item 
+\hyperlink{classtranscode_1_1util_1_1FFMPEGException_a0b38fccbe2fdff8d15b50c28a851cdae}{FFMPEGException} (const std::string \&msg, const int \&ec)  throw ()
+\begin{DoxyCompactList}\small\item\em Instantiate an \hyperlink{classtranscode_1_1util_1_1FFMPEGException}{FFMPEGException} with the provided message and error code. \item\end{DoxyCompactList}\item 
+int \hyperlink{classtranscode_1_1util_1_1FFMPEGException_a08bfd7a8cc1c2dcd5fc54fe700db7806}{getErrorCode} ()
+\begin{DoxyCompactList}\small\item\em Get the error code for this exception. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Exception that is thrown if something goes wrong with the FFMPEG library. 
+
+Definition at line 60 of file util\_\-ffmpeg.hpp.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classtranscode_1_1util_1_1FFMPEGException_a3e18fe9f063f97e2bcf3780fd957a8ba}{
+\index{transcode::util::FFMPEGException@{transcode::util::FFMPEGException}!FFMPEGException@{FFMPEGException}}
+\index{FFMPEGException@{FFMPEGException}!transcode::util::FFMPEGException@{transcode::util::FFMPEGException}}
+\subsubsection[{FFMPEGException}]{\setlength{\rightskip}{0pt plus 5cm}transcode::util::FFMPEGException::FFMPEGException (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)  throw ()\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1FFMPEGException_a3e18fe9f063f97e2bcf3780fd957a8ba}
+
+
+Default constructor, set message to empty string and error code to 0. 
+
+
+
+Definition at line 69 of file util\_\-ffmpeg.hpp.
+
+\hypertarget{classtranscode_1_1util_1_1FFMPEGException_ae593dd23fbd854835a78f4adc2c70f90}{
+\index{transcode::util::FFMPEGException@{transcode::util::FFMPEGException}!FFMPEGException@{FFMPEGException}}
+\index{FFMPEGException@{FFMPEGException}!transcode::util::FFMPEGException@{transcode::util::FFMPEGException}}
+\subsubsection[{FFMPEGException}]{\setlength{\rightskip}{0pt plus 5cm}transcode::util::FFMPEGException::FFMPEGException (
+\begin{DoxyParamCaption}
+\item[{const std::string \&}]{msg}
+\end{DoxyParamCaption}
+)  throw ()\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1FFMPEGException_ae593dd23fbd854835a78f4adc2c70f90}
+
+
+Instantiate a new \hyperlink{classtranscode_1_1util_1_1FFMPEGException}{FFMPEGException} with the provided error message and set the error code to 0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & -\/ the message for this exception. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 79 of file util\_\-ffmpeg.hpp.
+
+\hypertarget{classtranscode_1_1util_1_1FFMPEGException_a07fe05c4f009f2838f9a9e18ff99e607}{
+\index{transcode::util::FFMPEGException@{transcode::util::FFMPEGException}!FFMPEGException@{FFMPEGException}}
+\index{FFMPEGException@{FFMPEGException}!transcode::util::FFMPEGException@{transcode::util::FFMPEGException}}
+\subsubsection[{FFMPEGException}]{\setlength{\rightskip}{0pt plus 5cm}transcode::util::FFMPEGException::FFMPEGException (
+\begin{DoxyParamCaption}
+\item[{const int \&}]{ec}
+\end{DoxyParamCaption}
+)  throw ()\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1FFMPEGException_a07fe05c4f009f2838f9a9e18ff99e607}
+
+
+Instantiate a new \hyperlink{classtranscode_1_1util_1_1FFMPEGException}{FFMPEGException} with the provided error code and the message set automatically from the error code. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ec} & -\/ the FFMPEG error code for this exception. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 89 of file util\_\-ffmpeg.hpp.
+
+\hypertarget{classtranscode_1_1util_1_1FFMPEGException_a0b38fccbe2fdff8d15b50c28a851cdae}{
+\index{transcode::util::FFMPEGException@{transcode::util::FFMPEGException}!FFMPEGException@{FFMPEGException}}
+\index{FFMPEGException@{FFMPEGException}!transcode::util::FFMPEGException@{transcode::util::FFMPEGException}}
+\subsubsection[{FFMPEGException}]{\setlength{\rightskip}{0pt plus 5cm}transcode::util::FFMPEGException::FFMPEGException (
+\begin{DoxyParamCaption}
+\item[{const std::string \&}]{msg, }
+\item[{const int \&}]{ec}
+\end{DoxyParamCaption}
+)  throw ()\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1FFMPEGException_a0b38fccbe2fdff8d15b50c28a851cdae}
+
+
+Instantiate an \hyperlink{classtranscode_1_1util_1_1FFMPEGException}{FFMPEGException} with the provided message and error code. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & -\/ the message for this exception. \\
+\hline
+{\em ec} & -\/ the FFMPEG error code for this exception. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 99 of file util\_\-ffmpeg.hpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classtranscode_1_1util_1_1FFMPEGException_a08bfd7a8cc1c2dcd5fc54fe700db7806}{
+\index{transcode::util::FFMPEGException@{transcode::util::FFMPEGException}!getErrorCode@{getErrorCode}}
+\index{getErrorCode@{getErrorCode}!transcode::util::FFMPEGException@{transcode::util::FFMPEGException}}
+\subsubsection[{getErrorCode}]{\setlength{\rightskip}{0pt plus 5cm}int transcode::util::FFMPEGException::getErrorCode (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classtranscode_1_1util_1_1FFMPEGException_a08bfd7a8cc1c2dcd5fc54fe700db7806}
+
+
+Get the error code for this exception. 
+
+\begin{DoxyReturn}{Returns}
+the error code for this exception. 
+\end{DoxyReturn}
+
+
+Definition at line 111 of file util\_\-ffmpeg.hpp.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+src/main/native/util/\hyperlink{util__ffmpeg_8hpp}{util\_\-ffmpeg.hpp}\end{DoxyCompactItemize}

@@ -1,0 +1,65 @@
+\hypertarget{util__ffmpeg_8hpp}{
+\section{src/main/native/util/util\_\-ffmpeg.hpp File Reference}
+\label{util__ffmpeg_8hpp}\index{src/main/native/util/util\_\-ffmpeg.hpp@{src/main/native/util/util\_\-ffmpeg.hpp}}
+}
+
+
+The FFMPEG utility functions that provide a simple abstraction of the libav API's.  
+
+
+{\ttfamily \#include $<$error.hpp$>$}\par
+{\ttfamily \#include $<$string$>$}\par
+{\ttfamily \#include $<$vector$>$}\par
+{\ttfamily \#include $<$map$>$}\par
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classtranscode_1_1util_1_1FFMPEGException}{transcode::util::FFMPEGException}
+\begin{DoxyCompactList}\small\item\em Exception that is thrown if something goes wrong with the FFMPEG library. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \hyperlink{namespacetranscode}{transcode}
+
+
+\begin{DoxyCompactList}\small\item\em Transcode namespace, all the top level transcode functions and classes are in this namespace. \item\end{DoxyCompactList}
+
+\item 
+namespace \hyperlink{namespacetranscode_1_1util}{transcode::util}
+
+
+\begin{DoxyCompactList}\small\item\em Util namespace, all the utility functions and classes are found within this namespace. \item\end{DoxyCompactList}
+
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std::string \hyperlink{namespacetranscode_1_1util_ac43b28725fca57894665f5775b42111a}{transcode::util::ffmpegErrorMessage} (int errorCode)
+\begin{DoxyCompactList}\small\item\em Below is the implementation of the public API functions. \item\end{DoxyCompactList}\item 
+AVFormatContext $\ast$ \hyperlink{namespacetranscode_1_1util_a65511e44b87092eba02246dd0a6fe103}{transcode::util::retrieveAVFormatContext} (const std::string \&filePath)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Retrieve the AVFormatContext for the provided media file. \item\end{DoxyCompactList}\item 
+std::vector$<$ SubtitleMetaData $>$ \hyperlink{namespacetranscode_1_1util_a5d54bc962ed8a3ce2d592355e476bcdd}{transcode::util::extractSubtitleDetails} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Extract the subtitle details from the provided libav AVFormatContext. \item\end{DoxyCompactList}\item 
+std::vector$<$ AudioMetaData $>$ \hyperlink{namespacetranscode_1_1util_a77ca59f993d80e7f19ea20fdc6143222}{transcode::util::extractAudioDetails} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Extract the audio detail from the provided libav AVFormatContext. \item\end{DoxyCompactList}\item 
+std::vector$<$ VideoMetaData $>$ \hyperlink{namespacetranscode_1_1util_a5755318eb50f620cdc071c7ad23cfff7}{transcode::util::extractVideoDetails} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Extract the video detail from the provided libav AVFormatContext. \item\end{DoxyCompactList}\item 
+ContainerMetaData \hyperlink{namespacetranscode_1_1util_a38d01175f2cce57e6578e5e46cb385e0}{transcode::util::buildContainerDetail} (const AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Build a ContainerDetail struct out of the details in the provided AVFormatContext. \item\end{DoxyCompactList}\item 
+void \hyperlink{namespacetranscode_1_1util_ac6274ea5d31808dd2930981770a3946b}{transcode::util::closeCodecs} (AVFormatContext $\ast$videoFile)  throw (FFMPEGException)
+\begin{DoxyCompactList}\small\item\em Close any codecs that are related to the provided AVFormatContext. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespacetranscode_1_1util_a77b6a70cbe66d3c133266d586a923923}{
+const std::string {\bfseries transcode::util::UNKNOWN} = \char`\"{}Unknown\char`\"{}}
+\label{namespacetranscode_1_1util_a77b6a70cbe66d3c133266d586a923923}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The FFMPEG utility functions that provide a simple abstraction of the libav API's. 
+
+Definition in file \hyperlink{util__ffmpeg_8hpp_source}{util\_\-ffmpeg.hpp}.
+

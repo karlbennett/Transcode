@@ -1,0 +1,69 @@
+\hypertarget{classtranscode_1_1util_1_1FfmpegSingleton}{
+\section{transcode::util::FfmpegSingleton Class Reference}
+\label{classtranscode_1_1util_1_1FfmpegSingleton}\index{transcode::util::FfmpegSingleton@{transcode::util::FfmpegSingleton}}
+}
+
+
+A singleton class that provides all the implementations for the FFMPEG functions.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classtranscode_1_1util_1_1FfmpegSingleton_afcaff88a65a5a7392ef221c6124c7f47}{
+std::string {\bfseries ffmpegErrorMessage} (int errorCode) const }
+\label{classtranscode_1_1util_1_1FfmpegSingleton_afcaff88a65a5a7392ef221c6124c7f47}
+
+\item 
+\hypertarget{classtranscode_1_1util_1_1FfmpegSingleton_a2df8734a7a6b106757b1c9041ed0b3e8}{
+AVFormatContext $\ast$ {\bfseries retrieveAVFormatContext} (const std::string \&filePath) const }
+\label{classtranscode_1_1util_1_1FfmpegSingleton_a2df8734a7a6b106757b1c9041ed0b3e8}
+
+\item 
+\hypertarget{classtranscode_1_1util_1_1FfmpegSingleton_a82ca88208ef34718ee20ee99beb25101}{
+std::vector$<$ \hyperlink{structtranscode_1_1SubtitleMetaData}{SubtitleMetaData} $>$ {\bfseries extractSubtitleDetails} (const AVFormatContext $\ast$videoFile) const }
+\label{classtranscode_1_1util_1_1FfmpegSingleton_a82ca88208ef34718ee20ee99beb25101}
+
+\item 
+\hypertarget{classtranscode_1_1util_1_1FfmpegSingleton_aac69472179a03040d17d072c1987c5ce}{
+std::vector$<$ \hyperlink{structtranscode_1_1AudioMetaData}{AudioMetaData} $>$ {\bfseries extractAudioDetails} (const AVFormatContext $\ast$videoFile) const }
+\label{classtranscode_1_1util_1_1FfmpegSingleton_aac69472179a03040d17d072c1987c5ce}
+
+\item 
+\hypertarget{classtranscode_1_1util_1_1FfmpegSingleton_a7ecd105f56b9ac9e1c619453f4c872f2}{
+std::vector$<$ \hyperlink{structtranscode_1_1VideoMetaData}{VideoMetaData} $>$ {\bfseries extractVideoDetails} (const AVFormatContext $\ast$videoFile) const }
+\label{classtranscode_1_1util_1_1FfmpegSingleton_a7ecd105f56b9ac9e1c619453f4c872f2}
+
+\item 
+\hypertarget{classtranscode_1_1util_1_1FfmpegSingleton_a41251296d417f2751754b5d7f7f6205a}{
+\hyperlink{structtranscode_1_1ContainerMetaData}{ContainerMetaData} {\bfseries buildContainerDetail} (const AVFormatContext $\ast$videoFile) const }
+\label{classtranscode_1_1util_1_1FfmpegSingleton_a41251296d417f2751754b5d7f7f6205a}
+
+\item 
+\hypertarget{classtranscode_1_1util_1_1FfmpegSingleton_a9e30a10b3a4b443dfec543da746bab6e}{
+void {\bfseries closeCodecs} (AVFormatContext $\ast$videoFile) const   throw (FFMPEGException)}
+\label{classtranscode_1_1util_1_1FfmpegSingleton_a9e30a10b3a4b443dfec543da746bab6e}
+
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classtranscode_1_1util_1_1FfmpegSingleton_a37162eb4957bbfec135c6e24857363eb}{
+static const \hyperlink{classtranscode_1_1util_1_1FfmpegSingleton}{FfmpegSingleton} \& {\bfseries getInstance} ()}
+\label{classtranscode_1_1util_1_1FfmpegSingleton_a37162eb4957bbfec135c6e24857363eb}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A singleton class that provides all the implementations for the FFMPEG functions. This class has been created because FFMPEG requires initialisation, so if all function calls are invoked through this singleton it is guaranteed that the initialisation has been carried out and will only ever be carried out once.
+
+The structure of this singleton was taken from here: \href{http://stackoverflow.com/questions/1008019/c-singleton-design-pattern}{\tt http://stackoverflow.com/questions/1008019/c-\/singleton-\/design-\/pattern} 
+
+Definition at line 268 of file util\_\-ffmpeg.cpp.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+src/main/native/util/\hyperlink{util__ffmpeg_8cpp}{util\_\-ffmpeg.cpp}\end{DoxyCompactItemize}
