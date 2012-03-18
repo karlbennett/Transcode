@@ -41,7 +41,7 @@ struct MediaFileMetaData;
  * {@see transcode} namespace should provide what you need so you shouldn't have to
  * look in here.
  */
-namespace utils {
+namespace util {
 
 const std::string UNKNOWN = "Unknown";
 

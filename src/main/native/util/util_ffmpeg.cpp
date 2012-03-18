@@ -117,9 +117,9 @@ const std::map<std::string, std::string> NAME_TO_MIMETYPE =
  * @throws transcode::utils::FFMPEGException if a mimetype cannot be found.
  */
 static std::string findAVMimeType(const CodecID& codecId)
-        throw (transcode::utils::FFMPEGException) {
+        throw (transcode::util::FFMPEGException) {
 
-    std::string mimeType = transcode::utils::get(helper::CODEC_TO_MIMETYPE,
+    std::string mimeType = transcode::util::get(helper::CODEC_TO_MIMETYPE,
             codecId);
 
     if (std::string() == mimeType) {
@@ -129,7 +129,7 @@ static std::string findAVMimeType(const CodecID& codecId)
         errorMessage << "Could not find codec mimetype for codec ID: "
                 << codecId << std::endl;
 
-        throw transcode::utils::FFMPEGException(errorMessage.str());
+        throw transcode::util::FFMPEGException(errorMessage.str());
     }
 
     return mimeType;
@@ -145,12 +145,12 @@ static std::string findAVMimeType(const CodecID& codecId)
  */
 static std::string findContainerMimeType(const std::string& name) {
 
-    std::string mimeType = transcode::utils::get(helper::NAME_TO_MIMETYPE,
+    std::string mimeType = transcode::util::get(helper::NAME_TO_MIMETYPE,
             name);
 
     if (std::string() == mimeType) {
 
-        throw transcode::utils::FFMPEGException(
+        throw transcode::util::FFMPEGException(
                 "Could not find container mimetype for name: " + name);
     }
 
@@ -252,7 +252,7 @@ namespace transcode {
  * {@see transcode} namespace should provide what you need so you shouldn't have to
  * look in here.
  */
-namespace utils {
+namespace util {
 
 /**
  * A singleton class that provides all the implementations for the FFMPEG

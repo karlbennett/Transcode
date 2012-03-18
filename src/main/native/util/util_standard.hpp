@@ -28,7 +28,7 @@ namespace transcode {
  * {@see transcode} namespace should provide what you need so you shouldn't have to
  * look in here.
  */
-namespace utils {
+namespace util {
 
 /**
  * Convenience template to make it easier to get the value out of a constant map.

@@ -7,7 +7,7 @@
 #include <map>
 
 using namespace std;
-using namespace transcode::utils;
+using namespace transcode::util;
 
 const string ONE = "one";
 const string TWO = "two";

@@ -11,7 +11,7 @@
 BOOST_AUTO_TEST_CASE( test_util_file )
 {
 
-    transcode::utils::File file(TEXT_FILE);
+    transcode::util::File file(TEXT_FILE);
 
 	BOOST_CHECK_EQUAL( file.getPath(), TEXT_FILE );
 	BOOST_CHECK_EQUAL( file.getName(), TEXT_NAME );
@@ -26,6 +26,6 @@ BOOST_AUTO_TEST_CASE( test_util_file_on_invalid_file )
 {
 
     BOOST_REQUIRE_THROW(
-            transcode::utils::File file(INVALID_FILE),
-            transcode::utils::FileException );
+            transcode::util::File file(INVALID_FILE),
+            transcode::util::FileException );
 }

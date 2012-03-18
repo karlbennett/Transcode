@@ -29,7 +29,7 @@ namespace transcode {
  * {@see transcode} namespace should provide what you need so you shouldn't have to
  * look in here.
  */
-namespace utils {
+namespace util {
 
 class FileException: public std::exception {
 

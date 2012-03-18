@@ -39,10 +39,10 @@ namespace helper {
  *
  * @return a new File object related to the provided path.
  */
-static transcode::utils::File checkedFile(const std::string& path)
+static transcode::util::File checkedFile(const std::string& path)
         throw (transcode::UtilMediaException) {
 
-    using namespace transcode::utils;
+    using namespace transcode::util;
 
     try {
 
@@ -67,7 +67,7 @@ static transcode::utils::File checkedFile(const std::string& path)
 static AVFormatContext* retrieveCheckedAVFormatContext(
         const std::string& path) throw (transcode::UtilMediaException) {
 
-    using namespace transcode::utils;
+    using namespace transcode::util;
 
     File file = checkedFile(path);
 
@@ -127,7 +127,7 @@ std::vector<SubtitleMetaData> findSubtitleDetails(const std::string& path)
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
     return helper::extractCheckedDetails< std::vector<SubtitleMetaData> >(
-            videoFile, transcode::utils::extractSubtitleDetails);
+            videoFile, transcode::util::extractSubtitleDetails);
 }
 
 std::vector<AudioMetaData> findAudioDetails(const std::string& path)
@@ -136,7 +136,7 @@ std::vector<AudioMetaData> findAudioDetails(const std::string& path)
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
     return helper::extractCheckedDetails< std::vector<AudioMetaData> >(
-            videoFile, transcode::utils::extractAudioDetails);
+            videoFile, transcode::util::extractAudioDetails);
 }
 
 std::vector<VideoMetaData> findVideoDetails(const std::string& path)
@@ -145,7 +145,7 @@ std::vector<VideoMetaData> findVideoDetails(const std::string& path)
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
     return helper::extractCheckedDetails< std::vector<VideoMetaData> >(
-            videoFile, transcode::utils::extractVideoDetails);
+            videoFile, transcode::util::extractVideoDetails);
 }
 
 ContainerMetaData findContainerDetails(const std::string& path)
@@ -154,13 +154,13 @@ ContainerMetaData findContainerDetails(const std::string& path)
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
     return helper::extractCheckedDetails<ContainerMetaData>(
-            videoFile, transcode::utils::buildContainerDetail);
+            videoFile, transcode::util::buildContainerDetail);
 }
 
 MediaFileMetaData findMediaFileDetails(const std::string& path)
         throw (UtilMediaException) {
 
-    using namespace transcode::utils;
+    using namespace transcode::util;
 
     File file = helper::checkedFile(path);
 

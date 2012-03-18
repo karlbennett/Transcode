@@ -22,8 +22,8 @@ AVFormatContext emptyFormatContext;
 BOOST_AUTO_TEST_CASE( test_ffmpeg_error_message )
 {
 
-	BOOST_REQUIRE( transcode::utils::UNKNOWN !=
-	        transcode::utils::ffmpegErrorMessage(0));
+	BOOST_REQUIRE( transcode::util::UNKNOWN !=
+	        transcode::util::ffmpegErrorMessage(0));
 }
 
 /**
@@ -33,8 +33,8 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_error_message )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_error_message_not_found )
 {
 
-    BOOST_REQUIRE( transcode::utils::UNKNOWN ==
-            transcode::utils::ffmpegErrorMessage(1));
+    BOOST_REQUIRE( transcode::util::UNKNOWN ==
+            transcode::util::ffmpegErrorMessage(1));
 }
 
 /**
@@ -45,15 +45,15 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context )
 {
 
     aviFormatContext =
-            transcode::utils::retrieveAVFormatContext(VIDEO_AVI);
+            transcode::util::retrieveAVFormatContext(VIDEO_AVI);
     mkvFormatContext =
-            transcode::utils::retrieveAVFormatContext(VIDEO_MKV);
+            transcode::util::retrieveAVFormatContext(VIDEO_MKV);
     mp4FormatContext =
-            transcode::utils::retrieveAVFormatContext(VIDEO_MP4);
+            transcode::util::retrieveAVFormatContext(VIDEO_MP4);
     ogvFormatContext =
-            transcode::utils::retrieveAVFormatContext(VIDEO_OGV);
+            transcode::util::retrieveAVFormatContext(VIDEO_OGV);
     flvFormatContext =
-            transcode::utils::retrieveAVFormatContext(VIDEO_FLV);
+            transcode::util::retrieveAVFormatContext(VIDEO_FLV);
 }
 
 /**
@@ -63,8 +63,8 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context_empty_string )
 {
 
-    BOOST_REQUIRE_THROW( transcode::utils::retrieveAVFormatContext(""),
-            transcode::utils::FFMPEGException);
+    BOOST_REQUIRE_THROW( transcode::util::retrieveAVFormatContext(""),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -74,8 +74,8 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context_empty_string )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context_invalid_file )
 {
 
-    BOOST_REQUIRE_THROW( transcode::utils::retrieveAVFormatContext(INVALID_FILE),
-            transcode::utils::FFMPEGException);
+    BOOST_REQUIRE_THROW( transcode::util::retrieveAVFormatContext(INVALID_FILE),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -85,8 +85,8 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context_invalid_file )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context_non_media_file )
 {
 
-    BOOST_REQUIRE_THROW( transcode::utils::retrieveAVFormatContext(TEXT_FILE),
-            transcode::utils::FFMPEGException);
+    BOOST_REQUIRE_THROW( transcode::util::retrieveAVFormatContext(TEXT_FILE),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -95,11 +95,11 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context_non_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_subtitles )
 {
-    (void) transcode::utils::extractSubtitleDetails(aviFormatContext);
-    (void) transcode::utils::extractSubtitleDetails(mkvFormatContext);
-    (void) transcode::utils::extractSubtitleDetails(mp4FormatContext);
-    (void) transcode::utils::extractSubtitleDetails(ogvFormatContext);
-    (void) transcode::utils::extractSubtitleDetails(flvFormatContext);
+    (void) transcode::util::extractSubtitleDetails(aviFormatContext);
+    (void) transcode::util::extractSubtitleDetails(mkvFormatContext);
+    (void) transcode::util::extractSubtitleDetails(mp4FormatContext);
+    (void) transcode::util::extractSubtitleDetails(ogvFormatContext);
+    (void) transcode::util::extractSubtitleDetails(flvFormatContext);
 }
 
 /**
@@ -109,8 +109,8 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_subtitles )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_subtitles_from_null )
 {
 
-    BOOST_REQUIRE_THROW( transcode::utils::extractSubtitleDetails(NULL),
-            transcode::utils::FFMPEGException);
+    BOOST_REQUIRE_THROW( transcode::util::extractSubtitleDetails(NULL),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_subtitles_from_empty_format_context )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::utils::extractSubtitleDetails(&emptyFormatContext);
+            transcode::util::extractSubtitleDetails(&emptyFormatContext);
 
     BOOST_CHECK_EQUAL( subtitleMetaData.size(), 0);
 }
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_avi_subtitles )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::utils::extractSubtitleDetails(aviFormatContext);
+            transcode::util::extractSubtitleDetails(aviFormatContext);
 
     testAVISubtitles(subtitleMetaData);
 }
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mkv_subtitles )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::utils::extractSubtitleDetails(mkvFormatContext);
+            transcode::util::extractSubtitleDetails(mkvFormatContext);
 
     testMKVSubtitles(subtitleMetaData);
 }
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mp4_subtitles )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::utils::extractSubtitleDetails(mp4FormatContext);
+            transcode::util::extractSubtitleDetails(mp4FormatContext);
 
     testMP4Subtitles(subtitleMetaData);
 }
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_ogv_subtitles )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::utils::extractSubtitleDetails(ogvFormatContext);
+            transcode::util::extractSubtitleDetails(ogvFormatContext);
 
     testOGVSubtitles(subtitleMetaData);
 }
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_flv_subtitles )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::utils::extractSubtitleDetails(flvFormatContext);
+            transcode::util::extractSubtitleDetails(flvFormatContext);
 
     testFLVSubtitles(subtitleMetaData);
 }
@@ -197,11 +197,11 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_flv_subtitles )
  */
 BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_audio )
 {
-    (void) transcode::utils::extractAudioDetails(aviFormatContext);
-    (void) transcode::utils::extractAudioDetails(mkvFormatContext);
-    (void) transcode::utils::extractAudioDetails(mp4FormatContext);
-    (void) transcode::utils::extractAudioDetails(ogvFormatContext);
-    (void) transcode::utils::extractAudioDetails(flvFormatContext);
+    (void) transcode::util::extractAudioDetails(aviFormatContext);
+    (void) transcode::util::extractAudioDetails(mkvFormatContext);
+    (void) transcode::util::extractAudioDetails(mp4FormatContext);
+    (void) transcode::util::extractAudioDetails(ogvFormatContext);
+    (void) transcode::util::extractAudioDetails(flvFormatContext);
 }
 
 /**
@@ -211,8 +211,8 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_audio )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_audio_from_null )
 {
 
-    BOOST_REQUIRE_THROW( transcode::utils::extractAudioDetails(NULL),
-            transcode::utils::FFMPEGException);
+    BOOST_REQUIRE_THROW( transcode::util::extractAudioDetails(NULL),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_audio_from_empty_format_context )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::utils::extractAudioDetails(&emptyFormatContext);
+            transcode::util::extractAudioDetails(&emptyFormatContext);
 
     BOOST_CHECK_EQUAL( audioMetaData.size(), 0);
 }
@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_avi_audio )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::utils::extractAudioDetails(aviFormatContext);
+            transcode::util::extractAudioDetails(aviFormatContext);
 
     testAVIAudio(audioMetaData);
 }
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mkv_audio )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::utils::extractAudioDetails(mkvFormatContext);
+            transcode::util::extractAudioDetails(mkvFormatContext);
 
     testMKVAudio(audioMetaData);
 }
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mp4_audio )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::utils::extractAudioDetails(mp4FormatContext);
+            transcode::util::extractAudioDetails(mp4FormatContext);
 
     testMP4Audio(audioMetaData);
 }
@@ -275,7 +275,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_ogv_audio )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::utils::extractAudioDetails(ogvFormatContext);
+            transcode::util::extractAudioDetails(ogvFormatContext);
 
     testOGVAudio(audioMetaData);
 }
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_flv_audio )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::utils::extractAudioDetails(flvFormatContext);
+            transcode::util::extractAudioDetails(flvFormatContext);
 
     testFLVAudio(audioMetaData);
 }
@@ -299,11 +299,11 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_flv_audio )
  */
 BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_video )
 {
-    (void) transcode::utils::extractVideoDetails(aviFormatContext);
-    (void) transcode::utils::extractVideoDetails(mkvFormatContext);
-    (void) transcode::utils::extractVideoDetails(mp4FormatContext);
-    (void) transcode::utils::extractVideoDetails(ogvFormatContext);
-    (void) transcode::utils::extractVideoDetails(flvFormatContext);
+    (void) transcode::util::extractVideoDetails(aviFormatContext);
+    (void) transcode::util::extractVideoDetails(mkvFormatContext);
+    (void) transcode::util::extractVideoDetails(mp4FormatContext);
+    (void) transcode::util::extractVideoDetails(ogvFormatContext);
+    (void) transcode::util::extractVideoDetails(flvFormatContext);
 }
 
 /**
@@ -313,8 +313,8 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_video )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_video_from_null )
 {
 
-    BOOST_REQUIRE_THROW( transcode::utils::extractVideoDetails(NULL),
-            transcode::utils::FFMPEGException);
+    BOOST_REQUIRE_THROW( transcode::util::extractVideoDetails(NULL),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -325,7 +325,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_video_from_empty_format_context )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::utils::extractVideoDetails(&emptyFormatContext);
+            transcode::util::extractVideoDetails(&emptyFormatContext);
 
     BOOST_CHECK_EQUAL( videoMetaData.size(), 0);
 }
@@ -338,7 +338,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_avi_video )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::utils::extractVideoDetails(aviFormatContext);
+            transcode::util::extractVideoDetails(aviFormatContext);
 
     testAVIVideo(videoMetaData);
 }
@@ -351,7 +351,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mkv_video )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::utils::extractVideoDetails(mkvFormatContext);
+            transcode::util::extractVideoDetails(mkvFormatContext);
 
     testMKVVideo(videoMetaData);
 }
@@ -364,7 +364,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mp4_video )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::utils::extractVideoDetails(mp4FormatContext);
+            transcode::util::extractVideoDetails(mp4FormatContext);
 
     testMP4Video(videoMetaData);
 }
@@ -377,7 +377,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_ogv_video )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::utils::extractVideoDetails(ogvFormatContext);
+            transcode::util::extractVideoDetails(ogvFormatContext);
 
     testOGVVideo(videoMetaData);
 }
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_flv_video )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::utils::extractVideoDetails(flvFormatContext);
+            transcode::util::extractVideoDetails(flvFormatContext);
 
     testFLVVideo(videoMetaData);
 }
@@ -401,11 +401,11 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_flv_video )
  */
 BOOST_AUTO_TEST_CASE( test_ffmpeg_build_container )
 {
-    (void) transcode::utils::buildContainerDetail(aviFormatContext);
-    (void) transcode::utils::buildContainerDetail(mkvFormatContext);
-    (void) transcode::utils::buildContainerDetail(mp4FormatContext);
-    (void) transcode::utils::buildContainerDetail(ogvFormatContext);
-    (void) transcode::utils::buildContainerDetail(flvFormatContext);
+    (void) transcode::util::buildContainerDetail(aviFormatContext);
+    (void) transcode::util::buildContainerDetail(mkvFormatContext);
+    (void) transcode::util::buildContainerDetail(mp4FormatContext);
+    (void) transcode::util::buildContainerDetail(ogvFormatContext);
+    (void) transcode::util::buildContainerDetail(flvFormatContext);
 }
 
 /**
@@ -415,8 +415,8 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_build_container )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_container_from_null )
 {
 
-    BOOST_REQUIRE_THROW( transcode::utils::buildContainerDetail(NULL),
-            transcode::utils::FFMPEGException);
+    BOOST_REQUIRE_THROW( transcode::util::buildContainerDetail(NULL),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -426,8 +426,8 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_container_from_null )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_container_from_empty_format_context )
 {
 
-    BOOST_REQUIRE_THROW( transcode::utils::buildContainerDetail(&emptyFormatContext),
-            transcode::utils::FFMPEGException);
+    BOOST_REQUIRE_THROW( transcode::util::buildContainerDetail(&emptyFormatContext),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -438,7 +438,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_build_avi_container )
 {
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::utils::buildContainerDetail(aviFormatContext);
+            transcode::util::buildContainerDetail(aviFormatContext);
 
     testAVIContainer(containerMetaData);
 }
@@ -451,7 +451,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_build_mkv_container )
 {
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::utils::buildContainerDetail(mkvFormatContext);
+            transcode::util::buildContainerDetail(mkvFormatContext);
 
     testMKVContainer(containerMetaData);
 }
@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_build_mp4_container )
 {
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::utils::buildContainerDetail(mp4FormatContext);
+            transcode::util::buildContainerDetail(mp4FormatContext);
 
     testMP4Container(containerMetaData);
 }
@@ -477,7 +477,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_build_ogv_container )
 {
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::utils::buildContainerDetail(ogvFormatContext);
+            transcode::util::buildContainerDetail(ogvFormatContext);
 
     testOGVContainer(containerMetaData);
 }
@@ -490,7 +490,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_build_flv_container )
 {
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::utils::buildContainerDetail(flvFormatContext);
+            transcode::util::buildContainerDetail(flvFormatContext);
 
     testFLVContainer(containerMetaData);
 }
@@ -502,11 +502,11 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_build_flv_container )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_close_codecs )
 {
 
-    (void) transcode::utils::closeCodecs(aviFormatContext);
-    (void) transcode::utils::closeCodecs(mkvFormatContext);
-    (void) transcode::utils::closeCodecs(mp4FormatContext);
-    (void) transcode::utils::closeCodecs(ogvFormatContext);
-    (void) transcode::utils::closeCodecs(flvFormatContext);
+    (void) transcode::util::closeCodecs(aviFormatContext);
+    (void) transcode::util::closeCodecs(mkvFormatContext);
+    (void) transcode::util::closeCodecs(mp4FormatContext);
+    (void) transcode::util::closeCodecs(ogvFormatContext);
+    (void) transcode::util::closeCodecs(flvFormatContext);
 }
 
 /**
@@ -515,8 +515,8 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_close_codecs )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_close_codecs_with_null )
 {
 
-    BOOST_REQUIRE_THROW( transcode::utils::closeCodecs(NULL),
-                transcode::utils::FFMPEGException);
+    BOOST_REQUIRE_THROW( transcode::util::closeCodecs(NULL),
+                transcode::util::FFMPEGException);
 }
 
 /**
@@ -526,5 +526,5 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_close_codecs_with_null )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_close_codecs_with_empty_format_context )
 {
 
-    transcode::utils::closeCodecs(&emptyFormatContext);
+    transcode::util::closeCodecs(&emptyFormatContext);
 }
