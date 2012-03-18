@@ -69,53 +69,53 @@ public:
 };
 
 /**
- * Find the subtitle details for the media file at the provided path.
+ * Find the subtitle meta data for the media file at the provided path.
  *
  * @param filePath - the path to the file that will have it's details inspected.
  *
  * @return the subtitle details for the provided media file if possible.
  */
-std::vector<SubtitleMetaData> findSubtitleDetails(const std::string& filePath)
+std::vector<SubtitleMetaData> findSubtitleMetaData(const std::string& filePath)
         throw (UtilMediaException);
 
 /**
- * Find the audio details for the media file at the provided path.
+ * Find the audio meta data for the media file at the provided path.
  *
  * @param filePath - the path to the file that will have it's details inspected.
  *
  * @return the audio details for the provided media file if possible.
  */
-std::vector<AudioMetaData> findAudioDetails(const std::string& filePath)
+std::vector<AudioMetaData> findAudioMetaData(const std::string& filePath)
         throw (UtilMediaException);
 
 /**
- * Find the video details for the media file at the provided path.
+ * Find the video meta data for the media file at the provided path.
  *
  * @param filePath - the path to the file that will have it's details inspected.
  *
  * @return the video details for the provided media file if possible.
  */
-std::vector<VideoMetaData> findVideoDetails(const std::string& filePath)
+std::vector<VideoMetaData> findVideoMetaData(const std::string& filePath)
         throw (UtilMediaException);
 
 /**
- * Find the container details for the media file at the provided path.
+ * Find the container meta data for the media file at the provided path.
  *
  * @param filePath - the path to the file that will have it's details inspected.
  *
  * @return the container details for the provided media file if possible.
  */
-ContainerMetaData findContainerDetails(const std::string& filePath)
+ContainerMetaData findContainerMetaData(const std::string& filePath)
         throw (UtilMediaException);
 
 /**
- * Find the details for the media file at the provided path.
+ * Find the meta data for the media file at the provided path.
  *
  * @param filePath - the path to the file that will have it's details inspected.
  *
  * @return the details for the provided media file if possible.
  */
-MediaFileMetaData findMediaFileDetails(const std::string& filePath)
+MediaFileMetaData findMediaFileMetaData(const std::string& filePath)
         throw (UtilMediaException);
 
 } /* namespace util */

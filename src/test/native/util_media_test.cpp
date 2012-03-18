@@ -11,11 +11,11 @@
  */
 BOOST_AUTO_TEST_CASE( test_find_subtitles )
 {
-    (void) transcode::util::findSubtitleDetails(VIDEO_AVI);
-    (void) transcode::util::findSubtitleDetails(VIDEO_MKV);
-    (void) transcode::util::findSubtitleDetails(VIDEO_MP4);
-    (void) transcode::util::findSubtitleDetails(VIDEO_OGV);
-    (void) transcode::util::findSubtitleDetails(VIDEO_FLV);
+    (void) transcode::util::findSubtitleMetaData(VIDEO_AVI);
+    (void) transcode::util::findSubtitleMetaData(VIDEO_MKV);
+    (void) transcode::util::findSubtitleMetaData(VIDEO_MP4);
+    (void) transcode::util::findSubtitleMetaData(VIDEO_OGV);
+    (void) transcode::util::findSubtitleMetaData(VIDEO_FLV);
 }
 
 /**
@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( test_find_subtitles )
 n*/
 BOOST_AUTO_TEST_CASE( test_find_subtitles_for_empty_string )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findSubtitleDetails(""),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findSubtitleMetaData(""),
             transcode::util::UtilMediaException);
 }
 
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( test_find_subtitles_for_empty_string )
 BOOST_AUTO_TEST_CASE( test_find_subtitles_for_invalid_media_file )
 {
     BOOST_REQUIRE_THROW(
-            (void) transcode::util::findSubtitleDetails("file does not exist"),
+            (void) transcode::util::findSubtitleMetaData("file does not exist"),
             transcode::util::UtilMediaException);
 }
 
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( test_find_subtitles_for_invalid_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_find_subtitles_for_non_media_file )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findSubtitleDetails(TEXT_FILE),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findSubtitleMetaData(TEXT_FILE),
             transcode::util::UtilMediaException);
 }
 
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( test_find_avi_subtitles )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::util::findSubtitleDetails(VIDEO_AVI);
+            transcode::util::findSubtitleMetaData(VIDEO_AVI);
 
     testAVISubtitles(subtitleMetaData);
 }
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE( test_find_mkv_subtitles )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::util::findSubtitleDetails(VIDEO_MKV);
+            transcode::util::findSubtitleMetaData(VIDEO_MKV);
 
     testMKVSubtitles(subtitleMetaData);
 }
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_subtitles )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::util::findSubtitleDetails(VIDEO_MP4);
+            transcode::util::findSubtitleMetaData(VIDEO_MP4);
 
     testMP4Subtitles(subtitleMetaData);
 }
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( test_find_ogv_subtitles )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::util::findSubtitleDetails(VIDEO_OGV);
+            transcode::util::findSubtitleMetaData(VIDEO_OGV);
 
     testOGVSubtitles(subtitleMetaData);
 }
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE( test_find_flv_subtitles )
 {
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::util::findSubtitleDetails(VIDEO_FLV);
+            transcode::util::findSubtitleMetaData(VIDEO_FLV);
 
     testFLVSubtitles(subtitleMetaData);
 }
@@ -114,11 +114,11 @@ BOOST_AUTO_TEST_CASE( test_find_flv_subtitles )
  */
 BOOST_AUTO_TEST_CASE( test_find_audio )
 {
-    (void) transcode::util::findAudioDetails(VIDEO_AVI);
-    (void) transcode::util::findAudioDetails(VIDEO_MKV);
-    (void) transcode::util::findAudioDetails(VIDEO_MP4);
-    (void) transcode::util::findAudioDetails(VIDEO_OGV);
-    (void) transcode::util::findAudioDetails(VIDEO_FLV);
+    (void) transcode::util::findAudioMetaData(VIDEO_AVI);
+    (void) transcode::util::findAudioMetaData(VIDEO_MKV);
+    (void) transcode::util::findAudioMetaData(VIDEO_MP4);
+    (void) transcode::util::findAudioMetaData(VIDEO_OGV);
+    (void) transcode::util::findAudioMetaData(VIDEO_FLV);
 }
 
 /**
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE( test_find_audio )
 n*/
 BOOST_AUTO_TEST_CASE( test_find_audio_for_empty_string )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findAudioDetails(""),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findAudioMetaData(""),
             transcode::util::UtilMediaException);
 }
 
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE( test_find_audio_for_empty_string )
 BOOST_AUTO_TEST_CASE( test_find_audio_for_invalid_media_file )
 {
     BOOST_REQUIRE_THROW(
-            (void) transcode::util::findAudioDetails("file does not exist"),
+            (void) transcode::util::findAudioMetaData("file does not exist"),
             transcode::util::UtilMediaException);
 }
 
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_find_audio_for_invalid_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_find_audio_for_non_media_file )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findAudioDetails(TEXT_FILE),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findAudioMetaData(TEXT_FILE),
             transcode::util::UtilMediaException);
 }
 
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE( test_find_avi_audio )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::util::findAudioDetails(VIDEO_AVI);
+            transcode::util::findAudioMetaData(VIDEO_AVI);
 
     testAVIAudio(audioMetaData);
 }
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE( test_find_mkv_audio )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::util::findAudioDetails(VIDEO_MKV);
+            transcode::util::findAudioMetaData(VIDEO_MKV);
 
     testMKVAudio(audioMetaData);
 }
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_audio )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::util::findAudioDetails(VIDEO_MP4);
+            transcode::util::findAudioMetaData(VIDEO_MP4);
 
     testMP4Audio(audioMetaData);
 }
@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE( test_find_ogv_audio )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::util::findAudioDetails(VIDEO_OGV);
+            transcode::util::findAudioMetaData(VIDEO_OGV);
 
     testOGVAudio(audioMetaData);
 }
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_CASE( test_find_flv_audio )
 {
 
     std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::util::findAudioDetails(VIDEO_FLV);
+            transcode::util::findAudioMetaData(VIDEO_FLV);
 
     testFLVAudio(audioMetaData);
 }
@@ -217,11 +217,11 @@ BOOST_AUTO_TEST_CASE( test_find_flv_audio )
  */
 BOOST_AUTO_TEST_CASE( test_find_video )
 {
-    (void) transcode::util::findVideoDetails(VIDEO_AVI);
-    (void) transcode::util::findVideoDetails(VIDEO_MKV);
-    (void) transcode::util::findVideoDetails(VIDEO_MP4);
-    (void) transcode::util::findVideoDetails(VIDEO_OGV);
-    (void) transcode::util::findVideoDetails(VIDEO_FLV);
+    (void) transcode::util::findVideoMetaData(VIDEO_AVI);
+    (void) transcode::util::findVideoMetaData(VIDEO_MKV);
+    (void) transcode::util::findVideoMetaData(VIDEO_MP4);
+    (void) transcode::util::findVideoMetaData(VIDEO_OGV);
+    (void) transcode::util::findVideoMetaData(VIDEO_FLV);
 }
 
 /**
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE( test_find_video )
 n*/
 BOOST_AUTO_TEST_CASE( test_find_video_for_empty_string )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findVideoDetails(""),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findVideoMetaData(""),
             transcode::util::UtilMediaException);
 }
 
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE( test_find_video_for_empty_string )
 BOOST_AUTO_TEST_CASE( test_find_video_for_invalid_media_file )
 {
     BOOST_REQUIRE_THROW(
-            (void) transcode::util::findVideoDetails("file does not exist"),
+            (void) transcode::util::findVideoMetaData("file does not exist"),
             transcode::util::UtilMediaException);
 }
 
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE( test_find_video_for_invalid_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_find_video_for_non_media_file )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findVideoDetails(TEXT_FILE),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findVideoMetaData(TEXT_FILE),
             transcode::util::UtilMediaException);
 }
 
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE( test_find_avi_video )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::util::findVideoDetails(VIDEO_AVI);
+            transcode::util::findVideoMetaData(VIDEO_AVI);
 
     testAVIVideo(videoMetaData);
 }
@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE( test_find_mkv_video )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::util::findVideoDetails(VIDEO_MKV);
+            transcode::util::findVideoMetaData(VIDEO_MKV);
 
     testMKVVideo(videoMetaData);
 }
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_video )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::util::findVideoDetails(VIDEO_MP4);
+            transcode::util::findVideoMetaData(VIDEO_MP4);
 
     testMP4Video(videoMetaData);
 }
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE( test_find_ogv_video )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::util::findVideoDetails(VIDEO_OGV);
+            transcode::util::findVideoMetaData(VIDEO_OGV);
 
     testOGVVideo(videoMetaData);
 }
@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE( test_find_flv_video )
 {
 
     std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::util::findVideoDetails(VIDEO_FLV);
+            transcode::util::findVideoMetaData(VIDEO_FLV);
 
     testFLVVideo(videoMetaData);
 }
@@ -321,11 +321,11 @@ BOOST_AUTO_TEST_CASE( test_find_flv_video )
  */
 BOOST_AUTO_TEST_CASE( test_find_container )
 {
-    (void) transcode::util::findContainerDetails(VIDEO_AVI);
-    (void) transcode::util::findContainerDetails(VIDEO_MKV);
-    (void) transcode::util::findContainerDetails(VIDEO_MP4);
-    (void) transcode::util::findContainerDetails(VIDEO_OGV);
-    (void) transcode::util::findContainerDetails(VIDEO_FLV);
+    (void) transcode::util::findContainerMetaData(VIDEO_AVI);
+    (void) transcode::util::findContainerMetaData(VIDEO_MKV);
+    (void) transcode::util::findContainerMetaData(VIDEO_MP4);
+    (void) transcode::util::findContainerMetaData(VIDEO_OGV);
+    (void) transcode::util::findContainerMetaData(VIDEO_FLV);
 }
 
 /**
@@ -334,7 +334,7 @@ BOOST_AUTO_TEST_CASE( test_find_container )
 n*/
 BOOST_AUTO_TEST_CASE( test_find_container_for_empty_string )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findContainerDetails(""),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findContainerMetaData(""),
             transcode::util::UtilMediaException);
 }
 
@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE( test_find_container_for_empty_string )
 BOOST_AUTO_TEST_CASE( test_find_container_for_invalid_media_file )
 {
     BOOST_REQUIRE_THROW(
-            (void) transcode::util::findContainerDetails("file does not exist"),
+            (void) transcode::util::findContainerMetaData("file does not exist"),
             transcode::util::UtilMediaException);
 }
 
@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE( test_find_container_for_invalid_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_find_container_for_non_media_file )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findContainerDetails(TEXT_FILE),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findContainerMetaData(TEXT_FILE),
             transcode::util::UtilMediaException);
 }
 
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE( test_find_avi_container )
 {
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::util::findContainerDetails(VIDEO_AVI);
+            transcode::util::findContainerMetaData(VIDEO_AVI);
 
     testAVIContainer(containerMetaData);
 }
@@ -378,7 +378,7 @@ BOOST_AUTO_TEST_CASE( test_find_mkv_container )
 {
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::util::findContainerDetails(VIDEO_MKV);
+            transcode::util::findContainerMetaData(VIDEO_MKV);
 
     testMKVContainer(containerMetaData);
 }
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_container )
 {
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::util::findContainerDetails(VIDEO_MP4);
+            transcode::util::findContainerMetaData(VIDEO_MP4);
 
     testMP4Container(containerMetaData);
 }
@@ -402,7 +402,7 @@ BOOST_AUTO_TEST_CASE( test_find_ogv_container )
 {
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::util::findContainerDetails(VIDEO_OGV);
+            transcode::util::findContainerMetaData(VIDEO_OGV);
 
     testOGVContainer(containerMetaData);
 }
@@ -414,7 +414,7 @@ BOOST_AUTO_TEST_CASE( test_find_flv_container )
 {
 
     transcode::ContainerMetaData containerMetaData =
-            transcode::util::findContainerDetails(VIDEO_FLV);
+            transcode::util::findContainerMetaData(VIDEO_FLV);
 
     testFLVContainer(containerMetaData);
 }
@@ -424,11 +424,11 @@ BOOST_AUTO_TEST_CASE( test_find_flv_container )
  */
 BOOST_AUTO_TEST_CASE( test_open_media_files )
 {
-    (void) transcode::util::findMediaFileDetails(VIDEO_AVI);
-    (void) transcode::util::findMediaFileDetails(VIDEO_MKV);
-    (void) transcode::util::findMediaFileDetails(VIDEO_MP4);
-    (void) transcode::util::findMediaFileDetails(VIDEO_OGV);
-    (void) transcode::util::findMediaFileDetails(VIDEO_FLV);
+    (void) transcode::util::findMediaFileMetaData(VIDEO_AVI);
+    (void) transcode::util::findMediaFileMetaData(VIDEO_MKV);
+    (void) transcode::util::findMediaFileMetaData(VIDEO_MP4);
+    (void) transcode::util::findMediaFileMetaData(VIDEO_OGV);
+    (void) transcode::util::findMediaFileMetaData(VIDEO_FLV);
 }
 
 /**
@@ -437,7 +437,7 @@ BOOST_AUTO_TEST_CASE( test_open_media_files )
  */
 BOOST_AUTO_TEST_CASE( test_open_empty_string )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findMediaFileDetails(""),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findMediaFileMetaData(""),
             transcode::util::UtilMediaException);
 }
 
@@ -447,7 +447,7 @@ BOOST_AUTO_TEST_CASE( test_open_empty_string )
  */
 BOOST_AUTO_TEST_CASE( test_open_invalid_media_file )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findMediaFileDetails(INVALID_FILE),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findMediaFileMetaData(INVALID_FILE),
             transcode::util::UtilMediaException);
 }
 
@@ -457,7 +457,7 @@ BOOST_AUTO_TEST_CASE( test_open_invalid_media_file )
  */
 BOOST_AUTO_TEST_CASE( test_open_non_media_file )
 {
-    BOOST_REQUIRE_THROW( (void) transcode::util::findMediaFileDetails(TEXT_FILE),
+    BOOST_REQUIRE_THROW( (void) transcode::util::findMediaFileMetaData(TEXT_FILE),
             transcode::util::UtilMediaException);
 }
 
@@ -467,7 +467,7 @@ BOOST_AUTO_TEST_CASE( test_open_non_media_file )
 BOOST_AUTO_TEST_CASE( test_find_avi_media_file_details )
 {
 
-    transcode::MediaFileMetaData medaFile = transcode::util::findMediaFileDetails(
+    transcode::MediaFileMetaData medaFile = transcode::util::findMediaFileMetaData(
             VIDEO_AVI);
 
     BOOST_CHECK_EQUAL( medaFile.name, VIDEO_AVI_NAME);
@@ -483,7 +483,7 @@ BOOST_AUTO_TEST_CASE( test_find_avi_media_file_details )
 BOOST_AUTO_TEST_CASE( test_find_mkv_media_file_details )
 {
 
-    transcode::MediaFileMetaData medaFile = transcode::util::findMediaFileDetails(
+    transcode::MediaFileMetaData medaFile = transcode::util::findMediaFileMetaData(
             VIDEO_MKV);
 
     BOOST_CHECK_EQUAL( medaFile.name, VIDEO_MKV_NAME);
@@ -505,7 +505,7 @@ BOOST_AUTO_TEST_CASE( test_find_mkv_media_file_details )
 BOOST_AUTO_TEST_CASE( test_find_mp4_media_file_details )
 {
 
-    transcode::MediaFileMetaData medaFile = transcode::util::findMediaFileDetails(
+    transcode::MediaFileMetaData medaFile = transcode::util::findMediaFileMetaData(
             VIDEO_MP4);
 
     BOOST_CHECK_EQUAL( medaFile.name, VIDEO_MP4_NAME);
@@ -527,7 +527,7 @@ BOOST_AUTO_TEST_CASE( test_find_mp4_media_file_details )
 BOOST_AUTO_TEST_CASE( test_find_ogv_media_file_details )
 {
 
-    transcode::MediaFileMetaData medaFile = transcode::util::findMediaFileDetails(
+    transcode::MediaFileMetaData medaFile = transcode::util::findMediaFileMetaData(
             VIDEO_OGV);
 
     BOOST_CHECK_EQUAL( medaFile.name, VIDEO_OGV_NAME);
@@ -549,7 +549,7 @@ BOOST_AUTO_TEST_CASE( test_find_ogv_media_file_details )
 BOOST_AUTO_TEST_CASE( test_find_flv_media_file_details )
 {
 
-    transcode::MediaFileMetaData medaFile = transcode::util::findMediaFileDetails(
+    transcode::MediaFileMetaData medaFile = transcode::util::findMediaFileMetaData(
             VIDEO_FLV);
 
     BOOST_CHECK_EQUAL( medaFile.name, VIDEO_FLV_NAME);
