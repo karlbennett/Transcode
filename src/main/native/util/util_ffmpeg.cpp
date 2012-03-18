@@ -376,7 +376,7 @@ FfmpegSingleton::FfmpegSingleton() {
     av_register_all();
 
     // Set the log level to quiet to stop any warnings.
-    av_log_set_level(AV_LOG_QUIET);
+    av_log_set_level(AV_LOG_ERROR);
 }
 
 std::string FfmpegSingleton::ffmpegErrorMessage(int errorCode) const {
