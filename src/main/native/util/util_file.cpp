@@ -10,7 +10,25 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
+/**
+ * @file util_file.cpp
+ *
+ * The implementation for the util_file.hpp functions and
+ * classes.
+ */
+
+/**
+ * Transcode namespace, all the top level transcode functions and classes are in
+ * this namespace. So this namespace holds officially public API.
+ */
 namespace transcode {
+
+/**
+ * Util namespace, all the utility functions and classes are found within this
+ * namespace. You might find something useful here but hopefully everything in the
+ * {@see transcode} namespace should provide what you need so you shouldn't have to
+ * look in here.
+ */
 namespace utils {
 
 File::File(std::string path) throw (FileException) :

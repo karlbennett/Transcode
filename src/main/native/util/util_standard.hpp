@@ -10,7 +10,24 @@
 
 #include <map>
 
+/**
+ * @file util_standard.hpp
+ *
+ * An API that provided utility functions to help simplify some usages of the STL.
+ */
+
+/**
+ * Transcode namespace, all the top level transcode functions and classes are in
+ * this namespace. So this namespace holds officially public API.
+ */
 namespace transcode {
+
+/**
+ * Util namespace, all the utility functions and classes are found within this
+ * namespace. You might find something useful here but hopefully everything in the
+ * {@see transcode} namespace should provide what you need so you shouldn't have to
+ * look in here.
+ */
 namespace utils {
 
 /**

@@ -24,6 +24,17 @@ extern "C" {
 
 #include <tr1/functional>
 
+/**
+ * @file util_ffmpeg.cpp
+ *
+ * The implementation for the util_ffmpeg.hpp functions.
+ * The majority of the implementation is contained within the
+ * {@see transcode::utils::FfmpegSingleton} class.
+ */
+
+/**
+ * Helper namespace, all helper functions and classes are found here.
+ */
 namespace helper {
 
 static std::map<CodecID, std::string> initialiseCodecToMimeType() {
@@ -147,6 +158,9 @@ static std::string findContainerMimeType(const std::string& name) {
 }
 }
 
+/**
+ * Callback namespace, all callback functions are found here.
+ */
 namespace callback {
 
 /**
@@ -226,7 +240,18 @@ static transcode::VideoMetaData extractVideoDetail(const AVStream& stream) {
 
 }
 
+/**
+ * Transcode namespace, all the top level transcode functions and classes are in
+ * this namespace. So this namespace holds officially public API.
+ */
 namespace transcode {
+
+/**
+ * Util namespace, all the utility functions and classes are found within this
+ * namespace. You might find something useful here but hopefully everything in the
+ * {@see transcode} namespace should provide what you need so you shouldn't have to
+ * look in here.
+ */
 namespace utils {
 
 /**

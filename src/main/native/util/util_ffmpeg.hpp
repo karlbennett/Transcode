@@ -14,8 +14,19 @@
 #include <vector>
 #include <map>
 
+/**
+ * @file util_ffmpeg.hpp
+ *
+ * The FFMPEG utility functions that provide a simple
+ * abstraction of the libav API's.
+ */
+
 struct AVFormatContext;
 
+/**
+ * Transcode namespace, all the top level transcode functions and classes are in
+ * this namespace. So this namespace holds officially public API.
+ */
 namespace transcode {
 
 struct SubtitleMetaData;
@@ -24,6 +35,12 @@ struct VideoMetaData;
 struct ContainerMetaData;
 struct MediaFileMetaData;
 
+/**
+ * Util namespace, all the untility functions and classes are found within this
+ * namespace. You might find something useful here but hopefully everything in the
+ * {@see transcode} namespace should provide what you need so you shouldn't have to
+ * look in here.
+ */
 namespace utils {
 
 const std::string UNKNOWN = "Unknown";

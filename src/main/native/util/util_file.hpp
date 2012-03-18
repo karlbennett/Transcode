@@ -11,7 +11,24 @@
 #include <string>
 #include <exception>
 
+/**
+ * @file util_file.hpp
+ *
+ * A file API that provides a simplification of C++ file access.
+ */
+
+/**
+ * Transcode namespace, all the top level transcode functions and classes are in
+ * this namespace. So this namespace holds officially public API.
+ */
 namespace transcode {
+
+/**
+ * Util namespace, all the utility functions and classes are found within this
+ * namespace. You might find something useful here but hopefully everything in the
+ * {@see transcode} namespace should provide what you need so you shouldn't have to
+ * look in here.
+ */
 namespace utils {
 
 class FileException: public std::exception {

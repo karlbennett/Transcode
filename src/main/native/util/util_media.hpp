@@ -15,6 +15,17 @@
 #include <vector>
 #include <boost/rational.hpp>
 
+/**
+ * @file util_media_ffmpeg.hpp
+ *
+ * A simple API for accessing the meta data and manipulation of media
+ * files.
+ */
+
+/**
+ * Transcode namespace, all the top level transcode functions and classes are in
+ * this namespace. So this namespace holds officially public API.
+ */
 namespace transcode {
 
 struct SubtitleMetaData;

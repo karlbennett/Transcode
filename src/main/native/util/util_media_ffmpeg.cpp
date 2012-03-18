@@ -20,6 +20,15 @@ extern "C" {
 #include <vector>
 #include <tr1/functional>
 
+/**
+ * @file util_media_ffmpeg.cpp
+ *
+ * An FFMPEG based implementation of the util_media.hpp API.
+ */
+
+/**
+ * Helper namespace, all helper functions and classes are found here.
+ */
 namespace helper {
 
 /**
@@ -106,6 +115,10 @@ template<typename T> T extractCheckedDetails(
 
 }
 
+/**
+ * Transcode namespace, all the top level transcode functions and classes are in
+ * this namespace. So this namespace holds officially public API.
+ */
 namespace transcode {
 
 std::vector<SubtitleMetaData> findSubtitleDetails(const std::string& path)
