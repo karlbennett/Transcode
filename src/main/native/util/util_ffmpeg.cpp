@@ -182,13 +182,13 @@ static std::string extractLanguage(const AVStream& stream) {
 }
 
 /**
- * Extract the subtitle detail from the provided libav AVStream.
+ * Extract the subtitle meta data from the provided libav AVStream.
  *
- * @param stream - the av stream that contains the relevant subtitle details.
+ * @param stream - the av stream that contains the relevant subtitle meta data.
  *
- * @return a subtitle details struct populated from values within the provided codec.
+ * @return a subtitle meta data struct populated from values within the provided codec.
  */
-static transcode::SubtitleMetaData extractSubtitleDetail(
+static transcode::SubtitleMetaData extractSubtitleMetaData(
         const AVStream& stream) {
 
     AVCodecContext *codec = stream.codec;
@@ -202,13 +202,13 @@ static transcode::SubtitleMetaData extractSubtitleDetail(
 }
 
 /**
- * Extract the audio detail from the provided libav AVStream.
+ * Extract the audio meta data from the provided libav AVStream.
  *
- * @param stream - the av stream that contains the relevant audio details.
+ * @param stream - the av stream that contains the relevant audio meta data.
  *
- * @return an audio details struct populated from values within the provided codec.
+ * @return an audio meta data struct populated from values within the provided codec.
  */
-static transcode::AudioMetaData extractAudioDetail(const AVStream& stream) {
+static transcode::AudioMetaData extractAudioMetaData(const AVStream& stream) {
 
     AVCodecContext *codec = stream.codec;
 
@@ -222,13 +222,13 @@ static transcode::AudioMetaData extractAudioDetail(const AVStream& stream) {
 }
 
 /**
- * Extract the video detail from the provided libav AVStream.
+ * Extract the video meta data from the provided libav AVStream.
  *
- * @param stream - the av stream that contains the relevant video details.
+ * @param stream - the av stream that contains the relevant video meta data.
  *
- * @return a video details struct populated from values within the provided codec.
+ * @return a video meta data struct populated from values within the provided codec.
  */
-static transcode::VideoMetaData extractVideoDetail(const AVStream& stream) {
+static transcode::VideoMetaData extractVideoMetaData(const AVStream& stream) {
 
     AVCodecContext *codec = stream.codec;
 
@@ -318,18 +318,20 @@ static void checkFormatContext(const AVFormatContext *formatContext) {
 }
 
 /**
- * Extract the media details of the given type from the libav AVFormatContext struct
- * using the provided get details function.
+ * Extract the media meta data of the given type from the libav AVFormatContext struct
+ * using the provided get meta data function.
  *
- * @param videoFile - the av format context that contains the audio details to extract.
+ * @param videoFile - the av format context that contains the audio meta data to
+ *          extract.
  * @param mediaType - the type of media stream that should have it's codec inspected.
- * @param detailsCallback - the function to use to get the correct details out of the codec.
+ * @param metadataCallback - the function to use to get the correct meta data out of
+ *          the codec.
  *
- * @return a vector containing all the extracted details.
+ * @return a vector containing all the extracted meta data.
  */
-template<typename T> std::vector<T> extractDetails(
+template<typename T> std::vector<T> extractMetaData(
         const AVFormatContext *videoFile, AVMediaType mediatype,
-        std::tr1::function<T(const AVStream&)> detailsCallback) {
+        std::tr1::function<T(const AVStream&)> metadataCallback) {
 
     checkFormatContext(videoFile);
 
@@ -358,7 +360,7 @@ template<typename T> std::vector<T> extractDetails(
         // construct a struct of the requested type.
         if (codecType == mediatype) {
 
-            details.push_back(detailsCallback(*stream));
+            details.push_back(metadataCallback(*stream));
         }
     }
 
@@ -417,22 +419,22 @@ AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
 std::vector<SubtitleMetaData> FfmpegSingleton::extractSubtitleDetails(
         const AVFormatContext *videoFile) const {
 
-    return extractDetails<SubtitleMetaData>(videoFile, AVMEDIA_TYPE_SUBTITLE,
-            callback::extractSubtitleDetail);
+    return extractMetaData<SubtitleMetaData>(videoFile, AVMEDIA_TYPE_SUBTITLE,
+            callback::extractSubtitleMetaData);
 }
 
 std::vector<AudioMetaData> FfmpegSingleton::extractAudioDetails(
         const AVFormatContext *videoFile) const {
 
-    return extractDetails<AudioMetaData>(videoFile, AVMEDIA_TYPE_AUDIO,
-            callback::extractAudioDetail);
+    return extractMetaData<AudioMetaData>(videoFile, AVMEDIA_TYPE_AUDIO,
+            callback::extractAudioMetaData);
 }
 
 std::vector<VideoMetaData> FfmpegSingleton::extractVideoDetails(
         const AVFormatContext *videoFile) const {
 
-    return extractDetails<VideoMetaData>(videoFile, AVMEDIA_TYPE_VIDEO,
-            callback::extractVideoDetail);
+    return extractMetaData<VideoMetaData>(videoFile, AVMEDIA_TYPE_VIDEO,
+            callback::extractVideoMetaData);
 }
 
 ContainerMetaData FfmpegSingleton::buildContainerDetail(

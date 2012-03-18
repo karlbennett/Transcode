@@ -73,7 +73,7 @@ public:
  *
  * @param filePath - the path to the file that will have it's details inspected.
  *
- * @return the subtitle details for the provided media file if possible.
+ * @return the subtitle meta data for the provided media file if possible.
  */
 std::vector<SubtitleMetaData> findSubtitleMetaData(const std::string& filePath)
         throw (UtilMediaException);
@@ -83,7 +83,7 @@ std::vector<SubtitleMetaData> findSubtitleMetaData(const std::string& filePath)
  *
  * @param filePath - the path to the file that will have it's details inspected.
  *
- * @return the audio details for the provided media file if possible.
+ * @return the audio meta data for the provided media file if possible.
  */
 std::vector<AudioMetaData> findAudioMetaData(const std::string& filePath)
         throw (UtilMediaException);
@@ -93,7 +93,7 @@ std::vector<AudioMetaData> findAudioMetaData(const std::string& filePath)
  *
  * @param filePath - the path to the file that will have it's details inspected.
  *
- * @return the video details for the provided media file if possible.
+ * @return the video meta data for the provided media file if possible.
  */
 std::vector<VideoMetaData> findVideoMetaData(const std::string& filePath)
         throw (UtilMediaException);
@@ -103,7 +103,7 @@ std::vector<VideoMetaData> findVideoMetaData(const std::string& filePath)
  *
  * @param filePath - the path to the file that will have it's details inspected.
  *
- * @return the container details for the provided media file if possible.
+ * @return the container meta data for the provided media file if possible.
  */
 ContainerMetaData findContainerMetaData(const std::string& filePath)
         throw (UtilMediaException);
@@ -113,7 +113,7 @@ ContainerMetaData findContainerMetaData(const std::string& filePath)
  *
  * @param filePath - the path to the file that will have it's details inspected.
  *
- * @return the details for the provided media file if possible.
+ * @return the meta data for the provided media file if possible.
  */
 MediaFileMetaData findMediaFileMetaData(const std::string& filePath)
         throw (UtilMediaException);

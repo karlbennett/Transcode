@@ -84,17 +84,17 @@ static AVFormatContext* retrieveCheckedAVFormatContext(
 }
 
 /**
- * Helper template used to wrap an extract details function so that
+ * Helper template used to wrap an extract meta data function so that
  * it's exception can be converted to a UtilMediaException.
  *
  * @param formatContext - the format context that will be passed to
- *      the extract details function.
+ *      the extract meta data function.
  * @param detailsCallback - the function that will be called with
  *      the format context.
  *
  * @return a populated construct of the requested type.
  */
-template<typename T> T extractCheckedDetails(
+template<typename T> T extractCheckedMetaData(
         const AVFormatContext *formatContext,
         std::tr1::function<T(const AVFormatContext*)> detailsCallback)
                 throw (transcode::util::UtilMediaException) {
@@ -134,7 +134,7 @@ std::vector<SubtitleMetaData> findSubtitleMetaData(const std::string& path)
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
-    return helper::extractCheckedDetails< std::vector<SubtitleMetaData> >(
+    return helper::extractCheckedMetaData< std::vector<SubtitleMetaData> >(
             videoFile, transcode::util::extractSubtitleDetails);
 }
 
@@ -143,7 +143,7 @@ std::vector<AudioMetaData> findAudioMetaData(const std::string& path)
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
-    return helper::extractCheckedDetails< std::vector<AudioMetaData> >(
+    return helper::extractCheckedMetaData< std::vector<AudioMetaData> >(
             videoFile, transcode::util::extractAudioDetails);
 }
 
@@ -152,7 +152,7 @@ std::vector<VideoMetaData> findVideoMetaData(const std::string& path)
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
-    return helper::extractCheckedDetails< std::vector<VideoMetaData> >(
+    return helper::extractCheckedMetaData< std::vector<VideoMetaData> >(
             videoFile, transcode::util::extractVideoDetails);
 }
 
@@ -161,7 +161,7 @@ ContainerMetaData findContainerMetaData(const std::string& path)
 
     AVFormatContext *videoFile = helper::retrieveCheckedAVFormatContext(path);
 
-    return helper::extractCheckedDetails<ContainerMetaData>(
+    return helper::extractCheckedMetaData<ContainerMetaData>(
             videoFile, transcode::util::buildContainerDetail);
 }
 
@@ -186,7 +186,7 @@ MediaFileMetaData findMediaFileMetaData(const std::string& path)
 
     // Build a container struct from the AVFormatContext.
     //ContainerMetaData container = buildContainerDetail(videoFile);
-    ContainerMetaData container = helper::extractCheckedDetails<
+    ContainerMetaData container = helper::extractCheckedMetaData<
             ContainerMetaData>(formatContext, buildContainerDetail);
 
     // Clean up the lib av structs.
