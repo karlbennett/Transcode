@@ -22,6 +22,7 @@ const std::string VIDEO_MKV_NAME = "test.mkv";
 const std::string VIDEO_MP4_NAME = "test.mp4";
 const std::string VIDEO_OGV_NAME = "test.ogv";
 const std::string VIDEO_FLV_NAME = "test.flv";
+const std::string TEXT_NAME = "test.txt";
 
 // Sizes of the test media files.
 const int VIDEO_AVI_SIZE = 1398174;
@@ -29,6 +30,7 @@ const int VIDEO_MKV_SIZE = 9171456;
 const int VIDEO_MP4_SIZE = 8678105;
 const int VIDEO_OGV_SIZE = 1748992;
 const int VIDEO_FLV_SIZE = 2133883;
+const int TEXT_SIZE = 25;
 
 // The media containers that will be tested.
 const std::string AVI_CONTAINER = "video/x-msvideo";
