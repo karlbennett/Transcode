@@ -113,7 +113,7 @@ template<typename T> T extractCheckedDetails(
     return details;
 }
 
-}
+} /* namespace helper */
 
 /**
  * Transcode namespace, all the top level transcode functions and classes are in

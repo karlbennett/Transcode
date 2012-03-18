@@ -156,7 +156,8 @@ static std::string findContainerMimeType(const std::string& name) {
 
     return mimeType;
 }
-}
+
+} /* namespace helper */
 
 /**
  * Callback namespace, all callback functions are found here.
@@ -238,7 +239,7 @@ static transcode::VideoMetaData extractVideoDetail(const AVStream& stream) {
     return videoDetail;
 }
 
-}
+} /* namespace callback */
 
 /**
  * Transcode namespace, all the top level transcode functions and classes are in
