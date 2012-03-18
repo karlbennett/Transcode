@@ -57,7 +57,7 @@ template<typename K, typename V> V get(const std::map<K, V>& map
 	return V();
 }
 
-} /* namespace utils */
+} /* namespace util */
 } /* namespace transcode */
 
 #endif /* __UTIL_STANDARD_HPP__ */

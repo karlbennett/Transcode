@@ -534,6 +534,6 @@ void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException) {
     FfmpegSingleton::getInstance().closeCodecs(videoFile);
 }
 
-} /* namespace utils */
+} /* namespace util */
 } /* namespace transcode */
 

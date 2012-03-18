@@ -40,7 +40,7 @@ namespace helper {
  * @return a new File object related to the provided path.
  */
 static transcode::util::File checkedFile(const std::string& path)
-        throw (transcode::UtilMediaException) {
+        throw (transcode::util::UtilMediaException) {
 
     using namespace transcode::util;
 
@@ -50,7 +50,7 @@ static transcode::util::File checkedFile(const std::string& path)
 
     } catch (std::exception& e) {
 
-        throw transcode::UtilMediaException(e.what());
+        throw transcode::util::UtilMediaException(e.what());
     }
 
     return File(); // We should never get here.
@@ -65,7 +65,7 @@ static transcode::util::File checkedFile(const std::string& path)
  * @return the AVFormatContext for the provided media file.
  */
 static AVFormatContext* retrieveCheckedAVFormatContext(
-        const std::string& path) throw (transcode::UtilMediaException) {
+        const std::string& path) throw (transcode::util::UtilMediaException) {
 
     using namespace transcode::util;
 
@@ -77,7 +77,7 @@ static AVFormatContext* retrieveCheckedAVFormatContext(
 
     } catch (transcode::MediaException& e) {
 
-        throw transcode::UtilMediaException(e.what());
+        throw transcode::util::UtilMediaException(e.what());
     }
 
     return NULL; // We should never get here.
@@ -97,7 +97,7 @@ static AVFormatContext* retrieveCheckedAVFormatContext(
 template<typename T> T extractCheckedDetails(
         const AVFormatContext *formatContext,
         std::tr1::function<T(const AVFormatContext*)> detailsCallback)
-                throw (transcode::UtilMediaException) {
+                throw (transcode::util::UtilMediaException) {
 
     T details;
 
@@ -107,7 +107,7 @@ template<typename T> T extractCheckedDetails(
 
     } catch (std::exception& e) {
 
-        throw transcode::UtilMediaException(e.what());
+        throw transcode::util::UtilMediaException(e.what());
     }
 
     return details;
@@ -120,6 +120,14 @@ template<typename T> T extractCheckedDetails(
  * this namespace. So this namespace holds officially public API.
  */
 namespace transcode {
+
+/**
+ * Util namespace, all the untility functions and classes are found within this
+ * namespace. You might find something useful here but hopefully everything in the
+ * {@see transcode} namespace should provide what you need so you shouldn't have to
+ * look in here.
+ */
+namespace util {
 
 std::vector<SubtitleMetaData> findSubtitleDetails(const std::string& path)
         throw (UtilMediaException) {
@@ -189,4 +197,5 @@ MediaFileMetaData findMediaFileDetails(const std::string& path)
     return MediaFileMetaData(container, path, fileName, fileSize);
 }
 
+} /* namespace util */
 } /* namespace transcode */

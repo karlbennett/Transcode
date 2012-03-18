@@ -145,7 +145,7 @@ public:
 
 };
 
-} /* namespace utils */
+} /* namespace util */
 } /* namespace transcode */
 
 #endif /* __UTIL_FILE_HPP__ */

@@ -35,6 +35,14 @@ struct ContainerMetaData;
 struct MediaFileMetaData;
 
 /**
+ * Util namespace, all the untility functions and classes are found within this
+ * namespace. You might find something useful here but hopefully everything in the
+ * {@see transcode} namespace should provide what you need so you shouldn't have to
+ * look in here.
+ */
+namespace util {
+
+/**
  * An exception that is thrown from within the MediaUtils functions.
  */
 class UtilMediaException: public MediaException {
@@ -110,6 +118,7 @@ ContainerMetaData findContainerDetails(const std::string& filePath)
 MediaFileMetaData findMediaFileDetails(const std::string& filePath)
         throw (UtilMediaException);
 
-}
+} /* namespace util */
+} /* namespace transcode */
 
 #endif /* __UTIL_MEDIA_HPP__ */

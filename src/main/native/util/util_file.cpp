@@ -71,5 +71,5 @@ File::File(std::string path) throw (FileException) :
     size_ = boost::filesystem::file_size(filePath);
 }
 
-} /* namespace utils */
+} /* namespace util */
 } /* namespace transcode */

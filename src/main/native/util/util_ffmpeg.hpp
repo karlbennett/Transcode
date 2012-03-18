@@ -176,7 +176,7 @@ ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile)
  */
 void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException);
 
-} /* utils */
-} /* transcode */
+} /* namspace util */
+} /* namspace transcode */
 
 #endif /* __UTIL_FFMPEG_HPP__ */
