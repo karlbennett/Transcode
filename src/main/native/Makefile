@@ -20,7 +20,7 @@ LIB_DIR = $(CLASSES_DIR)lib/
 CCC = g++
 
 # The source files to compile.
-SRC = util/util_file.cpp util/util_media_ffmpeg.cpp util/util_ffmpeg.cpp
+SRC = util/util_file.cpp util/util_media_ffmpeg.cpp util/util_ffmpeg.cpp media.cpp
 
 # The source files with their extensions changed to the object file extension of ".so".
 OBJ = $(SRC:.cpp=.so)
