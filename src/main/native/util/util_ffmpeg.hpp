@@ -14,6 +14,8 @@
 #include <vector>
 #include <map>
 
+#include <boost/tr1/memory.hpp>
+
 /**
  * @file util_ffmpeg.hpp
  *
@@ -22,6 +24,7 @@
  */
 
 struct AVFormatContext;
+struct AVPacket;
 
 /**
  * Transcode namespace, all the top level transcode functions and classes are in
@@ -34,6 +37,10 @@ struct AudioMetaData;
 struct VideoMetaData;
 struct ContainerMetaData;
 struct MediaFileMetaData;
+
+struct DecodedFrame;
+struct DecodedAudioFrame;
+struct DecodedVideoFrame;
 
 /**
  * Util namespace, all the untility functions and classes are found within this
@@ -67,7 +74,7 @@ public:
      * Default constructor, set message to empty string and error code to 0.
      */
     FFMPEGException() throw () :
-        MediaException(), errorCode(0) {
+            MediaException(), errorCode(0) {
     }
 
     /**
@@ -77,7 +84,7 @@ public:
      * @param msg - the message for this exception.
      */
     FFMPEGException(const std::string& msg) throw () :
-        MediaException(msg), errorCode(0) {
+            MediaException(msg), errorCode(0) {
     }
 
     /**
@@ -87,7 +94,7 @@ public:
      * @param ec - the FFMPEG error code for this exception.
      */
     FFMPEGException(const int& ec) throw () :
-        MediaException(ffmpegErrorMessage(ec)), errorCode(ec) {
+            MediaException(ffmpegErrorMessage(ec)), errorCode(ec) {
     }
 
     /**
@@ -97,7 +104,7 @@ public:
      * @param ec - the FFMPEG error code for this exception.
      */
     FFMPEGException(const std::string& msg, const int& ec) throw () :
-        MediaException(msg), errorCode(ec) {
+            MediaException(msg), errorCode(ec) {
     }
 
     ~FFMPEGException() throw () {
@@ -168,6 +175,50 @@ std::vector<VideoMetaData> extractVideoDetails(const AVFormatContext *videoFile)
  */
 ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile)
         throw (FFMPEGException);
+
+/**
+ * Get the next generic packet from the AVFormatContext.
+ *
+ * NOTE: You must free the AVPacket with av_free_packet(AVPacket*) when your
+ * are finished with it.
+ *
+ * @param videoFile - the AVFormatContext that will have the packet extracted
+ *          from it.
+ * @return the next packet or NULL if we have reached the end of the file.
+ */
+AVPacket* readNextPacket(AVFormatContext *videoFile) throw (FFMPEGException);
+
+/**
+ * Decode the provided packet into decoded frames.
+ *
+ * @param packet - the packet that contains the data to decode.
+ * @param videoFile - the format context that the packet was read from.
+ * @return a vector of  DeocdedFrames generated from the provided packet.
+ */
+std::vector<std::tr1::shared_ptr<DecodedFrame> > decodeFrame(
+        const AVPacket *packet, const AVFormatContext *videoFile)
+                throw (FFMPEGException);
+
+/**
+ * Decode the provided packet into decoded audio frames.
+ *
+ * @param packet - the packet that contains the data to decode.
+ * @param videoFile - the format context that the packet was read from.
+ * @return a vector of DeocdedAudioFrames generated from the provided packet.
+ */
+std::vector<std::tr1::shared_ptr<DecodedAudioFrame> > decodeAudioFrame(
+        const AVPacket *packet, const AVFormatContext *videoFile)
+                throw (FFMPEGException);
+
+/**
+ * Decode the provided packet into a decoded video frames.
+ *
+ * @param packet - the packet that contains the data to decode.
+ * @param videoFile - the format context that the packet was read from.
+ * @return a DeocdedVideoFrame generated from the provided packet.
+ */
+std::tr1::shared_ptr<DecodedVideoFrame> decodeVideoFrame(const AVPacket *packet,
+        const AVFormatContext *videoFile) throw (FFMPEGException);
 
 /**
  * Close any codecs that are related to the provided AVFormatContext.

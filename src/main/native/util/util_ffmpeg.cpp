@@ -286,19 +286,23 @@ public:
 
     std::string ffmpegErrorMessage(int errorCode) const;
 
-    AVFormatContext* retrieveAVFormatContext(const std::string& filePath) const;
+    AVFormatContext* retrieveAVFormatContext(const std::string& filePath) const
+            throw (FFMPEGException);
 
     std::vector<SubtitleMetaData> extractSubtitleDetails(
-            const AVFormatContext *videoFile) const;
+            const AVFormatContext *videoFile) const throw (FFMPEGException);
 
     std::vector<AudioMetaData> extractAudioDetails(
-            const AVFormatContext *videoFile) const;
+            const AVFormatContext *videoFile) const throw (FFMPEGException);
 
     std::vector<VideoMetaData> extractVideoDetails(
-            const AVFormatContext *videoFile) const;
+            const AVFormatContext *videoFile) const throw (FFMPEGException);
 
     ContainerMetaData buildContainerDetail(
-            const AVFormatContext *videoFile) const;
+            const AVFormatContext *videoFile) const throw (FFMPEGException);
+
+    AVPacket* readNextPacket(AVFormatContext *videoFile) const
+            throw (FFMPEGException);
 
     void closeCodecs(AVFormatContext *videoFile) const throw (FFMPEGException);
 };
@@ -310,10 +314,15 @@ public:
  *
  * @throws an FFMPEGException if the AVFormatContext cannot be used.
  */
-static void checkFormatContext(const AVFormatContext *formatContext) {
+static void checkFormatContext(const AVFormatContext *formatContext)
+        throw (FFMPEGException) {
 
     if (NULL == formatContext) {
         throw FFMPEGException("The AVFormatContext cannot be NULL.");
+    }
+
+    if (NULL == formatContext->pb) {
+            throw FFMPEGException("The AVFormatContext IO has not been initialised.");
     }
 }
 
@@ -331,7 +340,8 @@ static void checkFormatContext(const AVFormatContext *formatContext) {
  */
 template<typename T> std::vector<T> extractMetaData(
         const AVFormatContext *videoFile, AVMediaType mediatype,
-        std::tr1::function<T(const AVStream&)> metadataCallback) {
+        std::tr1::function<T(const AVStream&)> metadataCallback)
+                throw (FFMPEGException) {
 
     checkFormatContext(videoFile);
 
@@ -391,7 +401,7 @@ std::string FfmpegSingleton::ffmpegErrorMessage(int errorCode) const {
 }
 
 AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
-        const std::string& filePath) const {
+        const std::string& filePath) const throw (FFMPEGException) {
 
     // Open the media file. This will populate the AVFormatContext
     // with all the information about this media file.
@@ -417,28 +427,28 @@ AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
 }
 
 std::vector<SubtitleMetaData> FfmpegSingleton::extractSubtitleDetails(
-        const AVFormatContext *videoFile) const {
+        const AVFormatContext *videoFile) const throw (FFMPEGException) {
 
     return extractMetaData<SubtitleMetaData>(videoFile, AVMEDIA_TYPE_SUBTITLE,
             callback::extractSubtitleMetaData);
 }
 
 std::vector<AudioMetaData> FfmpegSingleton::extractAudioDetails(
-        const AVFormatContext *videoFile) const {
+        const AVFormatContext *videoFile) const throw (FFMPEGException) {
 
     return extractMetaData<AudioMetaData>(videoFile, AVMEDIA_TYPE_AUDIO,
             callback::extractAudioMetaData);
 }
 
 std::vector<VideoMetaData> FfmpegSingleton::extractVideoDetails(
-        const AVFormatContext *videoFile) const {
+        const AVFormatContext *videoFile) const throw (FFMPEGException) {
 
     return extractMetaData<VideoMetaData>(videoFile, AVMEDIA_TYPE_VIDEO,
             callback::extractVideoMetaData);
 }
 
 ContainerMetaData FfmpegSingleton::buildContainerDetail(
-        const AVFormatContext *videoFile) const {
+        const AVFormatContext *videoFile) const throw (FFMPEGException) {
 
     checkFormatContext(videoFile);
 
@@ -463,6 +473,25 @@ ContainerMetaData FfmpegSingleton::buildContainerDetail(
 
     return ContainerMetaData(containerMimeType, description, subtitleDetails,
             audioDetails, videoDetails);
+}
+
+AVPacket* FfmpegSingleton::readNextPacket(AVFormatContext *videoFile) const
+            throw (FFMPEGException) {
+
+    checkFormatContext(videoFile);
+
+    AVPacket *packet = new AVPacket();
+
+    int error = av_read_frame(videoFile, packet);
+
+    // If error equals 0 then we have a valid packet so return it.
+    if (0 == error) return packet;
+
+    // If we have reached the end of the file return NULL;
+    if (AVERROR_EOF == error) return NULL;
+
+    // Otherwise throw and exception with the error message.
+    throw FFMPEGException(ffmpegErrorMessage(error));
 }
 
 void FfmpegSingleton::closeCodecs(AVFormatContext *videoFile) const
@@ -530,6 +559,11 @@ ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile)
         throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().buildContainerDetail(videoFile);
+}
+
+AVPacket* readNextPacket(AVFormatContext *videoFile) throw (FFMPEGException) {
+
+    return FfmpegSingleton::getInstance().readNextPacket(videoFile);
 }
 
 void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException) {
