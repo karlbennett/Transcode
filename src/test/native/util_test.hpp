@@ -15,6 +15,7 @@ const std::string VIDEO_OGV = "../../../target/test-classes/lib-test/test.ogv";
 const std::string VIDEO_FLV = "../../../target/test-classes/lib-test/test.flv";
 const std::string INVALID_FILE = "file does not exist";
 const std::string TEXT_FILE = "../../../target/test-classes/lib-test/test.txt";
+const std::string EMPTY_FILE = "../../../target/test-classes/lib-test/test.empty";
 
 // Names of the test media files.
 const std::string VIDEO_AVI_NAME = "test.avi";
@@ -73,7 +74,7 @@ const std::string LANG_VIE = "vie";
  *
  * @param subtitleMetaData - the collection of SubtitleMetaData structs to be tested.
  */
-static void testAVISubtitles(
+void testAVISubtitles(
         std::vector<transcode::SubtitleMetaData> subtitleMetaData) {
 
     BOOST_CHECK_EQUAL( subtitleMetaData.size(), 0);
@@ -84,7 +85,7 @@ static void testAVISubtitles(
  *
  * @param subtitleMetaData - the collection of SubtitleMetaData structs to be tested.
  */
-static void testMKVSubtitles(
+void testMKVSubtitles(
         std::vector<transcode::SubtitleMetaData> subtitleMetaData) {
 
     BOOST_CHECK_EQUAL( subtitleMetaData.size(), 10);
@@ -106,7 +107,7 @@ static void testMKVSubtitles(
  *
  * @param subtitleMetaData - the collection of SubtitleMetaData structs to be tested.
  */
-static void testMP4Subtitles(
+void testMP4Subtitles(
         std::vector<transcode::SubtitleMetaData> subtitleMetaData) {
 
     BOOST_CHECK_EQUAL( subtitleMetaData.size(), 0);
@@ -117,7 +118,7 @@ static void testMP4Subtitles(
  *
  * @param subtitleMetaData - the collection of SubtitleMetaData structs to be tested.
  */
-static void testOGVSubtitles(
+void testOGVSubtitles(
         std::vector<transcode::SubtitleMetaData> subtitleMetaData) {
 
     BOOST_CHECK_EQUAL( subtitleMetaData.size(), 0);
@@ -128,7 +129,7 @@ static void testOGVSubtitles(
  *
  * @param subtitleMetaData - the collection of SubtitleMetaData structs to be tested.
  */
-static void testFLVSubtitles(
+void testFLVSubtitles(
         std::vector<transcode::SubtitleMetaData> subtitleMetaData) {
 
     BOOST_CHECK_EQUAL( subtitleMetaData.size(), 0);
@@ -139,7 +140,7 @@ static void testFLVSubtitles(
  *
  * @param audioMetaData - the collection of AudioMetaData structs to be tested.
  */
-static void testAVIAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
+void testAVIAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
 
     BOOST_CHECK_EQUAL( audioMetaData.size(), 1);
     BOOST_CHECK_EQUAL( audioMetaData[0].mimeType, MPG_AUDIO);
@@ -150,7 +151,7 @@ static void testAVIAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
  *
  * @param audioMetaData - the collection of AudioMetaData structs to be tested.
  */
-static void testMKVAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
+void testMKVAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
 
     BOOST_CHECK_EQUAL( audioMetaData.size(), 1);
     BOOST_CHECK_EQUAL( audioMetaData[0].mimeType, AC3_AUDIO);
@@ -161,7 +162,7 @@ static void testMKVAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
  *
  * @param audioMetaData - the collection of AudioMetaData structs to be tested.
  */
-static void testMP4Audio(std::vector<transcode::AudioMetaData> audioMetaData) {
+void testMP4Audio(std::vector<transcode::AudioMetaData> audioMetaData) {
 
     BOOST_CHECK_EQUAL( audioMetaData.size(), 1);
     BOOST_CHECK_EQUAL( audioMetaData[0].mimeType, MPG_AUDIO);
@@ -172,7 +173,7 @@ static void testMP4Audio(std::vector<transcode::AudioMetaData> audioMetaData) {
  *
  * @param audioMetaData - the collection of AudioMetaData structs to be tested.
  */
-static void testOGVAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
+void testOGVAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
 
     BOOST_CHECK_EQUAL( audioMetaData.size(), 1);
     BOOST_CHECK_EQUAL( audioMetaData[0].mimeType, VORBIS_AUDIO);
@@ -183,7 +184,7 @@ static void testOGVAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
  *
  * @param audioMetaData - the collection of AudioMetaData structs to be tested.
  */
-static void testFLVAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
+void testFLVAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
 
     BOOST_CHECK_EQUAL( audioMetaData.size(), 1);
     BOOST_CHECK_EQUAL( audioMetaData[0].mimeType, MPG_AUDIO);
@@ -196,7 +197,7 @@ static void testFLVAudio(std::vector<transcode::AudioMetaData> audioMetaData) {
  *
  * @param videoMetaData - the collection of VideoMetaData structs to be tested.
  */
-static void testAVIVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
+void testAVIVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
 
     BOOST_CHECK_EQUAL( videoMetaData.size(), 1);
     BOOST_CHECK_EQUAL( videoMetaData[0].mimeType, DIVX_VIDEO);
@@ -210,7 +211,7 @@ static void testAVIVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
  *
  * @param videoMetaData - the collection of VideoMetaData structs to be tested.
  */
-static void testMKVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
+void testMKVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
 
     BOOST_CHECK_EQUAL( videoMetaData.size(), 1);
     BOOST_CHECK_EQUAL( videoMetaData[0].mimeType, H264_VIDEO);
@@ -224,7 +225,7 @@ static void testMKVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
  *
  * @param videoMetaData - the collection of VideoMetaData structs to be tested.
  */
-static void testMP4Video(std::vector<transcode::VideoMetaData> videoMetaData) {
+void testMP4Video(std::vector<transcode::VideoMetaData> videoMetaData) {
 
     BOOST_CHECK_EQUAL( videoMetaData.size(), 1);
     BOOST_CHECK_EQUAL( videoMetaData[0].mimeType, H264_VIDEO);
@@ -238,7 +239,7 @@ static void testMP4Video(std::vector<transcode::VideoMetaData> videoMetaData) {
  *
  * @param videoMetaData - the collection of VideoMetaData structs to be tested.
  */
-static void testOGVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
+void testOGVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
 
     BOOST_CHECK_EQUAL( videoMetaData.size(), 1);
     BOOST_CHECK_EQUAL( videoMetaData[0].mimeType, THEORA_VIDEO);
@@ -252,7 +253,7 @@ static void testOGVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
  *
  * @param videoMetaData - the collection of VideoMetaData structs to be tested.
  */
-static void testFLVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
+void testFLVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
 
     BOOST_CHECK_EQUAL( videoMetaData.size(), 1);
     BOOST_CHECK_EQUAL( videoMetaData[0].mimeType, FLV1_VIDEO);
@@ -266,7 +267,7 @@ static void testFLVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
  *
  * @param containerMetaData - the ContainerMetaData struct to be tested.
  */
-static void testAVIContainer(transcode::ContainerMetaData containerMetaData) {
+void testAVIContainer(transcode::ContainerMetaData containerMetaData) {
 
     BOOST_CHECK_EQUAL( containerMetaData.mimeType, AVI_CONTAINER);
 
@@ -282,7 +283,7 @@ static void testAVIContainer(transcode::ContainerMetaData containerMetaData) {
  *
  * @param containerMetaData - the ContainerMetaData struct to be tested.
  */
-static void testMKVContainer(transcode::ContainerMetaData containerMetaData) {
+void testMKVContainer(transcode::ContainerMetaData containerMetaData) {
 
     BOOST_CHECK_EQUAL( containerMetaData.mimeType, MKV_CONTAINER);
 
@@ -298,7 +299,7 @@ static void testMKVContainer(transcode::ContainerMetaData containerMetaData) {
  *
  * @param containerMetaData - the ContainerMetaData struct to be tested.
  */
-static void testMP4Container(transcode::ContainerMetaData containerMetaData) {
+void testMP4Container(transcode::ContainerMetaData containerMetaData) {
 
     BOOST_CHECK_EQUAL( containerMetaData.mimeType, MP4_CONTAINER);
 
@@ -314,7 +315,7 @@ static void testMP4Container(transcode::ContainerMetaData containerMetaData) {
  *
  * @param containerMetaData - the ContainerMetaData struct to be tested.
  */
-static void testOGVContainer(transcode::ContainerMetaData containerMetaData) {
+void testOGVContainer(transcode::ContainerMetaData containerMetaData) {
 
     BOOST_CHECK_EQUAL( containerMetaData.mimeType, OGV_CONTAINER);
 
@@ -330,7 +331,7 @@ static void testOGVContainer(transcode::ContainerMetaData containerMetaData) {
  *
  * @param containerMetaData - the ContainerMetaData struct to be tested.
  */
-static void testFLVContainer(transcode::ContainerMetaData containerMetaData) {
+void testFLVContainer(transcode::ContainerMetaData containerMetaData) {
 
     BOOST_CHECK_EQUAL( containerMetaData.mimeType, FLV_CONTAINER);
 
@@ -346,7 +347,7 @@ static void testFLVContainer(transcode::ContainerMetaData containerMetaData) {
  *
  * @param medaFile - the MediaFileMetaData struct to be tested.
  */
-static void testAVIMediaFile(transcode::MediaFileMetaData medaFile) {
+void testAVIMediaFile(transcode::MediaFileMetaData medaFile) {
 
     BOOST_CHECK_EQUAL( medaFile.path, VIDEO_AVI);
 
@@ -362,7 +363,7 @@ static void testAVIMediaFile(transcode::MediaFileMetaData medaFile) {
  *
  * @param medaFile - the MediaFileMetaData struct to be tested.
  */
-static void testMKVMediaFile(transcode::MediaFileMetaData medaFile) {
+void testMKVMediaFile(transcode::MediaFileMetaData medaFile) {
 
     BOOST_CHECK_EQUAL( medaFile.path, VIDEO_MKV);
 
@@ -378,7 +379,7 @@ static void testMKVMediaFile(transcode::MediaFileMetaData medaFile) {
  *
  * @param medaFile - the MediaFileMetaData struct to be tested.
  */
-static void testMP4MediaFile(transcode::MediaFileMetaData medaFile) {
+void testMP4MediaFile(transcode::MediaFileMetaData medaFile) {
 
     BOOST_CHECK_EQUAL( medaFile.path, VIDEO_MP4);
 
@@ -394,7 +395,7 @@ static void testMP4MediaFile(transcode::MediaFileMetaData medaFile) {
  *
  * @param medaFile - the MediaFileMetaData struct to be tested.
  */
-static void testOGVMediaFile(transcode::MediaFileMetaData medaFile) {
+void testOGVMediaFile(transcode::MediaFileMetaData medaFile) {
 
     BOOST_CHECK_EQUAL( medaFile.path, VIDEO_OGV);
 
@@ -410,7 +411,7 @@ static void testOGVMediaFile(transcode::MediaFileMetaData medaFile) {
  *
  * @param medaFile - the MediaFileMetaData struct to be tested.
  */
-static void testFLVMediaFile(transcode::MediaFileMetaData medaFile) {
+void testFLVMediaFile(transcode::MediaFileMetaData medaFile) {
 
     BOOST_CHECK_EQUAL( medaFile.path, VIDEO_FLV);
 
