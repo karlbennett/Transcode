@@ -8,6 +8,8 @@
 #ifndef __MEDIA_HPP__
 #define __MEDIA_HPP__
 
+#include <metadata.hpp>
+
 #include <error.hpp>
 
 #include <vector>
@@ -27,7 +29,7 @@
 namespace transcode {
 
 // Forward decelerations to allow usage in other classes.
-class InputMediaStream;
+class MediaStream;
 
 /**
  * Abstract class that represent a generic compressed frame of an any
@@ -56,7 +58,7 @@ private:
 
     int _duration;
 
-    std::tr1::shared_ptr<InputMediaStream> _stream;
+    std::tr1::shared_ptr<MediaStream> _stream;
 
 public:
     /**
@@ -79,7 +81,7 @@ public:
             const unsigned long& presentationTimestamp,
             const unsigned long& decompressionTimestamp,
             const int& duration,
-            const std::tr1::shared_ptr<InputMediaStream>& stream) :
+            const std::tr1::shared_ptr<MediaStream>& stream) :
             _type(type), _data(data),
                     _presentationTimestamp(presentationTimestamp),
                     _decompressionTimestamp(decompressionTimestamp),
@@ -141,7 +143,7 @@ public:
      *
      * @return the frames parent stream.
      */
-    std::tr1::shared_ptr<InputMediaStream> getStream() {
+    std::tr1::shared_ptr<MediaStream> getStream() {
         return _stream;
     }
 };
@@ -265,7 +267,7 @@ public:
             const unsigned long& presentationTimestamp,
             const unsigned long& decompressionTimestamp,
             const int& duration,
-            const std::tr1::shared_ptr<InputMediaStream>& stream) :
+            const std::tr1::shared_ptr<MediaStream>& stream) :
             Frame(type, data, presentationTimestamp,
                     decompressionTimestamp, duration, stream) {
     }
@@ -287,7 +289,7 @@ public:
             const unsigned long& presentationTimestamp,
             const unsigned long& decompressionTimestamp,
             const int& duration,
-            const std::tr1::shared_ptr<InputMediaStream>& stream) :
+            const std::tr1::shared_ptr<MediaStream>& stream) :
             Frame(type, data, presentationTimestamp,
                     decompressionTimestamp, duration, stream) {
     }
@@ -305,14 +307,15 @@ class DecodedAudioFrame;
 class EncodedAudioFrame: public DecodedFrame, Audio {
 
 public:
-    EncodedAudioFrame(const FRAME_TYPE& type,
+    EncodedAudioFrame(
+            const FRAME_TYPE& type,
             const std::vector<char>& data,
             const unsigned long& presentationTimestamp,
             const unsigned long& decompressionTimestamp,
             const int& duration,
-            const std::tr1::shared_ptr<InputMediaStream>& stream,
+            const std::tr1::shared_ptr<MediaStream>& stream,
             const int& sampleNum, const std::string& language) :
-                DecodedFrame(type, data, presentationTimestamp,
+            DecodedFrame(type, data, presentationTimestamp,
                     decompressionTimestamp, duration, stream),
                     Audio(sampleNum, language) {
     }
@@ -328,14 +331,15 @@ public:
 class DecodedAudioFrame: public EncodedFrame, Audio {
 
 public:
-    DecodedAudioFrame(const FRAME_TYPE& type,
+    DecodedAudioFrame(
+            const FRAME_TYPE& type,
             const std::vector<char>& data,
             const unsigned long& presentationTimestamp,
             const unsigned long& decompressionTimestamp,
             const int& duration,
-            const std::tr1::shared_ptr<InputMediaStream>& stream,
+            const std::tr1::shared_ptr<MediaStream>& stream,
             const int& sampleNum, const std::string& language) :
-                EncodedFrame(type, data, presentationTimestamp,
+            EncodedFrame(type, data, presentationTimestamp,
                     decompressionTimestamp, duration, stream),
                     Audio(sampleNum, language) {
     }
@@ -353,14 +357,15 @@ class DecodedVideoFrame;
 class EncodedVideoFrame: public DecodedFrame, Video {
 
 public:
-    EncodedVideoFrame(const FRAME_TYPE& type,
+    EncodedVideoFrame(
+            const FRAME_TYPE& type,
             const std::vector<char>& data,
             const unsigned long& presentationTimestamp,
             const unsigned long& decompressionTimestamp,
             const int& duration,
-            const std::tr1::shared_ptr<InputMediaStream>& stream,
+            const std::tr1::shared_ptr<MediaStream>& stream,
             const int& width, const int& height) :
-                DecodedFrame(type, data, presentationTimestamp,
+            DecodedFrame(type, data, presentationTimestamp,
                     decompressionTimestamp, duration, stream),
                     Video(width, height) {
     }
@@ -376,33 +381,37 @@ public:
 class DecodedVideoFrame: public EncodedFrame, Video {
 
 public:
-    DecodedVideoFrame(const FRAME_TYPE& type,
+    DecodedVideoFrame(
+            const FRAME_TYPE& type,
             const std::vector<char>& data,
             const unsigned long& presentationTimestamp,
             const unsigned long& decompressionTimestamp,
             const int& duration,
-            const std::tr1::shared_ptr<InputMediaStream>& stream,
+            const std::tr1::shared_ptr<MediaStream>& stream,
             const int& width, const int& height) :
-                EncodedFrame(type, data, presentationTimestamp,
+            EncodedFrame(type, data, presentationTimestamp,
                     decompressionTimestamp, duration, stream),
                     Video(width, height) {
     }
 
     std::tr1::shared_ptr<EncodedFrame> encodeFrame();
 
-    std::tr1::shared_ptr<EncodedAudioFrame> encodeVideoFrame();
+    std::tr1::shared_ptr<EncodedVideoFrame> encodeVideoFrame();
 };
 
-/**
- * A media stream that provides access to the binary
- * streams within a media file.
- */
-class InputMediaStream {
+class MediaStream {
+
+private:
+    int _index;
 
 public:
-    int getIndex();
+    MediaStream(): _index(0) {};
 
-    std::tr1::shared_ptr<Frame> getFrame();
+    MediaStream(const int& index): _index(index) {};
+
+    int getIndex() {
+        return _index;
+    }
 };
 
 } /* namespace transcode */
