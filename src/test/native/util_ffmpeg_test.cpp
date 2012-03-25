@@ -8,13 +8,15 @@ extern "C" {
 #include "libavformat/avformat.h"
 }
 
+#include <iostream>
+
 AVFormatContext *aviFormatContext = NULL;
 AVFormatContext *mkvFormatContext = NULL;
 AVFormatContext *mp4FormatContext = NULL;
 AVFormatContext *ogvFormatContext = NULL;
 AVFormatContext *flvFormatContext = NULL;
 
-AVFormatContext emptyFormatContext;
+AVFormatContext blankFormatContext;
 
 /**
  * Test to make sure that an FFMPEG error message can be found.
@@ -80,6 +82,17 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context_invalid_file )
 
 /**
  * Test to make sure that an exception is thrown when a format context is requested
+ * from an empty file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context_empty_file )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::retrieveAVFormatContext(EMPTY_FILE),
+            transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure that an exception is thrown when a format context is requested
  * from a text file.
  */
 BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context_non_media_file )
@@ -117,13 +130,11 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_subtitles_from_null )
  * Test to make sure that an empty collection is returned when subtitle
  * metadata is requested on an empty format context.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_subtitles_from_empty_format_context )
+BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_subtitles_from_blank_format_context )
 {
 
-    std::vector<transcode::SubtitleMetaData> subtitleMetaData =
-            transcode::util::extractSubtitleDetails(&emptyFormatContext);
-
-    BOOST_CHECK_EQUAL( subtitleMetaData.size(), 0);
+    BOOST_REQUIRE_THROW( transcode::util::extractSubtitleDetails(&blankFormatContext),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -219,13 +230,11 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_audio_from_null )
  * Test to make sure that an empty collection is returned when audio
  * metadata is requested on an empty format context.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_audio_from_empty_format_context )
+BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_audio_from_blank_format_context )
 {
 
-    std::vector<transcode::AudioMetaData> audioMetaData =
-            transcode::util::extractAudioDetails(&emptyFormatContext);
-
-    BOOST_CHECK_EQUAL( audioMetaData.size(), 0);
+    BOOST_REQUIRE_THROW( transcode::util::extractAudioDetails(&blankFormatContext),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -321,13 +330,11 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_video_from_null )
  * Test to make sure that an empty collection is returned when video
  * metadata is requested on an empty format context.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_video_from_empty_format_context )
+BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_video_from_blank_format_context )
 {
 
-    std::vector<transcode::VideoMetaData> videoMetaData =
-            transcode::util::extractVideoDetails(&emptyFormatContext);
-
-    BOOST_CHECK_EQUAL( videoMetaData.size(), 0);
+    BOOST_REQUIRE_THROW( transcode::util::extractVideoDetails(&blankFormatContext),
+            transcode::util::FFMPEGException);
 }
 
 /**
@@ -423,10 +430,10 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_container_from_null )
  * Test to make sure that an exception is thrown when container metadata
  * are requested on an empty format context.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_container_from_empty_format_context )
+BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_container_from_blank_format_context )
 {
 
-    BOOST_REQUIRE_THROW( transcode::util::buildContainerDetail(&emptyFormatContext),
+    BOOST_REQUIRE_THROW( transcode::util::buildContainerDetail(&blankFormatContext),
             transcode::util::FFMPEGException);
 }
 
@@ -496,6 +503,158 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_build_flv_container )
 }
 
 /**
+ * Helper function for test packet reads all the way to the end of the
+ * media file.
+ *
+ * @param formatContext - the format context that will have the packets
+ *      read from it.
+ */
+void testReadPackets(AVFormatContext *formatContext) {
+
+    AVPacket *packet = NULL;
+
+    while (NULL != (packet = transcode::util::readNextPacket(formatContext))) {
+
+        // The packet should not be empty.
+        BOOST_REQUIRE( 0 < packet->size);
+
+        av_free_packet(packet);
+    }
+
+    // Last packet should be NULL.
+    BOOST_REQUIRE( NULL == packet);
+}
+
+BOOST_AUTO_TEST_CASE( test_read_next_packet )
+{
+
+    (void) transcode::util::readNextPacket(aviFormatContext);
+    (void) transcode::util::readNextPacket(mkvFormatContext);
+    (void) transcode::util::readNextPacket(mp4FormatContext);
+    (void) transcode::util::readNextPacket(ogvFormatContext);
+    (void) transcode::util::readNextPacket(flvFormatContext);
+}
+
+BOOST_AUTO_TEST_CASE( test_read_next_packet_from_null )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::readNextPacket(NULL),
+            transcode::util::FFMPEGException);
+}
+
+BOOST_AUTO_TEST_CASE( test_read_next_packet_from_blank_format_context )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::readNextPacket(&blankFormatContext),
+            transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure that a packet can be read from a format context built
+ * from an avi file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_read_avi_packet )
+{
+
+    BOOST_REQUIRE( NULL != transcode::util::readNextPacket(aviFormatContext) );
+}
+
+/**
+ * Test to make sure that all the packets can be read from a format context
+ * built from an avi file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_read_avi_packets )
+{
+
+    testReadPackets(aviFormatContext);
+}
+
+/**
+ * Test to make sure that a packet can be read from a format context built
+ * from an mkv file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_read_mkv_packet )
+{
+
+    BOOST_REQUIRE( NULL != transcode::util::readNextPacket(mkvFormatContext) );
+}
+
+/**
+ * Test to make sure that all the packets can be read from a format context
+ * built from an mkv file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_read_mkv_packets )
+{
+
+    testReadPackets(mkvFormatContext);
+}
+
+/**
+ * Test to make sure that a packet can be read from a format context built
+ * from an mp4 file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_read_mp4_packet )
+{
+
+    BOOST_REQUIRE( NULL != transcode::util::readNextPacket(mp4FormatContext) );
+}
+
+/**
+ * Test to make sure that all the packets can be read from a format context
+ * built from an mp4 file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_read_mp4_packets )
+{
+
+    testReadPackets(mp4FormatContext);
+}
+
+/**
+ * Test to make sure that a packet can be read from a format context built
+ * from an ogv file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_read_ogv_packet )
+{
+
+    BOOST_REQUIRE( NULL != transcode::util::readNextPacket(ogvFormatContext) );
+}
+
+/**
+ * Test to make sure that all the packets can be read from a format context
+ * built from an ogv file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_read_ogv_packets )
+{
+
+    try {
+        testReadPackets(ogvFormatContext);
+    } catch(transcode::util::FFMPEGException e) {
+        // TODO fix the test.ogv file becuase it is corrupt at the end.
+        BOOST_CHECK_EQUAL( "Input/output error", e.what() );
+    }
+}
+
+/**
+ * Test to make sure that a packet can be read from a format context built
+ * from an flv file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_read_flv_packet )
+{
+
+    BOOST_REQUIRE( NULL != transcode::util::readNextPacket(flvFormatContext) );
+}
+
+/**
+ * Test to make sure that all the packets can be read from a format context
+ * built from an flv file.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_read_flv_packets )
+{
+
+    testReadPackets(flvFormatContext);
+}
+
+/**
  * Test to make sure that populated format contexts can have their codecs
  * closed.
  */
@@ -526,5 +685,6 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_close_codecs_with_null )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_close_codecs_with_empty_format_context )
 {
 
-    transcode::util::closeCodecs(&emptyFormatContext);
+    BOOST_REQUIRE_THROW( transcode::util::closeCodecs(&blankFormatContext),
+            transcode::util::FFMPEGException);
 }
