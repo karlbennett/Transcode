@@ -28,6 +28,15 @@
  */
 namespace transcode {
 
+/**
+ * Enum that represents the different types of frames.
+ */
+enum FRAME_TYPE {
+    SUBTITLE,
+    AUDIO,
+    VIDEO
+};
+
 // Forward decelerations to allow usage in other classes.
 class MediaStream;
 
@@ -36,16 +45,6 @@ class MediaStream;
  * type.
  */
 class Frame {
-
-public:
-    /**
-     * Enum that represents the different types of frames.
-     */
-    enum FRAME_TYPE {
-        SUBTITLE,
-        AUDIO,
-        VIDEO
-    };
 
 private:
     FRAME_TYPE _type;
@@ -405,9 +404,15 @@ private:
     int _index;
 
 public:
-    MediaStream(): _index(0) {};
+    MediaStream() :
+            _index(0) {
+    }
+    ;
 
-    MediaStream(const int& index): _index(index) {};
+    MediaStream(const int& index) :
+            _index(index) {
+    }
+    ;
 
     int getIndex() {
         return _index;
