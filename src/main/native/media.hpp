@@ -28,15 +28,6 @@
  */
 namespace transcode {
 
-/**
- * Enum that represents the different types of frames.
- */
-enum FRAME_TYPE {
-    SUBTITLE,
-    AUDIO,
-    VIDEO
-};
-
 // Forward decelerations to allow usage in other classes.
 class MediaStream;
 
@@ -47,8 +38,6 @@ class MediaStream;
 class Frame {
 
 private:
-    FRAME_TYPE _type;
-
     std::vector<char> _data;
 
     unsigned long _presentationTimestamp;
@@ -57,9 +46,10 @@ private:
 
     int _duration;
 
-    std::tr1::shared_ptr<MediaStream> _stream;
-
 public:
+    Frame() : _data(std::vector<char>()), _presentationTimestamp(0),
+    _decompressionTimestamp(0), _duration(0) {}
+
     /**
      * Instantiate a Frame object with all the required attributes.
      *
@@ -75,26 +65,14 @@ public:
      *          to the getFrame method on this stream will not get you the
      *          frame after this one.
      */
-    Frame(const FRAME_TYPE& type,
-            const std::vector<char>& data,
+    Frame(const std::vector<char>& data,
             const unsigned long& presentationTimestamp,
             const unsigned long& decompressionTimestamp,
-            const int& duration,
-            const std::tr1::shared_ptr<MediaStream>& stream) :
-            _type(type), _data(data),
+            const int& duration) :
+            _data(data),
                     _presentationTimestamp(presentationTimestamp),
                     _decompressionTimestamp(decompressionTimestamp),
-                    _duration(duration),
-                    _stream(stream) {
-    }
-
-    /**
-     * Get the type of this frame.
-     *
-     * @return the frame type.
-     */
-    FRAME_TYPE getType() {
-        return _type;
+                    _duration(duration) {
     }
 
     /**
@@ -132,19 +110,6 @@ public:
     int getDuration() {
         return _duration;
     }
-
-    /**
-     * Get the parent stream for this frame.
-     *
-     * NOTE: This stream should only be used for meta data, a call
-     *       to the getFrame method on this stream will not get you the
-     *       frame after this one.
-     *
-     * @return the frames parent stream.
-     */
-    std::tr1::shared_ptr<MediaStream> getStream() {
-        return _stream;
-    }
 };
 
 /**
@@ -160,7 +125,7 @@ public:
      *
      * @return a raw frame decoded from this frame.
      */
-    std::tr1::shared_ptr<E> decodeFrame();
+    virtual std::tr1::shared_ptr<E> decodeFrame();
 };
 
 /**
@@ -176,20 +141,23 @@ public:
      *
      * @return a frame encoded from this raw frame.
      */
-    std::tr1::shared_ptr<D> encodeFrame();
+    virtual std::tr1::shared_ptr<D> encodeFrame();
 };
 
 /**
  * An audio type that contains all the video related
  * attributes and methods.
  */
-class Audio {
+class AudioFrame: public Frame {
 
 private:
     int _sampleNum;
     std::string _language;
 
 public:
+    AudioFrame() : Frame(), _sampleNum(0),
+    _language(std::string()) {}
+
     /**
      * Instantiate an AudioFrame object with all the
      * required attributes.
@@ -198,8 +166,14 @@ public:
      *      (per channel) described by this frame.
      * @param language - the language of the audio.
      */
-    Audio(const int& sampleNum, const std::string& language) :
-            _sampleNum(sampleNum), _language(language) {
+    AudioFrame(const std::vector<char>& data,
+            const unsigned long& presentationTimestamp,
+            const unsigned long& decompressionTimestamp,
+            const int& duration, const int& sampleNum,
+            const std::string& language) :
+            Frame(data, presentationTimestamp,
+                    decompressionTimestamp, duration),
+                    _sampleNum(sampleNum), _language(language) {
     }
 
     /**
@@ -216,21 +190,28 @@ public:
  * A video type that contains all the video related
  * attributes and methods.
  */
-class Video {
+class VideoFrame: public Frame {
 
 private:
     int _width;
     int _height;
 
 public:
+    VideoFrame() : Frame(), _width(0), _height(0) {}
+
     /**
      * Instantiate a VideoFrame object with all the required attributes.
      *
      * @param width - the width of the video frame.
      * @param heitgh - the height of the video frame.
      */
-    Video(const int& width, const int& height) :
-            _width(width), _height(height) {
+    VideoFrame(const std::vector<char>& data,
+            const unsigned long& presentationTimestamp,
+            const unsigned long& decompressionTimestamp,
+            const int& duration, const int& width, const int& height) :
+            Frame(data, presentationTimestamp,
+                    decompressionTimestamp, duration),
+                    _width(width), _height(height) {
     }
 
     /**
@@ -250,152 +231,6 @@ public:
     int getHeight() {
         return _height;
     }
-};
-
-class DecodedFrame;
-
-/**
- * An encoded or compressed Frame, that has the ability to
- * be decoded.
- */
-class EncodedFrame: public Frame, Decodable<DecodedFrame> {
-
-public:
-    EncodedFrame(const FRAME_TYPE& type,
-            const std::vector<char>& data,
-            const unsigned long& presentationTimestamp,
-            const unsigned long& decompressionTimestamp,
-            const int& duration,
-            const std::tr1::shared_ptr<MediaStream>& stream) :
-            Frame(type, data, presentationTimestamp,
-                    decompressionTimestamp, duration, stream) {
-    }
-
-    virtual ~EncodedFrame();
-
-    virtual std::tr1::shared_ptr<DecodedFrame> decodeFrame();
-};
-
-/**
- * An decoded or compressed Frame, that has the ability to
- * be encoded.
- */
-class DecodedFrame: public Frame, Decodable<EncodedFrame> {
-
-public:
-    DecodedFrame(const FRAME_TYPE& type,
-            const std::vector<char>& data,
-            const unsigned long& presentationTimestamp,
-            const unsigned long& decompressionTimestamp,
-            const int& duration,
-            const std::tr1::shared_ptr<MediaStream>& stream) :
-            Frame(type, data, presentationTimestamp,
-                    decompressionTimestamp, duration, stream) {
-    }
-
-    virtual ~DecodedFrame();
-
-    virtual std::tr1::shared_ptr<EncodedFrame> encodeFrame();
-};
-
-class DecodedAudioFrame;
-
-/**
- * An encoded or compressed audio frame.
- */
-class EncodedAudioFrame: public DecodedFrame, Audio {
-
-public:
-    EncodedAudioFrame(
-            const FRAME_TYPE& type,
-            const std::vector<char>& data,
-            const unsigned long& presentationTimestamp,
-            const unsigned long& decompressionTimestamp,
-            const int& duration,
-            const std::tr1::shared_ptr<MediaStream>& stream,
-            const int& sampleNum, const std::string& language) :
-            DecodedFrame(type, data, presentationTimestamp,
-                    decompressionTimestamp, duration, stream),
-                    Audio(sampleNum, language) {
-    }
-
-    std::tr1::shared_ptr<EncodedFrame> decodeFrame();
-
-    std::tr1::shared_ptr<DecodedAudioFrame> decodeAudioFrame();
-};
-
-/**
- * A decoded or decompressed audio frame.
- */
-class DecodedAudioFrame: public EncodedFrame, Audio {
-
-public:
-    DecodedAudioFrame(
-            const FRAME_TYPE& type,
-            const std::vector<char>& data,
-            const unsigned long& presentationTimestamp,
-            const unsigned long& decompressionTimestamp,
-            const int& duration,
-            const std::tr1::shared_ptr<MediaStream>& stream,
-            const int& sampleNum, const std::string& language) :
-            EncodedFrame(type, data, presentationTimestamp,
-                    decompressionTimestamp, duration, stream),
-                    Audio(sampleNum, language) {
-    }
-
-    std::tr1::shared_ptr<EncodedFrame> encodeFrame();
-
-    std::tr1::shared_ptr<EncodedAudioFrame> encodeAudioFrame();
-};
-
-class DecodedVideoFrame;
-
-/**
- * An encoded or compressed video frame.
- */
-class EncodedVideoFrame: public DecodedFrame, Video {
-
-public:
-    EncodedVideoFrame(
-            const FRAME_TYPE& type,
-            const std::vector<char>& data,
-            const unsigned long& presentationTimestamp,
-            const unsigned long& decompressionTimestamp,
-            const int& duration,
-            const std::tr1::shared_ptr<MediaStream>& stream,
-            const int& width, const int& height) :
-            DecodedFrame(type, data, presentationTimestamp,
-                    decompressionTimestamp, duration, stream),
-                    Video(width, height) {
-    }
-
-    std::tr1::shared_ptr<EncodedFrame> decodeFrame();
-
-    std::tr1::shared_ptr<DecodedVideoFrame> decodeVideoFrame();
-};
-
-/**
- * A decoded or decompressed video frame.
- */
-class DecodedVideoFrame: public EncodedFrame, Video {
-
-public:
-    DecodedVideoFrame(
-            const FRAME_TYPE& type,
-            const std::vector<char>& data,
-            const unsigned long& presentationTimestamp,
-            const unsigned long& decompressionTimestamp,
-            const int& duration,
-            const std::tr1::shared_ptr<MediaStream>& stream,
-            const int& width, const int& height) :
-            EncodedFrame(type, data, presentationTimestamp,
-                    decompressionTimestamp, duration, stream),
-                    Video(width, height) {
-    }
-
-    std::tr1::shared_ptr<EncodedFrame> encodeFrame();
-
-    std::tr1::shared_ptr<EncodedVideoFrame> encodeVideoFrame();
 };
 
 class MediaStream {

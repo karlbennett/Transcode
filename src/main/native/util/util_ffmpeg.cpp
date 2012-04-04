@@ -304,6 +304,9 @@ public:
     AVPacket* readNextPacket(AVFormatContext *videoFile) const
             throw (FFMPEGException);
 
+    AVMediaType findPacketType(const AVPacket *packet,
+            const AVFormatContext *videoFile) const throw (FFMPEGException);
+
     void closeCodecs(AVFormatContext *videoFile) const throw (FFMPEGException);
 };
 
@@ -322,7 +325,8 @@ static void checkFormatContext(const AVFormatContext *formatContext)
     }
 
     if (NULL == formatContext->pb) {
-            throw FFMPEGException("The AVFormatContext IO has not been initialised.");
+        throw FFMPEGException(
+                "The AVFormatContext IO has not been initialised.");
     }
 }
 
@@ -356,10 +360,15 @@ template<typename T> std::vector<T> extractMetaData(
 
         stream = videoFile->streams[i];
         if (NULL == stream) {
-            throw FFMPEGException("A media stream was null.");
+            std::stringstream errorMessage;
+
+            errorMessage << "Media stream ("
+                    << i << ") was NULL." << std::endl;
+
+            throw FFMPEGException("errorMessage");
         }
 
-        codecContext = videoFile->streams[i]->codec;
+        codecContext = stream->codec;
         if (NULL == codecContext) {
             throw FFMPEGException("A codec was null.");
         }
@@ -476,7 +485,7 @@ ContainerMetaData FfmpegSingleton::buildContainerDetail(
 }
 
 AVPacket* FfmpegSingleton::readNextPacket(AVFormatContext *videoFile) const
-            throw (FFMPEGException) {
+        throw (FFMPEGException) {
 
     checkFormatContext(videoFile);
 
@@ -485,13 +494,40 @@ AVPacket* FfmpegSingleton::readNextPacket(AVFormatContext *videoFile) const
     int error = av_read_frame(videoFile, packet);
 
     // If error equals 0 then we have a valid packet so return it.
-    if (0 == error) return packet;
+    if (0 == error)
+        return packet;
 
     // If we have reached the end of the file return NULL;
-    if (AVERROR_EOF == error) return NULL;
+    if (AVERROR_EOF == error)
+        return NULL;
 
     // Otherwise throw and exception with the error message.
     throw FFMPEGException(ffmpegErrorMessage(error));
+}
+
+AVMediaType FfmpegSingleton::findPacketType(const AVPacket *packet,
+        const AVFormatContext *videoFile) const throw (FFMPEGException) {
+
+    checkFormatContext(videoFile);
+
+    int streamIndex = packet->stream_index;
+
+    AVStream *stream = videoFile->streams[streamIndex];
+    if (NULL == stream) {
+        std::stringstream errorMessage;
+
+        errorMessage << "Media stream ("
+                << streamIndex << ") was NULL." << std::endl;
+
+        throw FFMPEGException("errorMessage");
+    }
+
+    AVCodecContext *codecContext = stream->codec;
+    if (NULL == codecContext) {
+        throw FFMPEGException("A codec was null.");
+    }
+
+    return codecContext->codec_type;
 }
 
 void FfmpegSingleton::closeCodecs(AVFormatContext *videoFile) const
@@ -564,6 +600,12 @@ ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile)
 AVPacket* readNextPacket(AVFormatContext *videoFile) throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().readNextPacket(videoFile);
+}
+
+AVMediaType findPacketType(const AVPacket *packet,
+        const AVFormatContext *videoFile) throw (FFMPEGException) {
+
+    return FfmpegSingleton::getInstance().findPacketType(packet, videoFile);
 }
 
 void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException) {

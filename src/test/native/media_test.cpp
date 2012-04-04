@@ -12,6 +12,10 @@ class TestObject {};
 BOOST_AUTO_TEST_CASE( test_example )
 {
 
+    transcode::Frame frame;
+    transcode::AudioFrame audioFrame;
+    transcode::VideoFrame videoFrame;
+
 	// Example test for exception.
 	BOOST_REQUIRE_THROW( throw TestObject(), TestObject );
 

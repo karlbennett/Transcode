@@ -8,6 +8,11 @@
 #ifndef __UTIL_FFMPEG_HPP__
 #define __UTIL_FFMPEG_HPP__
 
+extern "C" {
+#include "libavutil/avutil.h"
+}
+
+#include <media.hpp>
 #include <error.hpp>
 
 #include <string>
@@ -37,10 +42,6 @@ struct AudioMetaData;
 struct VideoMetaData;
 struct ContainerMetaData;
 struct MediaFileMetaData;
-
-struct DecodedFrame;
-struct DecodedAudioFrame;
-struct DecodedVideoFrame;
 
 /**
  * Util namespace, all the untility functions and classes are found within this
@@ -189,15 +190,25 @@ ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile)
 AVPacket* readNextPacket(AVFormatContext *videoFile) throw (FFMPEGException);
 
 /**
+ * Find the type of the provided packet. That is if it is an audio or video
+ * packet.
+ *
+ * @param packet - the packet that is to be checked.
+ * @param videoFile - the format context that the packet was read from.
+ */
+AVMediaType findPacketType(const AVPacket *packet,
+        const AVFormatContext *videoFile) throw (FFMPEGException);
+
+/**
  * Decode the provided packet into decoded frames.
  *
  * @param packet - the packet that contains the data to decode.
  * @param videoFile - the format context that the packet was read from.
  * @return a vector of  DeocdedFrames generated from the provided packet.
  */
-std::vector<std::tr1::shared_ptr<DecodedFrame> > decodeFrame(
-        const AVPacket *packet, const AVFormatContext *videoFile)
-                throw (FFMPEGException);
+//std::vector<std::tr1::shared_ptr<DecodedFrame> > decodeFrame(
+//        const AVPacket *packet, const AVFormatContext *videoFile)
+//                throw (FFMPEGException);
 
 /**
  * Decode the provided packet into decoded audio frames.
@@ -206,9 +217,9 @@ std::vector<std::tr1::shared_ptr<DecodedFrame> > decodeFrame(
  * @param videoFile - the format context that the packet was read from.
  * @return a vector of DeocdedAudioFrames generated from the provided packet.
  */
-std::vector<std::tr1::shared_ptr<DecodedAudioFrame> > decodeAudioFrame(
-        const AVPacket *packet, const AVFormatContext *videoFile)
-                throw (FFMPEGException);
+//std::vector<std::tr1::shared_ptr<DecodedAudioFrame> > decodeAudioFrame(
+//        const AVPacket *packet, const AVFormatContext *videoFile)
+//                throw (FFMPEGException);
 
 /**
  * Decode the provided packet into a decoded video frames.
@@ -217,8 +228,8 @@ std::vector<std::tr1::shared_ptr<DecodedAudioFrame> > decodeAudioFrame(
  * @param videoFile - the format context that the packet was read from.
  * @return a DeocdedVideoFrame generated from the provided packet.
  */
-std::tr1::shared_ptr<DecodedVideoFrame> decodeVideoFrame(const AVPacket *packet,
-        const AVFormatContext *videoFile) throw (FFMPEGException);
+//std::tr1::shared_ptr<DecodedVideoFrame> decodeVideoFrame(const AVPacket *packet,
+//        const AVFormatContext *videoFile) throw (FFMPEGException);
 
 /**
  * Close any codecs that are related to the provided AVFormatContext.
