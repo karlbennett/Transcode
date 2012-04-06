@@ -29,7 +29,7 @@ const std::string TEXT_NAME = "test.txt";
 const int VIDEO_AVI_SIZE = 1398174;
 const int VIDEO_MKV_SIZE = 9171456;
 const int VIDEO_MP4_SIZE = 8678105;
-const int VIDEO_OGV_SIZE = 1748992;
+const int VIDEO_OGV_SIZE = 1010760;
 const int VIDEO_FLV_SIZE = 2133883;
 const int TEXT_SIZE = 25;
 
