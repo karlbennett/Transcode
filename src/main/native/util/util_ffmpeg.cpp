@@ -505,6 +505,7 @@ AVPacket* FfmpegSingleton::readNextPacket(AVFormatContext *videoFile) const
 
         ByteIOContext *ioContext = videoFile->pb;
 
+        // Check to see if we have reached the end of the file.
         if (NULL != ioContext && ioContext->eof_reached) return NULL;
     }
 
