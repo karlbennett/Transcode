@@ -626,12 +626,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_read_ogv_packet )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_read_ogv_packets )
 {
 
-    try {
-        testReadPackets(ogvFormatContext);
-    } catch(transcode::util::FFMPEGException e) {
-        // TODO fix the test.ogv file becuase it is corrupt at the end.
-        BOOST_CHECK_EQUAL( "Input/output error", e.what() );
-    }
+    testReadPackets(ogvFormatContext);
 }
 
 /**

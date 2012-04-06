@@ -494,14 +494,21 @@ AVPacket* FfmpegSingleton::readNextPacket(AVFormatContext *videoFile) const
     int error = av_read_frame(videoFile, packet);
 
     // If error equals 0 then we have a valid packet so return it.
-    if (0 == error)
-        return packet;
+    if (0 == error) return packet;
 
     // If we have reached the end of the file return NULL;
-    if (AVERROR_EOF == error)
-        return NULL;
+    if (AVERROR_EOF == error) return NULL;
 
-    // Otherwise throw and exception with the error message.
+    // If we have received an io error there is a chance it could be
+    // indicating an EOF. This seems to happen all the time with ogg files.
+    if (AVERROR_IO == error) {
+
+        ByteIOContext *ioContext = videoFile->pb;
+
+        if (NULL != ioContext && ioContext->eof_reached) return NULL;
+    }
+
+    // Otherwise throw an exception with the error message.
     throw FFMPEGException(ffmpegErrorMessage(error));
 }
 
