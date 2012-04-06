@@ -47,8 +47,10 @@ private:
     int _duration;
 
 public:
-    Frame() : _data(std::vector<char>()), _presentationTimestamp(0),
-    _decompressionTimestamp(0), _duration(0) {}
+    Frame() :
+            _data(std::vector<char>()), _presentationTimestamp(0),
+                    _decompressionTimestamp(0), _duration(0) {
+    }
 
     /**
      * Instantiate a Frame object with all the required attributes.
@@ -60,10 +62,6 @@ public:
      * @param decompressionTimestamp - the time in seconds at which
      *          the packet is decompressed.
      * @param duration - the duration of this packet in seconds, 0 if unknown.
-     * @param stream - the stream that this frame was extracted from.
-     *          NOTE: This stream should only be used for meta data, a call
-     *          to the getFrame method on this stream will not get you the
-     *          frame after this one.
      */
     Frame(const std::vector<char>& data,
             const unsigned long& presentationTimestamp,
@@ -125,7 +123,7 @@ public:
      *
      * @return a raw frame decoded from this frame.
      */
-    virtual std::tr1::shared_ptr<E> decodeFrame();
+    virtual std::tr1::shared_ptr<E> decodeFrame() = 0;
 };
 
 /**
@@ -141,7 +139,7 @@ public:
      *
      * @return a frame encoded from this raw frame.
      */
-    virtual std::tr1::shared_ptr<D> encodeFrame();
+    virtual std::tr1::shared_ptr<D> encodeFrame() = 0;
 };
 
 /**
@@ -155,13 +153,22 @@ private:
     std::string _language;
 
 public:
-    AudioFrame() : Frame(), _sampleNum(0),
-    _language(std::string()) {}
+    AudioFrame() :
+            Frame(), _sampleNum(0),
+                    _language(std::string()) {
+    }
 
     /**
      * Instantiate an AudioFrame object with all the
      * required attributes.
      *
+     * @param type - the type of the frame.
+     * @param data - the bytes that make up the frame.
+     * @param presentationTimestamp - the time in seconds at which
+     *          the decompressed packet will be presented to the user.
+     * @param decompressionTimestamp - the time in seconds at which
+     *          the packet is decompressed.
+     * @param duration - the duration of this packet in seconds, 0 if unknown.
      * @param sampleNum - number of audio samples
      *      (per channel) described by this frame.
      * @param language - the language of the audio.
@@ -197,11 +204,20 @@ private:
     int _height;
 
 public:
-    VideoFrame() : Frame(), _width(0), _height(0) {}
+    VideoFrame() :
+            Frame(), _width(0), _height(0) {
+    }
 
     /**
      * Instantiate a VideoFrame object with all the required attributes.
      *
+     * @param type - the type of the frame.
+     * @param data - the bytes that make up the frame.
+     * @param presentationTimestamp - the time in seconds at which
+     *          the decompressed packet will be presented to the user.
+     * @param decompressionTimestamp - the time in seconds at which
+     *          the packet is decompressed.
+     * @param duration - the duration of this packet in seconds, 0 if unknown.
      * @param width - the width of the video frame.
      * @param heitgh - the height of the video frame.
      */
@@ -233,25 +249,157 @@ public:
     }
 };
 
-class MediaStream {
+/**
+ * Forward declaration of a DecodedAudioFrame.
+ */
+class DecodedAudioFrame;
 
-private:
-    int _index;
+/**
+ * An encoded audio frame, this object contains the audio frames metadata along with it's compressed data.
+ */
+class EncodedAudioFrame: public AudioFrame, Decodable<DecodedAudioFrame> {
 
 public:
-    MediaStream() :
-            _index(0) {
+    EncodedAudioFrame() :
+            AudioFrame() {
     }
-    ;
 
-    MediaStream(const int& index) :
-            _index(index) {
+    /**
+     * Instantiate an EncodedAudioFrame object with all the
+     * required attributes.
+     *
+     * @param type - the type of the frame.
+     * @param data - the bytes that make up the frame.
+     * @param presentationTimestamp - the time in seconds at which
+     *          the decompressed packet will be presented to the user.
+     * @param decompressionTimestamp - the time in seconds at which
+     *          the packet is decompressed.
+     * @param duration - the duration of this packet in seconds, 0 if unknown.
+     * @param sampleNum - number of audio samples
+     *      (per channel) described by this frame.
+     * @param language - the language of the audio.
+     */
+    EncodedAudioFrame(const std::vector<char>& data,
+            const unsigned long& presentationTimestamp,
+            const unsigned long& decompressionTimestamp,
+            const int& duration, const int& sampleNum,
+            const std::string& language) :
+            AudioFrame(data, presentationTimestamp,
+                    decompressionTimestamp, duration,
+                    sampleNum, language) {
     }
-    ;
 
-    int getIndex() {
-        return _index;
+    std::tr1::shared_ptr<DecodedAudioFrame> decodeFrame();
+};
+
+/**
+ * A decoded audio frame, this object contains the audio frames metadata along with it's raw data.
+ */
+class DecodedAudioFrame: public AudioFrame, Encodable<EncodedAudioFrame> {
+
+public:
+    DecodedAudioFrame() :
+            AudioFrame() {
     }
+
+    /**
+     * Instantiate an DecodedAudioFrame object with all the
+     * required attributes.
+     *
+     * @param type - the type of the frame.
+     * @param data - the bytes that make up the frame.
+     * @param presentationTimestamp - the time in seconds at which
+     *          the decompressed packet will be presented to the user.
+     * @param decompressionTimestamp - the time in seconds at which
+     *          the packet is decompressed.
+     * @param duration - the duration of this packet in seconds, 0 if unknown.
+     * @param sampleNum - number of audio samples
+     *      (per channel) described by this frame.
+     * @param language - the language of the audio.
+     */
+    DecodedAudioFrame(const std::vector<char>& data,
+            const unsigned long& presentationTimestamp,
+            const unsigned long& decompressionTimestamp,
+            const int& duration, const int& sampleNum,
+            const std::string& language) :
+            AudioFrame(data, presentationTimestamp,
+                    decompressionTimestamp, duration,
+                    sampleNum, language) {
+    }
+
+    std::tr1::shared_ptr<EncodedAudioFrame> encodeFrame();
+};
+
+class DecodedVideoFrame;
+
+/**
+ * An encoded video frame, this object contains the video frames metadata along with it's compressed data.
+ */
+class EncodedVideoFrame: public VideoFrame, Decodable<DecodedVideoFrame> {
+
+public:
+    EncodedVideoFrame() :
+            VideoFrame() {
+    }
+
+    /**
+     * Instantiate a EncodedVideoFrame object with all the required attributes.
+     *
+     * @param type - the type of the frame.
+     * @param data - the bytes that make up the frame.
+     * @param presentationTimestamp - the time in seconds at which
+     *          the decompressed packet will be presented to the user.
+     * @param decompressionTimestamp - the time in seconds at which
+     *          the packet is decompressed.
+     * @param duration - the duration of this packet in seconds, 0 if unknown.
+     * @param width - the width of the video frame.
+     * @param heitgh - the height of the video frame.
+     */
+    EncodedVideoFrame(const std::vector<char>& data,
+            const unsigned long& presentationTimestamp,
+            const unsigned long& decompressionTimestamp,
+            const int& duration, const int& width, const int& height) :
+            VideoFrame(data, presentationTimestamp,
+                    decompressionTimestamp, duration,
+                    width, height) {
+    }
+
+    std::tr1::shared_ptr<DecodedVideoFrame> decodeFrame();
+};
+
+/**
+ * A decoded video frame, this object contains the video frames metadata along with it's raw data.
+ */
+class DecodedVideoFrame: public VideoFrame, Decodable<EncodedVideoFrame> {
+
+public:
+    DecodedVideoFrame() :
+            VideoFrame() {
+    }
+
+    /**
+     * Instantiate a DecodedVideoFrame object with all the required attributes.
+     *
+     * @param type - the type of the frame.
+     * @param data - the bytes that make up the frame.
+     * @param presentationTimestamp - the time in seconds at which
+     *          the decompressed packet will be presented to the user.
+     * @param decompressionTimestamp - the time in seconds at which
+     *          the packet is decompressed.
+     * @param duration - the duration of this packet in seconds, 0 if unknown.
+     * @param width - the width of the video frame.
+     * @param heitgh - the height of the video frame.
+     */
+    DecodedVideoFrame(const std::vector<char>& data,
+            const unsigned long& presentationTimestamp,
+            const unsigned long& decompressionTimestamp,
+            const int& duration, const int& width, const int& height) :
+            VideoFrame(data, presentationTimestamp,
+                    decompressionTimestamp, duration,
+                    width, height) {
+    }
+
+    std::tr1::shared_ptr<EncodedVideoFrame> encodeFrame();
 };
 
 } /* namespace transcode */
