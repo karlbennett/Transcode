@@ -10,6 +10,13 @@ extern "C" {
 
 #include <iostream>
 
+// The media types of the first frames in the media files.
+const AVMediaType FRAME_TYPE_AVI = AVMEDIA_TYPE_VIDEO;
+const AVMediaType FRAME_TYPE_MKV = AVMEDIA_TYPE_VIDEO;
+const AVMediaType FRAME_TYPE_MP4 = AVMEDIA_TYPE_AUDIO;
+const AVMediaType FRAME_TYPE_OGV = AVMEDIA_TYPE_AUDIO;
+const AVMediaType FRAME_TYPE_FLV = AVMEDIA_TYPE_AUDIO;
+
 AVFormatContext *aviFormatContext = NULL;
 AVFormatContext *mkvFormatContext = NULL;
 AVFormatContext *mp4FormatContext = NULL;
@@ -17,6 +24,12 @@ AVFormatContext *ogvFormatContext = NULL;
 AVFormatContext *flvFormatContext = NULL;
 
 AVFormatContext blankFormatContext;
+
+AVPacket *aviPacket = NULL;
+AVPacket *mkvPacket = NULL;
+AVPacket *mp4Packet = NULL;
+AVPacket *ogvPacket = NULL;
+AVPacket *flvPacket = NULL;
 
 /**
  * Test to make sure that an FFMPEG error message can be found.
@@ -525,6 +538,10 @@ void testReadPackets(AVFormatContext *formatContext) {
     BOOST_REQUIRE( NULL == packet);
 }
 
+/**
+ * Test to make sure that a packet can be read from all the different container
+ * types.
+ */
 BOOST_AUTO_TEST_CASE( test_read_next_packet )
 {
 
@@ -647,6 +664,82 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_read_flv_packets )
 {
 
     testReadPackets(flvFormatContext);
+}
+
+/**
+ * Test to make sure that a packets type can be found when read from all the
+ * different container types.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_find_packet_type )
+{
+
+    aviFormatContext =
+            transcode::util::retrieveAVFormatContext(VIDEO_AVI);
+    mkvFormatContext =
+            transcode::util::retrieveAVFormatContext(VIDEO_MKV);
+    mp4FormatContext =
+            transcode::util::retrieveAVFormatContext(VIDEO_MP4);
+    ogvFormatContext =
+            transcode::util::retrieveAVFormatContext(VIDEO_OGV);
+    flvFormatContext =
+            transcode::util::retrieveAVFormatContext(VIDEO_FLV);
+
+    aviPacket = transcode::util::readNextPacket(aviFormatContext);
+    mkvPacket = transcode::util::readNextPacket(mkvFormatContext);
+    mp4Packet = transcode::util::readNextPacket(mp4FormatContext);
+    ogvPacket = transcode::util::readNextPacket(ogvFormatContext);
+    flvPacket = transcode::util::readNextPacket(flvFormatContext);
+
+    (void) transcode::util::findPacketType(aviPacket, aviFormatContext);
+    (void) transcode::util::findPacketType(mkvPacket, mkvFormatContext);
+    (void) transcode::util::findPacketType(mp4Packet, mp4FormatContext);
+    (void) transcode::util::findPacketType(ogvPacket, ogvFormatContext);
+    (void) transcode::util::findPacketType(flvPacket, flvFormatContext);
+}
+
+/**
+ * Test to make sure the right packet type is found for avi packets.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_find_avi_packet_type )
+{
+
+    BOOST_CHECK_EQUAL( FRAME_TYPE_AVI, transcode::util::findPacketType(aviPacket, aviFormatContext));
+}
+
+/**
+ * Test to make sure the right packet type is found for mkv packets.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_find_mkv_packet_type )
+{
+
+    BOOST_CHECK_EQUAL( FRAME_TYPE_MKV, transcode::util::findPacketType(mkvPacket, mkvFormatContext));
+}
+
+/**
+ * Test to make sure the right packet type is found for mp4 packets.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_find_mp4_packet_type )
+{
+
+    BOOST_CHECK_EQUAL( FRAME_TYPE_MP4, transcode::util::findPacketType(mp4Packet, mp4FormatContext));
+}
+
+/**
+ * Test to make sure the right packet type is found for ogv packets.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_find_ogv_packet_type )
+{
+
+    BOOST_CHECK_EQUAL( FRAME_TYPE_OGV, transcode::util::findPacketType(ogvPacket, ogvFormatContext));
+}
+
+/**
+ * Test to make sure the right packet type is found for flv packets.
+ */
+BOOST_AUTO_TEST_CASE( test_ffmpeg_find_flv_packet_type )
+{
+
+    BOOST_CHECK_EQUAL( FRAME_TYPE_FLV, transcode::util::findPacketType(flvPacket, flvFormatContext));
 }
 
 /**
