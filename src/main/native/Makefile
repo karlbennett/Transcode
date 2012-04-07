@@ -26,7 +26,7 @@ SRC = util/util_file.cpp util/util_media_ffmpeg.cpp util/util_ffmpeg.cpp media.c
 OBJ = $(SRC:.cpp=.so)
 
 # The required head files.
-INCLUDES = -D__STDC_CONSTANT_MACROS -I./ -I/usr/include/
+INCLUDES = -D__STDC_CONSTANT_MACROS -I./ -I/opt/libav/include/ -I/usr/include/
 
 # The required libraries. Leaving here for later static compiling.
 # LIBS = -L/usr/lib/ -lavformat -lavcodec -lavutil -lboost_filesystem

@@ -191,7 +191,7 @@ MediaFileMetaData findMediaFileMetaData(const std::string& path)
 
     // Clean up the lib av structs.
     closeCodecs(formatContext);
-    av_close_input_file(formatContext);
+    avformat_close_input(&formatContext);
 
     // Then lastly return a fully populated MediaFileDetail struct.
     return MediaFileMetaData(container, path, fileName, fileSize);

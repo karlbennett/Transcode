@@ -87,7 +87,7 @@ static std::map<std::string, std::string> initialiseNameToMimeType() {
 
     nameToMimeType["asf"] = "video/x-ms-asf";
     nameToMimeType["avi"] = "video/x-msvideo";
-    nameToMimeType["matroska"] = "video/x-matroska";
+    nameToMimeType["matroska,webm"] = "video/x-matroska";
     nameToMimeType["mpeg"] = "video/mpeg";
     nameToMimeType["ogg"] = "application/ogg";
     nameToMimeType["mov,mp4,m4a,3gp,3g2,mj2"] = "video/quicktime";
@@ -175,7 +175,7 @@ static std::string extractLanguage(const AVStream& stream) {
 
     // Try and find the language value by inspecting the streams metadata.
     // Supposedly this is paired to the key "language".
-    AVMetadataTag *metadata = av_metadata_get(stream.metadata, "language", NULL,
+    AVDictionaryEntry *metadata = av_dict_get(stream.metadata, "language", NULL,
             0);
 
     return metadata == NULL ? "" : metadata->value;
@@ -328,6 +328,44 @@ static void checkFormatContext(const AVFormatContext *formatContext)
         throw FFMPEGException(
                 "The AVFormatContext IO has not been initialised.");
     }
+
+    if (NULL == formatContext->iformat) {
+        throw FFMPEGException(
+                "The AVFormatContext does not contain an input format.");
+    }
+
+    if (0 >= formatContext->nb_streams) {
+        throw FFMPEGException(
+                "The AVFormatContext does not contain any streams.");
+    }
+
+    // If we only have one stream check to make sure that the file we are
+    // working with is no a text file.
+    if (1 == formatContext->nb_streams) {
+
+        AVStream *stream = formatContext->streams[0];
+
+        if (NULL == stream) {
+
+            throw FFMPEGException(
+                    "The AVFormatContext does not contain any streams.");
+        }
+
+        AVCodecContext *codec = stream->codec;
+
+        if (NULL == codec) {
+
+            throw FFMPEGException(
+                    "The AVFormatContext does not contain any codecs.");
+        }
+
+        // The CODEC_ID_ANSI seems to indecate a text file.
+        if (CODEC_ID_ANSI == codec->codec_id) {
+
+            throw FFMPEGException(
+                    "The AVFormatContext has been opened on a text file.");
+        }
+    }
 }
 
 /**
@@ -388,13 +426,12 @@ template<typename T> std::vector<T> extractMetaData(
 
 FfmpegSingleton::FfmpegSingleton() {
 
-    // Initialise the ffmpeg libav library so we can use it to inspect
+    // Initialise the libav library so we can use it to inspect
     // the media file.
-    avcodec_init();
     avcodec_register_all();
     av_register_all();
 
-    // Set the log level to quiet to stop any warnings.
+    // Set the log level to error to stop any warnings.
     av_log_set_level(AV_LOG_ERROR);
 }
 
@@ -414,9 +451,9 @@ AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
 
     // Open the media file. This will populate the AVFormatContext
     // with all the information about this media file.
-    AVFormatContext *videoFile;
+    AVFormatContext *videoFile = NULL;
 
-    int errorCode = av_open_input_file(&videoFile, filePath.c_str(), NULL, 0,
+    int errorCode = avformat_open_input(&videoFile, filePath.c_str(), NULL,
             NULL);
 
     // If an error code was returned throw an appropriate exception.
@@ -426,11 +463,13 @@ AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
 
     // Have a double try at extracting the info from the media file because
     // sometimes opening it is not enough.
-    errorCode = av_find_stream_info(videoFile);
+    errorCode = avformat_find_stream_info(videoFile, NULL);
 
     if (0 > errorCode) {
         throw FFMPEGException(errorCode);
     }
+
+    checkFormatContext(videoFile);
 
     return videoFile;
 }
@@ -499,15 +538,9 @@ AVPacket* FfmpegSingleton::readNextPacket(AVFormatContext *videoFile) const
     // If we have reached the end of the file return NULL;
     if (AVERROR_EOF == error) return NULL;
 
-    // If we have received an io error there is a chance it could be
-    // indicating an EOF. This seems to happen all the time with ogg files.
-    if (AVERROR_IO == error) {
-
-        ByteIOContext *ioContext = videoFile->pb;
-
-        // Check to see if we have reached the end of the file.
-        if (NULL != ioContext && ioContext->eof_reached) return NULL;
-    }
+    // Double check to see if we have reached the end of the file.
+    AVIOContext *ioContext = videoFile->pb;
+    if (NULL != ioContext && ioContext->eof_reached) return NULL;
 
     // Otherwise throw an exception with the error message.
     throw FFMPEGException(ffmpegErrorMessage(error));

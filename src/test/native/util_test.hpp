@@ -55,6 +55,7 @@ const std::string THEORA_VIDEO = "video/x-theora";
 const int VIDEO_WIDTH = 1280;
 const int VIDEO_HEIGHT = 544;
 const int VIDEO_FRAME_RATE = 0;
+const int VIDEO_MKV_FRAME_RATE = 6;
 const int VIDEO_FLV_FRAME_RATE = 1;
 
 // The language types that will be tested.
@@ -217,7 +218,7 @@ void testMKVVideo(std::vector<transcode::VideoMetaData> videoMetaData) {
     BOOST_CHECK_EQUAL( videoMetaData[0].mimeType, H264_VIDEO);
     BOOST_CHECK_EQUAL( videoMetaData[0].width, VIDEO_WIDTH);
     BOOST_CHECK_EQUAL( videoMetaData[0].height, VIDEO_HEIGHT);
-    BOOST_CHECK_EQUAL( videoMetaData[0].frameRate, VIDEO_FRAME_RATE);
+    BOOST_CHECK_EQUAL( videoMetaData[0].frameRate, VIDEO_MKV_FRAME_RATE);
 }
 
 /**

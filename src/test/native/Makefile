@@ -29,10 +29,10 @@ LIB_TEST_DIR = $(TEST_CLASSES_DIR)lib-test/
 CCC = g++
 
 # The required header files for the native code.
-INCLUDES = -D__STDC_CONSTANT_MACROS -I/usr/include/ -I$(SRC_DIR) -I./
+INCLUDES = -D__STDC_CONSTANT_MACROS -I/opt/libav/include/ -I/usr/include/ -I$(SRC_DIR) -I./
 
-LIBS = -L/usr/lib/i386-linux-gnu -L/usr/lib/ -L$(LIB_DIR) -lboost_test_exec_monitor \
--lavformat -lavcodec -lavutil -lboost_filesystem -lutil_file -lutil_ffmpeg -lutil_media_ffmpeg
+LIBS = -L/usr/lib/i386-linux-gnu -L/opt/libav/lib/ -L/usr/lib/ -L$(LIB_DIR) -lboost_test_exec_monitor \
+-lavformat -lavcodec -lavutil -lx264 -lboost_filesystem -lutil_file -lutil_ffmpeg -lutil_media_ffmpeg
 
 # The C++ test source files.
 SRC_TEST_ONE = example_test.cpp
@@ -64,12 +64,12 @@ all:
 	$(COMPILE_NATIVE_FOUR_CMD)
 	$(COMPILE_NATIVE_FIVE_CMD)
 	$(COMPILE_NATIVE_SIX_CMD)
-	LD_LIBRARY_PATH=$(LIB_DIR) $(BIN_TEST_ONE)
-	LD_LIBRARY_PATH=$(LIB_DIR) $(BIN_TEST_TWO)
-	LD_LIBRARY_PATH=$(LIB_DIR) $(BIN_TEST_THREE)
-	LD_LIBRARY_PATH=$(LIB_DIR) $(BIN_TEST_FOUR)
-	LD_LIBRARY_PATH=$(LIB_DIR) $(BIN_TEST_FIVE)
-	LD_LIBRARY_PATH=$(LIB_DIR) $(BIN_TEST_SIX)
+	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_ONE)
+	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_TWO)
+	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_THREE)
+	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_FOUR)
+	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_FIVE)
+	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_SIX)
 
 clean:
 	rm $(LIB_TEST_DIR)*
