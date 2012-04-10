@@ -340,7 +340,7 @@ static void checkFormatContext(const AVFormatContext *formatContext)
     }
 
     // If we only have one stream check to make sure that the file we are
-    // working with is no a text file.
+    // working with is not a text file.
     if (1 == formatContext->nb_streams) {
 
         AVStream *stream = formatContext->streams[0];
@@ -359,7 +359,7 @@ static void checkFormatContext(const AVFormatContext *formatContext)
                     "The AVFormatContext does not contain any codecs.");
         }
 
-        // The CODEC_ID_ANSI seems to indecate a text file.
+        // The CODEC_ID_ANSI seems to indicate a text file.
         if (CODEC_ID_ANSI == codec->codec_id) {
 
             throw FFMPEGException(
