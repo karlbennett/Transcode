@@ -19,6 +19,247 @@ const AVMediaType FRAME_TYPE_MP4 = AVMEDIA_TYPE_AUDIO;
 const AVMediaType FRAME_TYPE_OGV = AVMEDIA_TYPE_AUDIO;
 const AVMediaType FRAME_TYPE_FLV = AVMEDIA_TYPE_AUDIO;
 
+struct FormatContextFixture {
+
+    FormatContextFixture() : formatContext(NULL) {}
+    FormatContextFixture(AVFormatContext *fc) : formatContext(fc) {}
+
+    virtual ~FormatContextFixture() {
+        avformat_close_input(&formatContext);
+    }
+
+    AVFormatContext *formatContext;
+};
+
+struct AVIFormatContextFixture: public FormatContextFixture {
+
+    AVIFormatContextFixture() :
+            FormatContextFixture(
+                    transcode::util::retrieveAVFormatContext(VIDEO_AVI)) {
+    }
+};
+
+struct MKVFormatContextFixture: public FormatContextFixture {
+
+    MKVFormatContextFixture() :
+            FormatContextFixture(
+                    transcode::util::retrieveAVFormatContext(VIDEO_MKV)) {
+    }
+};
+
+struct MP4FormatContextFixture: public FormatContextFixture {
+
+    MP4FormatContextFixture() :
+            FormatContextFixture(
+                    transcode::util::retrieveAVFormatContext(VIDEO_MP4)) {
+    }
+};
+
+struct OGVFormatContextFixture: public FormatContextFixture {
+
+    OGVFormatContextFixture() :
+            FormatContextFixture(
+                    transcode::util::retrieveAVFormatContext(VIDEO_OGV)) {
+    }
+};
+
+struct FLVFormatContextFixture: public FormatContextFixture {
+
+    FLVFormatContextFixture() :
+            FormatContextFixture(
+                    transcode::util::retrieveAVFormatContext(VIDEO_FLV)) {
+    }
+};
+
+struct MultiNullFormatContextFixture {
+
+    MultiNullFormatContextFixture() :
+            aviFormatContext(NULL),
+                    mkvFormatContext(NULL),
+                    mp4FormatContext(NULL),
+                    ogvFormatContext(NULL),
+                    flvFormatContext(NULL) {
+    }
+    MultiNullFormatContextFixture(AVFormatContext *aviFc,
+            AVFormatContext *mkvFc,
+            AVFormatContext *mp4Fc,
+            AVFormatContext *ogvFc,
+            AVFormatContext *flvFc) :
+            aviFormatContext(aviFc),
+                    mkvFormatContext(mkvFc),
+                    mp4FormatContext(mp4Fc),
+                    ogvFormatContext(ogvFc),
+                    flvFormatContext(flvFc) {
+    }
+
+    virtual ~MultiNullFormatContextFixture() {
+        avformat_close_input(&aviFormatContext);
+        avformat_close_input(&mkvFormatContext);
+        avformat_close_input(&mp4FormatContext);
+        avformat_close_input(&ogvFormatContext);
+        avformat_close_input(&flvFormatContext);
+    }
+
+    AVFormatContext *aviFormatContext;
+    AVFormatContext *mkvFormatContext;
+    AVFormatContext *mp4FormatContext;
+    AVFormatContext *ogvFormatContext;
+    AVFormatContext *flvFormatContext;
+};
+
+struct MultiFormatContextFixture : public MultiNullFormatContextFixture {
+
+    MultiFormatContextFixture() :
+        MultiNullFormatContextFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_AVI),
+                transcode::util::retrieveAVFormatContext(VIDEO_MKV),
+                transcode::util::retrieveAVFormatContext(VIDEO_MP4),
+                transcode::util::retrieveAVFormatContext(VIDEO_OGV),
+                transcode::util::retrieveAVFormatContext(VIDEO_FLV)) {
+    }
+
+    virtual ~MultiFormatContextFixture() {}
+};
+
+struct PacketFixture : public FormatContextFixture {
+
+    PacketFixture() : FormatContextFixture(NULL), packet(NULL) {}
+    PacketFixture(AVFormatContext *fc) :
+        FormatContextFixture(fc),
+        packet(transcode::util::readNextPacket(formatContext)) {}
+    PacketFixture(AVFormatContext *fc, AVPacket *p) :
+                FormatContextFixture(fc), packet(p) {}
+
+    ~PacketFixture() {
+        av_free_packet(packet);
+    }
+
+    AVPacket *packet;
+};
+
+struct AVINullPacketFixture : public PacketFixture {
+
+    AVINullPacketFixture() :
+        PacketFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_AVI),
+                NULL) {}
+};
+
+struct AVIPacketFixture : public PacketFixture {
+
+    AVIPacketFixture() :
+        PacketFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_AVI)) {}
+};
+
+struct MKVNullPacketFixture : public PacketFixture {
+
+    MKVNullPacketFixture() :
+        PacketFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_MKV),
+                NULL) {}
+};
+
+struct MKVPacketFixture : public PacketFixture {
+
+    MKVPacketFixture() :
+        PacketFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_MKV)) {}
+};
+
+struct MP4NullPacketFixture : public PacketFixture {
+
+    MP4NullPacketFixture() :
+        PacketFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_MP4),
+                NULL) {}
+};
+
+struct MP4PacketFixture : public PacketFixture {
+
+    MP4PacketFixture() :
+        PacketFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_MP4)) {}
+};
+
+struct OGVNullPacketFixture : public PacketFixture {
+
+    OGVNullPacketFixture() :
+        PacketFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_OGV),
+                NULL) {}
+};
+
+struct OGVPacketFixture : public PacketFixture {
+
+    OGVPacketFixture() :
+        PacketFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_OGV)) {}
+};
+
+struct FLVNullPacketFixture : public PacketFixture {
+
+    FLVNullPacketFixture() :
+        PacketFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_FLV),
+                NULL) {}
+};
+
+struct FLVPacketFixture : public PacketFixture {
+
+    FLVPacketFixture() :
+        PacketFixture(
+                transcode::util::retrieveAVFormatContext(VIDEO_FLV)) {}
+};
+
+struct MultiNullPacketFixture : public MultiFormatContextFixture {
+
+    MultiNullPacketFixture() : MultiFormatContextFixture(),
+            aviPacket(NULL), mkvPacket(NULL), mp4Packet(NULL),
+            ogvPacket(NULL), flvPacket(NULL)
+            {}
+
+    ~MultiNullPacketFixture() {
+        av_free_packet(aviPacket);
+        av_free_packet(mkvPacket);
+        av_free_packet(mp4Packet);
+        av_free_packet(ogvPacket);
+        av_free_packet(flvPacket);
+    }
+
+    AVPacket *aviPacket;
+    AVPacket *mkvPacket;
+    AVPacket *mp4Packet;
+    AVPacket *ogvPacket;
+    AVPacket *flvPacket;
+};
+
+struct MultiPacketFixture : public MultiFormatContextFixture {
+
+    MultiPacketFixture() : MultiFormatContextFixture(),
+            aviPacket(transcode::util::readNextPacket(aviFormatContext)),
+            mkvPacket(transcode::util::readNextPacket(mkvFormatContext)),
+            mp4Packet(transcode::util::readNextPacket(mp4FormatContext)),
+            ogvPacket(transcode::util::readNextPacket(ogvFormatContext)),
+            flvPacket(transcode::util::readNextPacket(flvFormatContext))
+            {}
+
+    ~MultiPacketFixture() {
+        std::cout << "Multi packets cleared." << std::endl;
+        av_free_packet(aviPacket);
+        av_free_packet(mkvPacket);
+        av_free_packet(mp4Packet);
+        av_free_packet(ogvPacket);
+        av_free_packet(flvPacket);
+    }
+
+    AVPacket *aviPacket;
+    AVPacket *mkvPacket;
+    AVPacket *mp4Packet;
+    AVPacket *ogvPacket;
+    AVPacket *flvPacket;
+};
+
 /**
  * Test to make sure that an FFMPEG error message can be found.
  */
@@ -44,14 +285,14 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_error_message_not_found )
  * Test to make sure that a format context can be found for all
  * the video files.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_retrieve_format_context, MultiNullFormatContextFixture )
 {
 
-    (void) transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-    (void) transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-    (void) transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-    (void) transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-    (void) transcode::util::retrieveAVFormatContext(VIDEO_FLV);
+    aviFormatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
+    mkvFormatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
+    mp4FormatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
+    ogvFormatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
+    flvFormatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
 }
 
 /**
@@ -102,29 +343,13 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_format_context_non_media_file )
  * Test to make sure that subtitle metadata can be extracted from a format
  * context.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_subtitles )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_subtitles, MultiFormatContextFixture )
 {
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-    (void) transcode::util::extractSubtitleDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-    (void) transcode::util::extractSubtitleDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-    (void) transcode::util::extractSubtitleDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-    (void) transcode::util::extractSubtitleDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
-    (void) transcode::util::extractSubtitleDetails(formatContext);
-    avformat_close_input(&formatContext);
+    (void) transcode::util::extractSubtitleDetails(aviFormatContext);
+    (void) transcode::util::extractSubtitleDetails(mkvFormatContext);
+    (void) transcode::util::extractSubtitleDetails(mp4FormatContext);
+    (void) transcode::util::extractSubtitleDetails(ogvFormatContext);
+    (void) transcode::util::extractSubtitleDetails(flvFormatContext);
 }
 
 /**
@@ -153,124 +378,78 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_subtitles_from_blank_format_context )
  * Test to make sure that subtitle metadata can be extracted from a format
  * context built from an avi file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_avi_subtitles )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_avi_subtitles, AVIFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
             transcode::util::extractSubtitleDetails(formatContext);
 
     testAVISubtitles(subtitleMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that subtitle metadata can be extracted from a format
  * context built from an mkv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mkv_subtitles )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_mkv_subtitles, MKVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
             transcode::util::extractSubtitleDetails(formatContext);
 
     testMKVSubtitles(subtitleMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that subtitle metadata can be extracted from a format
  * context built from an MP4 file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mp4_subtitles )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_mp4_subtitles, MP4FormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
             transcode::util::extractSubtitleDetails(formatContext);
 
     testMP4Subtitles(subtitleMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that subtitle metadata can be extracted from a format
  * context built from an ogv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_ogv_subtitles )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_ogv_subtitles, OGVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
             transcode::util::extractSubtitleDetails(formatContext);
 
     testOGVSubtitles(subtitleMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that subtitle metadata can be extracted from a format
  * context built from an flv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_flv_subtitles )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_flv_subtitles, FLVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
 
     std::vector<transcode::SubtitleMetaData> subtitleMetaData =
             transcode::util::extractSubtitleDetails(formatContext);
 
     testFLVSubtitles(subtitleMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that audio metadata can be extracted from a format
  * context.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_audio )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_audio, MultiFormatContextFixture )
 {
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-    (void) transcode::util::extractAudioDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-    (void) transcode::util::extractAudioDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-    (void) transcode::util::extractAudioDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-    (void) transcode::util::extractAudioDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
-    (void) transcode::util::extractAudioDetails(formatContext);
-    avformat_close_input(&formatContext);
+    (void) transcode::util::extractAudioDetails(aviFormatContext);
+    (void) transcode::util::extractAudioDetails(aviFormatContext);
+    (void) transcode::util::extractAudioDetails(aviFormatContext);
+    (void) transcode::util::extractAudioDetails(aviFormatContext);
+    (void) transcode::util::extractAudioDetails(aviFormatContext);
 }
 
 /**
@@ -299,124 +478,78 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_audio_from_blank_format_context )
  * Test to make sure that audio metadata can be extracted from a format
  * context built from an avi file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_avi_audio )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_avi_audio, AVIFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
 
     std::vector<transcode::AudioMetaData> audioMetaData =
             transcode::util::extractAudioDetails(formatContext);
 
     testAVIAudio(audioMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that audio metadata can be extracted from a format
  * context built from an mkv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mkv_audio )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_mkv_audio, MKVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
 
     std::vector<transcode::AudioMetaData> audioMetaData =
             transcode::util::extractAudioDetails(formatContext);
 
     testMKVAudio(audioMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that audio metadata can be extracted from a format
  * context built from an MP4 file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mp4_audio )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_mp4_audio, MP4FormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
 
     std::vector<transcode::AudioMetaData> audioMetaData =
             transcode::util::extractAudioDetails(formatContext);
 
     testMP4Audio(audioMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that audio metadata can be extracted from a format
  * context built from an ogv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_ogv_audio )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_ogv_audio, OGVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
 
     std::vector<transcode::AudioMetaData> audioMetaData =
             transcode::util::extractAudioDetails(formatContext);
 
     testOGVAudio(audioMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that audio metadata can be extracted from a format
  * context built from an flv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_flv_audio )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_flv_audio, FLVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
 
     std::vector<transcode::AudioMetaData> audioMetaData =
             transcode::util::extractAudioDetails(formatContext);
 
     testFLVAudio(audioMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that video metadata can be extracted from a format
  * context.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_video )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_video, MultiFormatContextFixture )
 {
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-    (void) transcode::util::extractVideoDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-    (void) transcode::util::extractVideoDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-    (void) transcode::util::extractVideoDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-    (void) transcode::util::extractVideoDetails(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
-    (void) transcode::util::extractVideoDetails(formatContext);
-    avformat_close_input(&formatContext);
+    (void) transcode::util::extractVideoDetails(aviFormatContext);
+    (void) transcode::util::extractVideoDetails(mkvFormatContext);
+    (void) transcode::util::extractVideoDetails(mp4FormatContext);
+    (void) transcode::util::extractVideoDetails(ogvFormatContext);
+    (void) transcode::util::extractVideoDetails(flvFormatContext);
 }
 
 /**
@@ -445,124 +578,78 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_video_from_blank_format_context )
  * Test to make sure that video metadata can be extracted from a format
  * context built from an avi file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_avi_video )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_avi_video, AVIFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
 
     std::vector<transcode::VideoMetaData> videoMetaData =
             transcode::util::extractVideoDetails(formatContext);
 
     testAVIVideo(videoMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that video metadata can be extracted from a format
  * context built from an mkv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mkv_video )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_mkv_video, MKVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
 
     std::vector<transcode::VideoMetaData> videoMetaData =
             transcode::util::extractVideoDetails(formatContext);
 
     testMKVVideo(videoMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that video metadata can be extracted from a format
  * context built from an MP4 file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_mp4_video )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_mp4_video, MP4FormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
 
     std::vector<transcode::VideoMetaData> videoMetaData =
             transcode::util::extractVideoDetails(formatContext);
 
     testMP4Video(videoMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that video metadata can be extracted from a format
  * context built from an ogv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_ogv_video )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_ogv_video, OGVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
 
     std::vector<transcode::VideoMetaData> videoMetaData =
             transcode::util::extractVideoDetails(formatContext);
 
     testOGVVideo(videoMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that video metadata can be extracted from a format
  * context built from an flv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_extract_flv_video )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_extract_flv_video, FLVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
 
     std::vector<transcode::VideoMetaData> videoMetaData =
             transcode::util::extractVideoDetails(formatContext);
 
     testFLVVideo(videoMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that container metadata can be extracted from a format
  * context.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_build_container )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_build_container, MultiFormatContextFixture  )
 {
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-    (void) transcode::util::buildContainerDetail(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-    (void) transcode::util::buildContainerDetail(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-    (void) transcode::util::buildContainerDetail(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-    (void) transcode::util::buildContainerDetail(formatContext);
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
-    (void) transcode::util::buildContainerDetail(formatContext);
-    avformat_close_input(&formatContext);
+    (void) transcode::util::buildContainerDetail(aviFormatContext);
+    (void) transcode::util::buildContainerDetail(mkvFormatContext);
+    (void) transcode::util::buildContainerDetail(mp4FormatContext);
+    (void) transcode::util::buildContainerDetail(ogvFormatContext);
+    (void) transcode::util::buildContainerDetail(flvFormatContext);
 }
 
 /**
@@ -591,95 +678,65 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_retrieve_container_from_blank_format_context )
  * Test to make sure that container metadata can be extracted from a format
  * context built from an avi file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_build_avi_container )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_build_avi_container, AVIFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
 
     transcode::ContainerMetaData containerMetaData =
             transcode::util::buildContainerDetail(formatContext);
 
     testAVIContainer(containerMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that container metadata can be extracted from a format
  * context built from an mkv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_build_mkv_container )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_build_mkv_container, MKVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
 
     transcode::ContainerMetaData containerMetaData =
             transcode::util::buildContainerDetail(formatContext);
 
     testMKVContainer(containerMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that container metadata can be extracted from a format
  * context built from an MP4 file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_build_mp4_container )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_build_mp4_container, MP4FormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
 
     transcode::ContainerMetaData containerMetaData =
             transcode::util::buildContainerDetail(formatContext);
 
     testMP4Container(containerMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that container metadata can be extracted from a format
  * context built from an ogv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_build_ogv_container )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_build_ogv_container, OGVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
 
     transcode::ContainerMetaData containerMetaData =
             transcode::util::buildContainerDetail(formatContext);
 
     testOGVContainer(containerMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that container metadata can be extracted from a format
  * context built from an flv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_build_flv_container )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_build_flv_container, FLVFormatContextFixture )
 {
-
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
 
     transcode::ContainerMetaData containerMetaData =
             transcode::util::buildContainerDetail(formatContext);
 
     testFLVContainer(containerMetaData);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
@@ -709,30 +766,14 @@ void testReadPackets(AVFormatContext *formatContext) {
  * Test to make sure that a packet can be read from all the different container
  * types.
  */
-BOOST_AUTO_TEST_CASE( test_read_next_packet )
+BOOST_FIXTURE_TEST_CASE( test_read_next_packet, MultiFormatContextFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-    av_free_packet(transcode::util::readNextPacket(formatContext));
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-    av_free_packet(transcode::util::readNextPacket(formatContext));
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-    av_free_packet(transcode::util::readNextPacket(formatContext));
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-    av_free_packet(transcode::util::readNextPacket(formatContext));
-    avformat_close_input(&formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
-    av_free_packet(transcode::util::readNextPacket(formatContext));
-    avformat_close_input(&formatContext);
+    av_free_packet(transcode::util::readNextPacket(aviFormatContext));
+    av_free_packet(transcode::util::readNextPacket(mkvFormatContext));
+    av_free_packet(transcode::util::readNextPacket(mp4FormatContext));
+    av_free_packet(transcode::util::readNextPacket(ogvFormatContext));
+    av_free_packet(transcode::util::readNextPacket(flvFormatContext));
 }
 
 BOOST_AUTO_TEST_CASE( test_read_next_packet_from_null )
@@ -753,321 +794,188 @@ BOOST_AUTO_TEST_CASE( test_read_next_packet_from_blank_format_context )
  * Test to make sure that a packet can be read from a format context built
  * from an avi file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_read_avi_packet )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_avi_packet, AVINullPacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
+    packet = transcode::util::readNextPacket(formatContext);
 
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-
-    BOOST_REQUIRE( NULL != transcode::util::readNextPacket(formatContext));
-
-    avformat_close_input(&formatContext);
+    BOOST_REQUIRE( NULL != packet );
 }
 
 /**
  * Test to make sure that all the packets can be read from a format context
  * built from an avi file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_read_avi_packets )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_avi_packets, AVIFormatContextFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-
     testReadPackets(formatContext);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that a packet can be read from a format context built
  * from an mkv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_read_mkv_packet )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_mkv_packet, MKVNullPacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
+    packet = transcode::util::readNextPacket(formatContext);
 
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-
-    BOOST_REQUIRE( NULL != transcode::util::readNextPacket(formatContext));
-
-    avformat_close_input(&formatContext);
+    BOOST_REQUIRE( NULL != packet);
 }
 
 /**
  * Test to make sure that all the packets can be read from a format context
  * built from an mkv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_read_mkv_packets )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_mkv_packets, MKVFormatContextFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-
     testReadPackets(formatContext);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that a packet can be read from a format context built
  * from an mp4 file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_read_mp4_packet )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_mp4_packet, MP4NullPacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
+    packet = transcode::util::readNextPacket(formatContext);
 
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-
-    BOOST_REQUIRE( NULL != transcode::util::readNextPacket(formatContext));
-
-    avformat_close_input(&formatContext);
+    BOOST_REQUIRE( NULL != packet);
 }
 
 /**
  * Test to make sure that all the packets can be read from a format context
  * built from an mp4 file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_read_mp4_packets )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_mp4_packets, MP4FormatContextFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-
     testReadPackets(formatContext);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that a packet can be read from a format context built
  * from an ogv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_read_ogv_packet )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_ogv_packet, OGVNullPacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
+    packet = transcode::util::readNextPacket(formatContext);
 
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-
-    BOOST_REQUIRE( NULL != transcode::util::readNextPacket(formatContext));
-
-    avformat_close_input(&formatContext);
+    BOOST_REQUIRE( NULL != packet);
 }
 
 /**
  * Test to make sure that all the packets can be read from a format context
  * built from an ogv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_read_ogv_packets )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_ogv_packets, OGVFormatContextFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-
     testReadPackets(formatContext);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that a packet can be read from a format context built
  * from an flv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_read_flv_packet )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_flv_packet, FLVNullPacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
+    packet = transcode::util::readNextPacket(formatContext);
 
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
-
-    BOOST_REQUIRE( NULL != transcode::util::readNextPacket(formatContext));
-
-    avformat_close_input(&formatContext);
+    BOOST_REQUIRE( NULL != packet);
 }
 
 /**
  * Test to make sure that all the packets can be read from a format context
  * built from an flv file.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_read_flv_packets )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_flv_packets, FLVFormatContextFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
-
     testReadPackets(formatContext);
-
-    avformat_close_input(&formatContext);
 }
 
 /**
  * Test to make sure that a packets type can be found when read from all the
  * different container types.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_find_packet_type )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_find_packet_type, MultiPacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-    AVPacket *packet = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-    packet = transcode::util::readNextPacket(formatContext);
-    (void) transcode::util::findPacketType(packet, formatContext);
-    avformat_close_input(&formatContext);
-    av_free_packet(packet);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-    packet = transcode::util::readNextPacket(formatContext);
-    (void) transcode::util::findPacketType(packet, formatContext);
-    avformat_close_input(&formatContext);
-    av_free_packet(packet);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-    packet = transcode::util::readNextPacket(formatContext);
-    (void) transcode::util::findPacketType(packet, formatContext);
-    avformat_close_input(&formatContext);
-    av_free_packet(packet);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-    packet = transcode::util::readNextPacket(formatContext);
-    (void) transcode::util::findPacketType(packet, formatContext);
-    avformat_close_input(&formatContext);
-    av_free_packet(packet);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
-    packet = transcode::util::readNextPacket(formatContext);
-    (void) transcode::util::findPacketType(packet, formatContext);
-    avformat_close_input(&formatContext);
-    av_free_packet(packet);
+    (void) transcode::util::findPacketType(aviPacket, aviFormatContext);
+    (void) transcode::util::findPacketType(mkvPacket, mkvFormatContext);
+    (void) transcode::util::findPacketType(mp4Packet, mp4FormatContext);
+    (void) transcode::util::findPacketType(ogvPacket, ogvFormatContext);
+    (void) transcode::util::findPacketType(flvPacket, flvFormatContext);
 }
 
 /**
  * Test to make sure the right packet type is found for avi packets.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_find_avi_packet_type )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_find_avi_packet_type, AVIPacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-    AVPacket *packet = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-    packet = transcode::util::readNextPacket(formatContext);
-
-    BOOST_CHECK_EQUAL( FRAME_TYPE_AVI,
+    BOOST_REQUIRE_EQUAL( FRAME_TYPE_AVI,
             transcode::util::findPacketType(packet, formatContext));
-
-    avformat_close_input(&formatContext);
-    av_free_packet(packet);
 }
 
 /**
  * Test to make sure the right packet type is found for mkv packets.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_find_mkv_packet_type )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_find_mkv_packet_type, MKVPacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-    AVPacket *packet = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-    packet = transcode::util::readNextPacket(formatContext);
-
-    BOOST_CHECK_EQUAL( FRAME_TYPE_MKV,
+    BOOST_REQUIRE_EQUAL( FRAME_TYPE_MKV,
             transcode::util::findPacketType(packet, formatContext));
-
-    avformat_close_input(&formatContext);
-    av_free_packet(packet);
 }
 
 /**
  * Test to make sure the right packet type is found for mp4 packets.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_find_mp4_packet_type )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_find_mp4_packet_type, MP4PacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-    AVPacket *packet = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-    packet = transcode::util::readNextPacket(formatContext);
-
-    BOOST_CHECK_EQUAL( FRAME_TYPE_MP4,
+    BOOST_REQUIRE_EQUAL( FRAME_TYPE_MP4,
             transcode::util::findPacketType(packet, formatContext));
-
-    avformat_close_input(&formatContext);
-    av_free_packet(packet);
 }
 
 /**
  * Test to make sure the right packet type is found for ogv packets.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_find_ogv_packet_type )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_find_ogv_packet_type, OGVPacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-    AVPacket *packet = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-    packet = transcode::util::readNextPacket(formatContext);
-
-    BOOST_CHECK_EQUAL( FRAME_TYPE_OGV,
+    BOOST_REQUIRE_EQUAL( FRAME_TYPE_OGV,
             transcode::util::findPacketType(packet, formatContext));
-
-    avformat_close_input(&formatContext);
-    av_free_packet(packet);
 }
 
 /**
  * Test to make sure the right packet type is found for flv packets.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_find_flv_packet_type )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_find_flv_packet_type, FLVPacketFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-    AVPacket *packet = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
-    packet = transcode::util::readNextPacket(formatContext);
-
-    BOOST_CHECK_EQUAL( FRAME_TYPE_FLV,
+    BOOST_REQUIRE_EQUAL( FRAME_TYPE_FLV,
             transcode::util::findPacketType(packet, formatContext));
-
-    avformat_close_input(&formatContext);
-    av_free_packet(packet);
 }
 
 /**
  * Test to make sure that populated format contexts can have their codecs
  * closed.
  */
-BOOST_AUTO_TEST_CASE( test_ffmpeg_close_codecs )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_close_codecs, MultiFormatContextFixture )
 {
 
-    AVFormatContext *formatContext = NULL;
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
-    (void) transcode::util::closeCodecs(formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
-    (void) transcode::util::closeCodecs(formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
-    (void) transcode::util::closeCodecs(formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
-    (void) transcode::util::closeCodecs(formatContext);
-
-    formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
-    (void) transcode::util::closeCodecs(formatContext);
+    (void) transcode::util::closeCodecs(aviFormatContext);
+    (void) transcode::util::closeCodecs(mkvFormatContext);
+    (void) transcode::util::closeCodecs(mp4FormatContext);
+    (void) transcode::util::closeCodecs(ogvFormatContext);
+    (void) transcode::util::closeCodecs(flvFormatContext);
 }
 
 /**
