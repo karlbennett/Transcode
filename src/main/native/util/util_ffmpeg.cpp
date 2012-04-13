@@ -97,6 +97,21 @@ static std::map<std::string, std::string> initialiseNameToMimeType() {
     return nameToMimeType;
 }
 
+static std::map<AVMediaType, std::string> initialiseMediaTypeNames() {
+
+    std::map<AVMediaType, std::string> mediaTypeNames;
+
+    mediaTypeNames[AVMEDIA_TYPE_UNKNOWN] = "AVMEDIA_TYPE_UNKNOWN";
+    mediaTypeNames[AVMEDIA_TYPE_VIDEO] = "AVMEDIA_TYPE_VIDEO";
+    mediaTypeNames[AVMEDIA_TYPE_AUDIO] = "AVMEDIA_TYPE_AUDIO";
+    mediaTypeNames[AVMEDIA_TYPE_DATA] = "AVMEDIA_TYPE_DATA";
+    mediaTypeNames[AVMEDIA_TYPE_SUBTITLE] = "AVMEDIA_TYPE_SUBTITLE";
+    mediaTypeNames[AVMEDIA_TYPE_ATTACHMENT] = "AVMEDIA_TYPE_ATTACHMENT";
+    mediaTypeNames[AVMEDIA_TYPE_NB] = "AVMEDIA_TYPE_NB";
+
+    return mediaTypeNames;
+}
+
 /**
  * The map that is used to look up mime types from libav CodecID's.
  */
@@ -108,6 +123,13 @@ const std::map<CodecID, std::string> CODEC_TO_MIMETYPE =
  */
 const std::map<std::string, std::string> NAME_TO_MIMETYPE =
         initialiseNameToMimeType();
+
+/**
+ * The map that is used to get a name of the AVMediaType enum value as
+ * a string.
+ */
+const std::map<AVMediaType, std::string> MEDIA_TYPE_NAMES =
+        initialiseMediaTypeNames();
 
 /**
  * Find the audio or video mediatype for the provided codec id.
@@ -155,6 +177,77 @@ static std::string findContainerMimeType(const std::string& name) {
     }
 
     return mimeType;
+}
+
+/**
+ * Get the AVStream from the supplied AVFormatContext at the supplied index.
+ *
+ * @param videoFile - the format context that contains the required stream.
+ * @param index - the index of the required stream.
+ * @throws transcode::util::FFMPEGException if the index is out of bounds
+ *      or the stream is NULL.
+ */
+static AVStream* getAVStream(const AVFormatContext *videoFile, const int& index)
+        throw (transcode::util::FFMPEGException) {
+
+    if (0 > index || videoFile->nb_streams < index) {
+        std::stringstream errorMessage;
+
+        errorMessage << "The stream index is out of bounds. Index: " <<
+                index << " Number of streams: " << videoFile->nb_streams
+                << std::endl;
+
+        throw transcode::util::FFMPEGException(errorMessage.str());
+    }
+
+    AVStream *stream = videoFile->streams[index];
+    if (NULL == stream) {
+        std::stringstream errorMessage;
+
+        errorMessage << "The requested stream was NULL. Index: " <<
+                index << " Number of streams: " << videoFile->nb_streams
+                << std::endl;
+
+        throw transcode::util::FFMPEGException(errorMessage.str());
+    }
+
+    return stream;
+}
+
+/**
+ * Get the codec from the supplied AVStream and make sure it matches the
+ * supplied AVMediaType.
+ *
+ * @param stream - the stream to get the codec from.
+ * @param mediaType - the expected mediatype of the codec.
+ */
+static AVCodecContext* getCorrectCodec(const AVStream* stream,
+        const AVMediaType& mediaType) throw (transcode::util::FFMPEGException) {
+
+    AVCodecContext *codec = stream->codec;
+    if (NULL == codec) {
+        std::stringstream errorMessage;
+
+        errorMessage << "The codec context was NULL for stream: " <<
+                stream->index << std::endl;
+
+        throw transcode::util::FFMPEGException(errorMessage.str());
+    }
+
+    if (mediaType != codec->codec_type) {
+        std::stringstream errorMessage;
+
+        errorMessage << "The media type was incorrect for stream: " <<
+                stream->index << ". Expected: " <<
+                transcode::util::get(MEDIA_TYPE_NAMES, mediaType)
+                << " Actual: " <<
+                transcode::util::get(MEDIA_TYPE_NAMES, codec->codec_type)
+                << std::endl;
+
+        throw transcode::util::FFMPEGException(errorMessage.str());
+    }
+
+    return codec;
 }
 
 } /* namespace helper */
@@ -307,6 +400,15 @@ public:
     AVMediaType findPacketType(const AVPacket *packet,
             const AVFormatContext *videoFile) const throw (FFMPEGException);
 
+    AVCodecContext* openCodecContext(AVCodecContext* codecContext)
+            const throw (FFMPEGException);
+
+    std::vector<AVFrame*> decodeAudioFrame(const AVPacket *packet,
+            const AVFormatContext *videoFile) throw (FFMPEGException);
+
+    AVFrame* decodeVideoFrame(const AVPacket *packet,
+            const AVFormatContext *videoFile) throw (FFMPEGException);
+
     void closeCodecs(AVFormatContext *videoFile) const throw (FFMPEGException);
 };
 
@@ -403,7 +505,7 @@ template<typename T> std::vector<T> extractMetaData(
             errorMessage << "Media stream ("
                     << i << ") was NULL." << std::endl;
 
-            throw FFMPEGException("errorMessage");
+            throw FFMPEGException(errorMessage.str());
         }
 
         codecContext = stream->codec;
@@ -530,6 +632,8 @@ AVPacket* FfmpegSingleton::readNextPacket(AVFormatContext *videoFile) const
 
     AVPacket *packet = new AVPacket();
 
+    av_init_packet(packet);
+
     int error = av_read_frame(videoFile, packet);
 
     // If error equals 0 then we have a valid packet so return it.
@@ -553,15 +657,7 @@ AVMediaType FfmpegSingleton::findPacketType(const AVPacket *packet,
 
     int streamIndex = packet->stream_index;
 
-    AVStream *stream = videoFile->streams[streamIndex];
-    if (NULL == stream) {
-        std::stringstream errorMessage;
-
-        errorMessage << "Media stream ("
-                << streamIndex << ") was NULL." << std::endl;
-
-        throw FFMPEGException("errorMessage");
-    }
+    AVStream *stream = helper::getAVStream(videoFile, streamIndex);
 
     AVCodecContext *codecContext = stream->codec;
     if (NULL == codecContext) {
@@ -569,6 +665,97 @@ AVMediaType FfmpegSingleton::findPacketType(const AVPacket *packet,
     }
 
     return codecContext->codec_type;
+}
+
+AVCodecContext* FfmpegSingleton::openCodecContext(AVCodecContext* codecContext)
+        const throw (FFMPEGException) {
+
+    if (NULL == codecContext) throw FFMPEGException("Codec context is NULL.");
+
+    // Find the codec type for the provided codec context.
+    AVCodec *codec = avcodec_find_decoder(codecContext->codec_id);
+
+    if (NULL == codec) throw FFMPEGException("Could not find a supported codec.");
+
+    int codecOpenResult = avcodec_open2(codecContext, codec, NULL);
+
+    if (0 > codecOpenResult) {
+        std::stringstream errorMessage;
+
+        errorMessage << "Could not open " << codec->long_name << " codec. Error: "
+                << codecOpenResult << std::endl;
+
+        throw FFMPEGException(errorMessage.str());
+    }
+
+    return codecContext;
+}
+
+std::vector<AVFrame*> FfmpegSingleton::decodeAudioFrame(const AVPacket *packet,
+        const AVFormatContext *videoFile) throw (FFMPEGException) {
+
+    // Get the stream that relates to the packet, this well contain the codec
+    // that can be used to decode the packet.
+    AVStream *stream = helper::getAVStream(videoFile, packet->stream_index);
+
+    AVCodecContext *codec = helper::getCorrectCodec(stream, AVMEDIA_TYPE_AUDIO);
+
+    // Open the codec context so that it can be used for decoding.
+    codec = openCodecContext(codec);
+
+    // This vector will contain all the audio frames decoded from the supplied packet.
+    std::vector<AVFrame*> frames;
+
+    // A copy of the supplied packet that will be used during the decoding so that we
+    // don't mutate the supplied packet. If we mutated the supplied packet it would no
+    // longer be able to be correctly deleted.
+    AVPacket packetCopy;
+    packetCopy.data = packet->data;
+    packetCopy.size = packet->size;
+
+    // The frame pointer that will hold each new frame before it is placed in the vector.
+    AVFrame *decodedFrame = NULL;
+
+    int bytesDecoded = 0; // The number of bytes that were decoded in each iteration.
+
+    // This will be set to 1 if a frame has successfully been decoded with the
+    // avcodec_decode_audio4() function.
+    int frameDecoded = 0;
+
+    while (0 < packetCopy.size) {
+
+        decodedFrame = avcodec_alloc_frame(); // Create a new frame to contain the decoded data.
+
+        // Decode the packet and store it in the new frame.
+        // Also record how many bytes were decoded because it might not have been all of them.
+        bytesDecoded = avcodec_decode_audio4(codec, decodedFrame, &frameDecoded,
+                &packetCopy);
+
+        if (0 > bytesDecoded) { // If negative bytes a decoded then something went terribly wrong.
+            std::stringstream errorMessage;
+
+            errorMessage << "Error while decoding a packet from stream: " <<
+                    packet->stream_index << std::endl;
+
+            throw FFMPEGException(errorMessage.str());
+        }
+
+        // If a frame was successfully decoded add it the vector to be returned.
+        if (1 == frameDecoded) frames.push_back(decodedFrame);
+
+        // Push the data pointer down the byte array passed the last byte that we decoded.
+        packetCopy.data += bytesDecoded;
+        // Reduce the relative size of the data to the amount that is yet to be decoded.
+        packetCopy.size -= bytesDecoded;
+    }
+
+    return frames;
+}
+
+AVFrame* FfmpegSingleton::decodeVideoFrame(const AVPacket *packet,
+            const AVFormatContext *videoFile) throw (FFMPEGException) {
+
+    return NULL;
 }
 
 void FfmpegSingleton::closeCodecs(AVFormatContext *videoFile) const
@@ -647,6 +834,12 @@ AVMediaType findPacketType(const AVPacket *packet,
         const AVFormatContext *videoFile) throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().findPacketType(packet, videoFile);
+}
+
+AVCodecContext* openCodecContext(AVCodecContext* codecContext)
+        throw (FFMPEGException) {
+
+    return FfmpegSingleton::getInstance().openCodecContext(codecContext);
 }
 
 void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException) {

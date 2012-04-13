@@ -30,6 +30,8 @@ extern "C" {
 
 struct AVFormatContext;
 struct AVPacket;
+struct AVFrame;
+struct AVCodecContext;
 
 /**
  * Transcode namespace, all the top level transcode functions and classes are in
@@ -195,29 +197,42 @@ AVPacket* readNextPacket(AVFormatContext *videoFile) throw (FFMPEGException);
  *
  * @param packet - the packet that is to be checked.
  * @param videoFile - the format context that the packet was read from.
+ * @return the type of the packet.
  */
 AVMediaType findPacketType(const AVPacket *packet,
         const AVFormatContext *videoFile) throw (FFMPEGException);
+
+/**
+ * Opens the supplied ocdec context and then returns it.
+ * NOTE: This function modifies the supplied codec context, this is because
+ * of the way the libav API works. It is only returned to allow a more concise
+ * usage.
+ *
+ * @param codecContext - the codec context that is to be opened.
+ * @return the newly opened codec context.
+ * @throws an FFMPEGException if the supplied codec context could not be opened.
+ */
+AVCodecContext* openCodecContext(AVCodecContext* codecContext)
+        throw (FFMPEGException);
 
 /**
  * Decode the provided packet into decoded audio frames.
  *
  * @param packet - the packet that contains the data to decode.
  * @param videoFile - the format context that the packet was read from.
- * @return a vector of DeocdedAudioFrames generated from the provided packet.
+ * @return a vector of AVFrames generated from the provided packet.
  */
-std::vector<std::tr1::shared_ptr<DecodedAudioFrame> > decodeAudioFrame(
-        const AVPacket *packet, const AVFormatContext *videoFile)
-                throw (FFMPEGException);
+std::vector<AVFrame*> decodeAudioFrame(const AVPacket *packet,
+        const AVFormatContext *videoFile) throw (FFMPEGException);
 
 /**
  * Decode the provided packet into a decoded video frames.
  *
  * @param packet - the packet that contains the data to decode.
  * @param videoFile - the format context that the packet was read from.
- * @return a DeocdedVideoFrame generated from the provided packet.
+ * @return an AVFrame generated from the provided packet.
  */
-std::tr1::shared_ptr<DecodedVideoFrame> decodeVideoFrame(const AVPacket *packet,
+AVFrame* decodeVideoFrame(const AVPacket *packet,
         const AVFormatContext *videoFile) throw (FFMPEGException);
 
 /**
