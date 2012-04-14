@@ -801,7 +801,7 @@ std::vector<AVFrame*> FfmpegSingleton::decodeAudioFrame(const AVPacket *packet,
         helper::checkBytesDecoded(bytesDecoded, packet->stream_index);
 
         // If a frame was successfully decoded add it the vector to be returned.
-        if (1 == frameDecoded) frames.push_back(decodedFrame);
+        if (0 != frameDecoded) frames.push_back(decodedFrame);
 
         // Push the data pointer down the byte array passed the last byte that we decoded.
         packetCopy.data += bytesDecoded;
@@ -830,7 +830,7 @@ AVFrame* FfmpegSingleton::decodeVideoFrame(const AVPacket *packet,
 
     helper::checkBytesDecoded(bytesDecoded, packet->stream_index);
 
-    return 1 == frameDecoded ? decodedFrame : NULL;
+    return 0 != frameDecoded ? decodedFrame : NULL;
 }
 
 void FfmpegSingleton::closeCodecs(AVFormatContext *videoFile) const
