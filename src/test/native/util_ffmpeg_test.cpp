@@ -109,10 +109,13 @@ static AVPacket* getPacket(AVFormatContext *formatContext,
 
     av_init_packet(packet);
 
+    int error = 0;
     // Only try 1000 packets, we don't want to read the whole file.
     for (int i = 0; i < 1000; i++) {
 
-        av_read_frame(formatContext, packet);
+        error = av_read_frame(formatContext, packet);
+
+        if (0 != error) return NULL; // If there is an error quit.
 
         if (stream->index == packet->stream_index) return packet;
 
@@ -124,7 +127,7 @@ static AVPacket* getPacket(AVFormatContext *formatContext,
 }
 
 /**
- * This function will retry decoding an audio up to five times, this
+ * This function will retry decoding an audio frame up to five times, this
  * is done because some codecs first packet isn't decodable.
  *
  * @param audioPacket - the first packet to try decoding.
@@ -151,6 +154,35 @@ static std::vector<AVFrame*> retryDecodeAudioFrame(AVPacket *audioPacket,
     }
 
     return audioFrames;
+}
+
+/**
+ * This function will retry decoding a video frame up to five times, this
+ * is done because some codecs first packet isn't decodable.
+ *
+ * @param audioPacket - the first packet to try decoding.
+ * @param formatContext - the format context to use in the decoding of the packet.
+ */
+static AVFrame* retryDecodeVideoFrame(AVPacket *videoPacket,
+        AVFormatContext *formatContext) {
+
+    AVFrame *videoFrame;
+
+    // Try to decode an audio frame from one of the first five packets.
+    while (NULL != videoPacket) {
+
+        videoFrame = transcode::util::decodeVideoFrame(videoPacket,
+                formatContext);
+
+        // If we get a frame return it.
+        if (NULL != videoFrame) return videoFrame;
+
+        av_free_packet(videoPacket);
+
+        videoPacket = getPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+    }
+
+    return videoFrame;
 }
 
 struct FormatContextFixture {
@@ -1602,6 +1634,61 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_video_packet_with_blank_format_conte
 
     BOOST_REQUIRE_THROW( transcode::util::decodeVideoFrame(videoPacket,
             &blankFormatContext), transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure the a video packet can be decoded from an avi media file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_avi_video_packet, AVIFramesFixture )
+{
+
+    videoFrame = retryDecodeVideoFrame(videoPacket, formatContext);
+
+    BOOST_REQUIRE( NULL != videoFrame);
+}
+
+/**
+ * Test to make sure the a video packet can be decoded from an mkv media file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_mkv_video_packet, MKVFramesFixture )
+{
+
+    videoFrame = retryDecodeVideoFrame(videoPacket, formatContext);
+
+    BOOST_REQUIRE( NULL != videoFrame);
+}
+
+/**
+ * Test to make sure the a video packet can be decoded from an mp4 media file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_mp4_video_packet, MP4FramesFixture )
+{
+
+    videoFrame = retryDecodeVideoFrame(videoPacket, formatContext);
+
+    BOOST_REQUIRE( NULL != videoFrame);
+}
+
+/**
+ * Test to make sure the a video packet can be decoded from an ogv media file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_ogv_video_packet, OGVFramesFixture )
+{
+
+    videoFrame = retryDecodeVideoFrame(videoPacket, formatContext);
+
+    BOOST_REQUIRE( NULL != videoFrame);
+}
+
+/**
+ * Test to make sure the a video packet can be decoded from an flv media file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_flv_video_packet, FLVFramesFixture )
+{
+
+    videoFrame = transcode::util::decodeVideoFrame(videoPacket, formatContext);
+
+    BOOST_REQUIRE( NULL != videoFrame);
 }
 
 /**
