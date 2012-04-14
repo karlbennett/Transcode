@@ -12,7 +12,6 @@ extern "C" {
 
 AVFormatContext blankFormatContext;
 AVCodecContext blankCodecContext;
-AVPacket blankPacket;
 
 // The media types of the first frames in the media files.
 const AVMediaType FRAME_TYPE_AVI = AVMEDIA_TYPE_VIDEO;
@@ -1462,12 +1461,12 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_null_audio_packet, AVIFormatContextF
 }
 
 /**
- * Test to make sure an exception is thrown if a blank packet is decoded.
+ * Test to make sure an exception is thrown if a video packet is decoded.
  */
-BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_blank_audio_packet, AVIFormatContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_video_for_audio_packet, AVIFramesFixture )
 {
 
-    BOOST_REQUIRE_THROW( transcode::util::decodeAudioFrame(&blankPacket, formatContext),
+    BOOST_REQUIRE_THROW( transcode::util::decodeAudioFrame(videoPacket, formatContext),
                 transcode::util::FFMPEGException);
 }
 
@@ -1548,6 +1547,61 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_flv_audio_packet, FLVFramesFixture )
     audioFrames = transcode::util::decodeAudioFrame(audioPacket, formatContext);
 
     BOOST_REQUIRE( 0 < audioFrames.size() );
+}
+
+/**
+ * Test to make sure that a video packet can be decoded from all the different media files.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_video_packet, MultiFramesFixture )
+{
+
+    aviVideoFrame = transcode::util::decodeVideoFrame(aviVideoPacket, aviFormatContext);
+    mkvVideoFrame = transcode::util::decodeVideoFrame(mkvVideoPacket, mkvFormatContext);
+    mp4VideoFrame = transcode::util::decodeVideoFrame(mp4VideoPacket, mp4FormatContext);
+    ogvVideoFrame = transcode::util::decodeVideoFrame(ogvVideoPacket, ogvFormatContext);
+    flvVideoFrame = transcode::util::decodeVideoFrame(flvVideoPacket, flvFormatContext);
+}
+
+/**
+ * Test to make sure an exception is thrown if a NULL packet is decoded.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_null_video_packet, AVIFormatContextFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeVideoFrame(NULL, formatContext),
+            transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure an exception is thrown if a audio packet is decoded.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_audio_video_packet, AVIFramesFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeVideoFrame(audioPacket, formatContext),
+                transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure an exception is thrown if a blank packet is decoded.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_video_packet_with_null_format_context,
+        AVIFramesFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeVideoFrame(videoPacket, NULL),
+                transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure an exception is thrown if a blank packet is decoded.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_video_packet_with_blank_format_context,
+        AVIFramesFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeVideoFrame(videoPacket,
+            &blankFormatContext), transcode::util::FFMPEGException);
 }
 
 /**
