@@ -1471,7 +1471,7 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_video_for_audio_packet, AVIFramesFix
 }
 
 /**
- * Test to make sure an exception is thrown if a blank packet is decoded.
+ * Test to make sure an exception is thrown if a null format context is used.
  */
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_audio_packet_with_null_format_context,
         AVIFramesFixture )
@@ -1482,7 +1482,7 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_audio_packet_with_null_format_contex
 }
 
 /**
- * Test to make sure an exception is thrown if a blank packet is decoded.
+ * Test to make sure an exception is thrown if a blank format context is used.
  */
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_audio_packet_with_blank_format_context,
         AVIFramesFixture )
@@ -1573,7 +1573,7 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_null_video_packet, AVIFormatContextF
 }
 
 /**
- * Test to make sure an exception is thrown if a audio packet is decoded.
+ * Test to make sure an exception is thrown if an audio packet is decoded.
  */
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_audio_video_packet, AVIFramesFixture )
 {
@@ -1583,7 +1583,7 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_audio_video_packet, AVIFramesFixture
 }
 
 /**
- * Test to make sure an exception is thrown if a blank packet is decoded.
+ * Test to make sure an exception is thrown if a null format context is used.
  */
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_video_packet_with_null_format_context,
         AVIFramesFixture )
@@ -1594,7 +1594,7 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_video_packet_with_null_format_contex
 }
 
 /**
- * Test to make sure an exception is thrown if a blank packet is decoded.
+ * Test to make sure an exception is thrown if a blank format context is used.
  */
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_video_packet_with_blank_format_context,
         AVIFramesFixture )
