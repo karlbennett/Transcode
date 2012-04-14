@@ -84,40 +84,45 @@ struct FormatContextFixture {
 struct AVIFormatContextFixture: public FormatContextFixture {
 
     AVIFormatContextFixture() :
-            FormatContextFixture(
-                    transcode::util::retrieveAVFormatContext(VIDEO_AVI)) {
+            FormatContextFixture() {
+
+        formatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
     }
 };
 
 struct MKVFormatContextFixture: public FormatContextFixture {
 
     MKVFormatContextFixture() :
-            FormatContextFixture(
-                    transcode::util::retrieveAVFormatContext(VIDEO_MKV)) {
+            FormatContextFixture() {
+
+        formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
     }
 };
 
 struct MP4FormatContextFixture: public FormatContextFixture {
 
     MP4FormatContextFixture() :
-            FormatContextFixture(
-                    transcode::util::retrieveAVFormatContext(VIDEO_MP4)) {
+            FormatContextFixture() {
+
+        formatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
     }
 };
 
 struct OGVFormatContextFixture: public FormatContextFixture {
 
     OGVFormatContextFixture() :
-            FormatContextFixture(
-                    transcode::util::retrieveAVFormatContext(VIDEO_OGV)) {
+            FormatContextFixture() {
+
+        formatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
     }
 };
 
 struct FLVFormatContextFixture: public FormatContextFixture {
 
     FLVFormatContextFixture() :
-            FormatContextFixture(
-                    transcode::util::retrieveAVFormatContext(VIDEO_FLV)) {
+            FormatContextFixture() {
+
+        formatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
     }
 };
 
@@ -157,28 +162,25 @@ struct MultiFormatContextFixture {
     AVFormatContext *flvFormatContext;
 };
 
-struct MultiInitialisedFormatContextFixture : public MultiFormatContextFixture {
+struct MultiInitialisedFormatContextFixture: public MultiFormatContextFixture {
 
     MultiInitialisedFormatContextFixture() :
-        MultiFormatContextFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_AVI),
-                transcode::util::retrieveAVFormatContext(VIDEO_MKV),
-                transcode::util::retrieveAVFormatContext(VIDEO_MP4),
-                transcode::util::retrieveAVFormatContext(VIDEO_OGV),
-                transcode::util::retrieveAVFormatContext(VIDEO_FLV)) {
+            MultiFormatContextFixture() {
+
+        aviFormatContext = transcode::util::retrieveAVFormatContext(VIDEO_AVI);
+        mkvFormatContext = transcode::util::retrieveAVFormatContext(VIDEO_MKV);
+        mp4FormatContext = transcode::util::retrieveAVFormatContext(VIDEO_MP4);
+        ogvFormatContext = transcode::util::retrieveAVFormatContext(VIDEO_OGV);
+        flvFormatContext = transcode::util::retrieveAVFormatContext(VIDEO_FLV);
     }
 
-    virtual ~MultiInitialisedFormatContextFixture() {}
+    virtual ~MultiInitialisedFormatContextFixture() {
+    }
 };
 
-struct PacketFixture : public FormatContextFixture {
+struct PacketFixture {
 
-    PacketFixture() : FormatContextFixture(NULL), packet(NULL) {}
-    PacketFixture(AVFormatContext *fc) :
-        FormatContextFixture(fc),
-        packet(transcode::util::readNextPacket(formatContext)) {}
-    PacketFixture(AVFormatContext *fc, AVPacket *p) :
-                FormatContextFixture(fc), packet(p) {}
+    PacketFixture() : packet(NULL) {}
 
     ~PacketFixture() {
         av_free_packet(packet);
@@ -187,102 +189,77 @@ struct PacketFixture : public FormatContextFixture {
     AVPacket *packet;
 };
 
-struct AVINullPacketFixture : public PacketFixture {
+struct AVINullPacketFixture : public AVIFormatContextFixture, PacketFixture {
 
-    AVINullPacketFixture() :
-        PacketFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_AVI),
-                NULL) {}
+    AVINullPacketFixture() : AVIFormatContextFixture(), PacketFixture() {}
 };
 
-struct AVIPacketFixture : public PacketFixture {
+struct AVIPacketFixture : public AVIFormatContextFixture, PacketFixture {
 
-    AVIPacketFixture() :
-        PacketFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_AVI)) {}
+    AVIPacketFixture() : AVIFormatContextFixture(), PacketFixture() {
+
+        packet = transcode::util::readNextPacket(formatContext);
+    }
 };
 
-struct MKVNullPacketFixture : public PacketFixture {
+struct MKVNullPacketFixture : public MKVFormatContextFixture, PacketFixture {
 
-    MKVNullPacketFixture() :
-        PacketFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_MKV),
-                NULL) {}
+    MKVNullPacketFixture() : MKVFormatContextFixture(), PacketFixture() {}
 };
 
-struct MKVPacketFixture : public PacketFixture {
+struct MKVPacketFixture : public MKVFormatContextFixture, PacketFixture {
 
-    MKVPacketFixture() :
-        PacketFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_MKV)) {}
+    MKVPacketFixture() : MKVFormatContextFixture(), PacketFixture() {
+
+        packet = transcode::util::readNextPacket(formatContext);
+    }
 };
 
-struct MP4NullPacketFixture : public PacketFixture {
+struct MP4NullPacketFixture : public MP4FormatContextFixture, PacketFixture {
 
-    MP4NullPacketFixture() :
-        PacketFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_MP4),
-                NULL) {}
+    MP4NullPacketFixture() : MP4FormatContextFixture(), PacketFixture() {}
 };
 
-struct MP4PacketFixture : public PacketFixture {
+struct MP4PacketFixture : public MP4FormatContextFixture, PacketFixture {
 
-    MP4PacketFixture() :
-        PacketFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_MP4)) {}
+    MP4PacketFixture() : MP4FormatContextFixture(), PacketFixture() {
+
+        packet = transcode::util::readNextPacket(formatContext);
+    }
 };
 
-struct OGVNullPacketFixture : public PacketFixture {
+struct OGVNullPacketFixture : public OGVFormatContextFixture, PacketFixture {
 
-    OGVNullPacketFixture() :
-        PacketFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_OGV),
-                NULL) {}
+    OGVNullPacketFixture() : OGVFormatContextFixture(), PacketFixture() {}
 };
 
-struct OGVPacketFixture : public PacketFixture {
+struct OGVPacketFixture : public OGVFormatContextFixture, PacketFixture {
 
-    OGVPacketFixture() :
-        PacketFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_OGV)) {}
+    OGVPacketFixture() : OGVFormatContextFixture(), PacketFixture() {
+
+        packet = transcode::util::readNextPacket(formatContext);
+    }
 };
 
-struct FLVNullPacketFixture : public PacketFixture {
+struct FLVNullPacketFixture : public FLVFormatContextFixture, PacketFixture {
 
-    FLVNullPacketFixture() :
-        PacketFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_FLV),
-                NULL) {}
+    FLVNullPacketFixture() : FLVFormatContextFixture(), PacketFixture() {}
 };
 
-struct FLVPacketFixture : public PacketFixture {
+struct FLVPacketFixture : public FLVFormatContextFixture, PacketFixture {
 
-    FLVPacketFixture() :
-        PacketFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_FLV)) {}
+    FLVPacketFixture() : FLVFormatContextFixture(), PacketFixture() {
+
+        packet = transcode::util::readNextPacket(formatContext);
+    }
 };
 
-struct MultiPacketFixture: public MultiFormatContextFixture {
+struct MultiPacketFixture: public MultiInitialisedFormatContextFixture {
 
     MultiPacketFixture() :
-            MultiFormatContextFixture(),
+            MultiInitialisedFormatContextFixture(),
                     aviPacket(NULL), mkvPacket(NULL), mp4Packet(NULL),
                     ogvPacket(NULL), flvPacket(NULL)
-    {
-    }
-    MultiPacketFixture(AVFormatContext *aviFc, AVFormatContext *mkvFc,
-            AVFormatContext *mp4Fc, AVFormatContext *ogvFc,
-            AVFormatContext *flvFc) :
-            MultiFormatContextFixture(aviFc, mkvFc, mp4Fc, ogvFc, flvFc),
-                    aviPacket(
-                            transcode::util::readNextPacket(aviFormatContext)),
-                    mkvPacket(
-                            transcode::util::readNextPacket(mkvFormatContext)),
-                    mp4Packet(
-                            transcode::util::readNextPacket(mp4FormatContext)),
-                    ogvPacket(
-                            transcode::util::readNextPacket(ogvFormatContext)),
-                    flvPacket(transcode::util::readNextPacket(flvFormatContext))
     {
     }
 
@@ -301,34 +278,22 @@ struct MultiPacketFixture: public MultiFormatContextFixture {
     AVPacket *flvPacket;
 };
 
-struct MultiInitialisedPacketFixture : public MultiPacketFixture {
+struct MultiInitialisedPacketFixture: public MultiPacketFixture {
 
-    MultiInitialisedPacketFixture() : MultiPacketFixture(
-            transcode::util::retrieveAVFormatContext(VIDEO_AVI),
-            transcode::util::retrieveAVFormatContext(VIDEO_MKV),
-            transcode::util::retrieveAVFormatContext(VIDEO_MP4),
-            transcode::util::retrieveAVFormatContext(VIDEO_OGV),
-            transcode::util::retrieveAVFormatContext(VIDEO_FLV))
-            {}
+    MultiInitialisedPacketFixture() :
+            MultiPacketFixture() {
+
+        aviPacket = transcode::util::readNextPacket(aviFormatContext);
+        mkvPacket = transcode::util::readNextPacket(mkvFormatContext);
+        mp4Packet = transcode::util::readNextPacket(mp4FormatContext);
+        ogvPacket = transcode::util::readNextPacket(ogvFormatContext);
+        flvPacket = transcode::util::readNextPacket(flvFormatContext);
+    }
 };
 
-struct CodecContextFixture: public FormatContextFixture {
+struct CodecContextFixture {
 
-    CodecContextFixture() :
-            FormatContextFixture(),
-                    videoCodec(NULL), audioCodec(NULL) {
-    }
-    CodecContextFixture(AVFormatContext *fc) :
-            FormatContextFixture(fc),
-                    videoCodec(getCodecContext(formatContext,
-                            AVMEDIA_TYPE_VIDEO)),
-                    audioCodec(getCodecContext(formatContext,
-                            AVMEDIA_TYPE_AUDIO)) {
-    }
-    CodecContextFixture(AVFormatContext *fc, AVCodecContext *vc,
-            AVCodecContext *ac) :
-            FormatContextFixture(fc),
-                    videoCodec(vc), audioCodec(ac) {
+    CodecContextFixture() : videoCodec(NULL), audioCodec(NULL) {
     }
 
     virtual ~CodecContextFixture() {
@@ -342,91 +307,60 @@ struct CodecContextFixture: public FormatContextFixture {
     AVCodecContext *audioCodec;
 };
 
-struct AVICodecContextFixture: public CodecContextFixture {
+struct AVICodecContextFixture: public AVIFormatContextFixture, CodecContextFixture {
 
-    AVICodecContextFixture() :
-            CodecContextFixture(
-                    transcode::util::retrieveAVFormatContext(VIDEO_AVI)) {
+    AVICodecContextFixture() : AVIFormatContextFixture(), CodecContextFixture() {
+
+        audioCodec = getCodecContext(formatContext, AVMEDIA_TYPE_AUDIO);
+        videoCodec = getCodecContext(formatContext, AVMEDIA_TYPE_VIDEO);
     }
 };
 
-struct MKVCodecContextFixture: public CodecContextFixture {
+struct MKVCodecContextFixture: public MKVFormatContextFixture, CodecContextFixture {
 
-    MKVCodecContextFixture() :
-            CodecContextFixture(
-                    transcode::util::retrieveAVFormatContext(VIDEO_MKV)) {
+    MKVCodecContextFixture() : MKVFormatContextFixture(), CodecContextFixture() {
+
+        audioCodec = getCodecContext(formatContext, AVMEDIA_TYPE_AUDIO);
+        videoCodec = getCodecContext(formatContext, AVMEDIA_TYPE_VIDEO);
     }
 };
 
-struct MP4CodecContextFixture: public CodecContextFixture {
+struct MP4CodecContextFixture: public MP4FormatContextFixture, CodecContextFixture {
 
-    MP4CodecContextFixture() :
-            CodecContextFixture(
-                    transcode::util::retrieveAVFormatContext(VIDEO_MP4)) {
+    MP4CodecContextFixture() : MP4FormatContextFixture(), CodecContextFixture() {
+
+        audioCodec = getCodecContext(formatContext, AVMEDIA_TYPE_AUDIO);
+        videoCodec = getCodecContext(formatContext, AVMEDIA_TYPE_VIDEO);
     }
 };
 
-struct OGVCodecContextFixture: public CodecContextFixture {
+struct OGVCodecContextFixture: public OGVFormatContextFixture, CodecContextFixture {
 
-    OGVCodecContextFixture() :
-            CodecContextFixture(
-                    transcode::util::retrieveAVFormatContext(VIDEO_OGV)) {
+    OGVCodecContextFixture() : OGVFormatContextFixture(), CodecContextFixture() {
+
+        audioCodec = getCodecContext(formatContext, AVMEDIA_TYPE_AUDIO);
+        videoCodec = getCodecContext(formatContext, AVMEDIA_TYPE_VIDEO);
     }
 };
 
-struct FLVCodecContextFixture: public CodecContextFixture {
+struct FLVCodecContextFixture: public FLVFormatContextFixture, CodecContextFixture {
 
-    FLVCodecContextFixture() :
-            CodecContextFixture(
-                    transcode::util::retrieveAVFormatContext(VIDEO_FLV)) {
+    FLVCodecContextFixture() : FLVFormatContextFixture(), CodecContextFixture() {
+
+        audioCodec = getCodecContext(formatContext, AVMEDIA_TYPE_AUDIO);
+        videoCodec = getCodecContext(formatContext, AVMEDIA_TYPE_VIDEO);
     }
 };
 
-struct MultiCodecContextFixture: public MultiFormatContextFixture {
+struct MultiCodecContextFixture: public MultiInitialisedFormatContextFixture {
 
     MultiCodecContextFixture() :
-            MultiFormatContextFixture(),
+            MultiInitialisedFormatContextFixture(),
                     aviAudioCodec(NULL), aviVideoCodec(NULL),
                     mkvAudioCodec(NULL), mkvVideoCodec(NULL),
                     mp4AudioCodec(NULL), mp4VideoCodec(NULL),
                     ogvAudioCodec(NULL), ogvVideoCodec(NULL),
                     flvAudioCodec(NULL), flvVideoCodec(NULL)
-    {
-    }
-    MultiCodecContextFixture(AVFormatContext *aviFc, AVFormatContext *mkvFc,
-            AVFormatContext *mp4Fc, AVFormatContext *ogvFc,
-            AVFormatContext *flvFc) :
-            MultiFormatContextFixture(aviFc, mkvFc, mp4Fc, ogvFc, flvFc),
-            aviAudioCodec(
-                    getCodecContext(aviFormatContext,
-                            AVMEDIA_TYPE_AUDIO)),
-                    aviVideoCodec(
-                            getCodecContext(aviFormatContext,
-                                    AVMEDIA_TYPE_VIDEO)),
-                    mkvAudioCodec(
-                            getCodecContext(mkvFormatContext,
-                                    AVMEDIA_TYPE_AUDIO)),
-                    mkvVideoCodec(
-                            getCodecContext(mkvFormatContext,
-                                    AVMEDIA_TYPE_VIDEO)),
-                    mp4AudioCodec(
-                            getCodecContext(mp4FormatContext,
-                                    AVMEDIA_TYPE_AUDIO)),
-                    mp4VideoCodec(
-                            getCodecContext(mp4FormatContext,
-                                    AVMEDIA_TYPE_VIDEO)),
-                    ogvAudioCodec(
-                            getCodecContext(ogvFormatContext,
-                                    AVMEDIA_TYPE_AUDIO)),
-                    ogvVideoCodec(
-                            getCodecContext(ogvFormatContext,
-                                    AVMEDIA_TYPE_VIDEO)),
-                    flvAudioCodec(
-                            getCodecContext(flvFormatContext,
-                                    AVMEDIA_TYPE_AUDIO)),
-                    flvVideoCodec(
-                            getCodecContext(flvFormatContext,
-                                    AVMEDIA_TYPE_VIDEO))
     {
     }
 
@@ -467,12 +401,19 @@ struct MultiCodecContextFixture: public MultiFormatContextFixture {
 struct MultiInitialisedCodecContextFixture: public MultiCodecContextFixture {
 
     MultiInitialisedCodecContextFixture() :
-        MultiCodecContextFixture(
-                transcode::util::retrieveAVFormatContext(VIDEO_AVI),
-                transcode::util::retrieveAVFormatContext(VIDEO_MKV),
-                transcode::util::retrieveAVFormatContext(VIDEO_MP4),
-                transcode::util::retrieveAVFormatContext(VIDEO_OGV),
-                transcode::util::retrieveAVFormatContext(VIDEO_FLV)) {}
+            MultiCodecContextFixture() {
+
+        aviAudioCodec = getCodecContext(aviFormatContext, AVMEDIA_TYPE_AUDIO);
+        aviVideoCodec = getCodecContext(aviFormatContext, AVMEDIA_TYPE_VIDEO);
+        mkvAudioCodec = getCodecContext(mkvFormatContext, AVMEDIA_TYPE_AUDIO);
+        mkvVideoCodec = getCodecContext(mkvFormatContext, AVMEDIA_TYPE_VIDEO);
+        mp4AudioCodec = getCodecContext(mp4FormatContext, AVMEDIA_TYPE_AUDIO);
+        mp4VideoCodec = getCodecContext(mp4FormatContext, AVMEDIA_TYPE_VIDEO);
+        ogvAudioCodec = getCodecContext(ogvFormatContext, AVMEDIA_TYPE_AUDIO);
+        ogvVideoCodec = getCodecContext(ogvFormatContext, AVMEDIA_TYPE_VIDEO);
+        flvAudioCodec = getCodecContext(flvFormatContext, AVMEDIA_TYPE_AUDIO);
+        flvVideoCodec = getCodecContext(flvFormatContext, AVMEDIA_TYPE_VIDEO);
+    }
 };
 
 /**
