@@ -44,14 +44,14 @@ static void testReadPackets(AVFormatContext *formatContext) {
 }
 
 /**
- * Get the codec from the supplied format context that matches the
+ * Get the stream from the supplied format context that matches the
  * supplied media type.
  *
- * @param formatContext - the format context to get the codec from.
- * @param mediaType - the media type of the required codec.
- * @return the correct codec or NULL if one is not found.
+ * @param formatContext - the format context to get the stream from.
+ * @param mediaType - the media type of the required stream.
+ * @return the correct stream or NULL if one is not found.
  */
-static AVCodecContext *getCodecContext(const AVFormatContext *formatContext,
+static AVStream* getStream(const AVFormatContext *formatContext,
         const AVMediaType& mediaType) {
 
     AVStream *stream = NULL;
@@ -60,10 +60,64 @@ static AVCodecContext *getCodecContext(const AVFormatContext *formatContext,
     for (int i = 0; i < formatContext->nb_streams; i++) {
 
         stream = formatContext->streams[i];
-        codec = stream->codec;
+        // If there is no stream at this index try the next.
+        if (NULL == stream) continue;
 
-        if (mediaType == codec->codec_type)
-            return codec;
+        codec = stream->codec;
+        // If this stream does not have a codec try the next.
+        if (NULL == codec) continue;
+
+        if (mediaType == codec->codec_type) return stream;
+    }
+
+    return NULL;
+}
+
+/**
+ * Get the codec from the supplied format context that matches the
+ * supplied media type.
+ *
+ * @param formatContext - the format context to get the codec from.
+ * @param mediaType - the media type of the required codec.
+ * @return the correct codec or NULL if one is not found.
+ */
+static AVCodecContext* getCodecContext(const AVFormatContext *formatContext,
+        const AVMediaType& mediaType) {
+
+    AVStream *stream = getStream(formatContext, mediaType);
+
+    return NULL == stream ? NULL : stream->codec;
+}
+
+/**
+ * Get the packet from the supplied format context that matches the
+ * supplied media type.
+ *
+ * @param formatContext - the format context to get the packet from.
+ * @param mediaType - the media type of the required packet.
+ * @return the correct packet or NULL if one is not found within the
+ *      first 1000 packets.
+ */
+static AVPacket* getPacket(AVFormatContext *formatContext,
+        const AVMediaType& mediaType) {
+
+    // Find the stream of the type we want, it's index will be cross
+    // referenced against the packets stream index.
+    AVStream *stream = getStream(formatContext, mediaType);
+
+    AVPacket *packet = new AVPacket();
+
+    av_init_packet(packet);
+
+    // Only try 1000 packets, we don't want to read the whole file.
+    for (int i = 0; i < 1000; i++) {
+
+        av_read_frame(formatContext, packet);
+
+        if (stream->index == packet->stream_index) return packet;
+
+        // If this isn't the right packet type discard it.
+        av_free_packet(packet);
     }
 
     return NULL;
@@ -183,6 +237,7 @@ struct PacketFixture {
     PacketFixture() : packet(NULL) {}
 
     ~PacketFixture() {
+
         av_free_packet(packet);
     }
 
@@ -415,6 +470,140 @@ struct MultiInitialisedCodecContextFixture: public MultiCodecContextFixture {
         flvVideoCodec = getCodecContext(flvFormatContext, AVMEDIA_TYPE_VIDEO);
     }
 };
+
+struct FramesFixture {
+
+    FramesFixture() :
+            audioPacket(NULL), videoPacket(NULL),
+                    audioFrames(std::vector<AVFrame*>()), videoFrame(NULL) {
+    }
+
+    virtual ~FramesFixture() {
+
+        av_free_packet(audioPacket);
+        av_free_packet(videoPacket);
+        for (int i = 0; i < audioFrames.size(); i++)
+            av_free(audioFrames[i]);
+        av_free(videoFrame);
+    }
+
+    AVPacket *audioPacket;
+    AVPacket *videoPacket;
+
+    std::vector<AVFrame*> audioFrames;
+    AVFrame *videoFrame;
+};
+
+struct AVIFramesFixture: public AVIFormatContextFixture, FramesFixture {
+
+    AVIFramesFixture() :
+            AVIFormatContextFixture(), FramesFixture() {
+
+        audioPacket = getPacket(formatContext, AVMEDIA_TYPE_AUDIO);
+        videoPacket = getPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+    }
+};
+
+struct AVIInitialisedFramesFixture: public AVIFramesFixture {
+
+    AVIInitialisedFramesFixture() :
+            AVIFramesFixture() {
+
+        audioFrames = transcode::util::decodeAudioFrame(audioPacket,
+                formatContext);
+        videoFrame = transcode::util::decodeVideoFrame(videoPacket,
+                formatContext);
+    }
+};
+
+struct MKVFramesFixture: public MKVFormatContextFixture, FramesFixture {
+
+    MKVFramesFixture() :
+            MKVFormatContextFixture(), FramesFixture() {
+
+        audioPacket = getPacket(formatContext, AVMEDIA_TYPE_AUDIO);
+        videoPacket = getPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+    }
+};
+
+struct MKVInitialisedFramesFixture: public MKVFramesFixture {
+
+    MKVInitialisedFramesFixture() :
+            MKVFramesFixture() {
+
+        audioFrames = transcode::util::decodeAudioFrame(audioPacket,
+                formatContext);
+        videoFrame = transcode::util::decodeVideoFrame(videoPacket,
+                formatContext);
+    }
+};
+
+struct MP4FramesFixture: public MP4FormatContextFixture, FramesFixture {
+
+    MP4FramesFixture() :
+            MP4FormatContextFixture(), FramesFixture() {
+
+        audioPacket = getPacket(formatContext, AVMEDIA_TYPE_AUDIO);
+        videoPacket = getPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+    }
+};
+
+struct MP4InitialisedFramesFixture: public MP4FramesFixture {
+
+    MP4InitialisedFramesFixture() :
+            MP4FramesFixture() {
+
+        audioFrames = transcode::util::decodeAudioFrame(audioPacket,
+                formatContext);
+        videoFrame = transcode::util::decodeVideoFrame(videoPacket,
+                formatContext);
+    }
+};
+
+struct OGVFramesFixture: public OGVFormatContextFixture, FramesFixture {
+
+    OGVFramesFixture() :
+            OGVFormatContextFixture(), FramesFixture() {
+
+        audioPacket = getPacket(formatContext, AVMEDIA_TYPE_AUDIO);
+        videoPacket = getPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+    }
+};
+
+struct OGVInitialisedFramesFixture: public OGVFramesFixture {
+
+    OGVInitialisedFramesFixture() :
+            OGVFramesFixture() {
+
+        audioFrames = transcode::util::decodeAudioFrame(audioPacket,
+                formatContext);
+        videoFrame = transcode::util::decodeVideoFrame(videoPacket,
+                formatContext);
+    }
+};
+
+struct FLVFramesFixture: public FLVFormatContextFixture, FramesFixture {
+
+    FLVFramesFixture() :
+            FLVFormatContextFixture(), FramesFixture() {
+
+        audioPacket = getPacket(formatContext, AVMEDIA_TYPE_AUDIO);
+        videoPacket = getPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+    }
+};
+
+struct FLVInitialisedFramesFixture: public FLVFramesFixture {
+
+    FLVInitialisedFramesFixture() :
+            FLVFramesFixture() {
+
+        audioFrames = transcode::util::decodeAudioFrame(audioPacket,
+                formatContext);
+        videoFrame = transcode::util::decodeVideoFrame(videoPacket,
+                formatContext);
+    }
+};
+
 
 /**
  * Test to make sure that an FFMPEG error message can be found.
@@ -1103,16 +1292,16 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_find_flv_packet_type, FLVPacketFixture )
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_open_codecs, MultiInitialisedCodecContextFixture )
 {
 
-    (void) transcode::util::openCodecContext(aviAudioCodec);
-    (void) transcode::util::openCodecContext(aviVideoCodec);
-    (void) transcode::util::openCodecContext(mkvAudioCodec);
-    (void) transcode::util::openCodecContext(mkvVideoCodec);
-    (void) transcode::util::openCodecContext(mp4AudioCodec);
-    (void) transcode::util::openCodecContext(mp4VideoCodec);
-    (void) transcode::util::openCodecContext(ogvAudioCodec);
-    (void) transcode::util::openCodecContext(ogvVideoCodec);
-    (void) transcode::util::openCodecContext(flvAudioCodec);
-    (void) transcode::util::openCodecContext(flvVideoCodec);
+    aviAudioCodec = transcode::util::openCodecContext(aviAudioCodec);
+    aviVideoCodec = transcode::util::openCodecContext(aviVideoCodec);
+    mkvAudioCodec = transcode::util::openCodecContext(mkvAudioCodec);
+    mkvVideoCodec = transcode::util::openCodecContext(mkvVideoCodec);
+    mp4AudioCodec = transcode::util::openCodecContext(mp4AudioCodec);
+    mp4VideoCodec = transcode::util::openCodecContext(mp4VideoCodec);
+    ogvAudioCodec = transcode::util::openCodecContext(ogvAudioCodec);
+    ogvVideoCodec = transcode::util::openCodecContext(ogvVideoCodec);
+    flvAudioCodec = transcode::util::openCodecContext(flvAudioCodec);
+    flvVideoCodec = transcode::util::openCodecContext(flvVideoCodec);
 }
 
 BOOST_AUTO_TEST_CASE( test_ffmpeg_open_null_codec )
