@@ -404,7 +404,7 @@ public:
             const throw (FFMPEGException);
 
     std::vector<AVFrame*> decodeAudioFrame(const AVPacket *packet,
-            const AVFormatContext *videoFile) throw (FFMPEGException);
+            const AVFormatContext *videoFile) const throw (FFMPEGException);
 
     AVFrame* decodeVideoFrame(const AVPacket *packet,
             const AVFormatContext *videoFile) throw (FFMPEGException);
@@ -692,7 +692,11 @@ AVCodecContext* FfmpegSingleton::openCodecContext(AVCodecContext* codecContext)
 }
 
 std::vector<AVFrame*> FfmpegSingleton::decodeAudioFrame(const AVPacket *packet,
-        const AVFormatContext *videoFile) throw (FFMPEGException) {
+        const AVFormatContext *videoFile) const throw (FFMPEGException) {
+
+    checkFormatContext(videoFile);
+
+    if (NULL == packet) throw FFMPEGException("Packet was NULL.");
 
     // Get the stream that relates to the packet, this well contain the codec
     // that can be used to decode the packet.
@@ -840,6 +844,12 @@ AVCodecContext* openCodecContext(AVCodecContext* codecContext)
         throw (FFMPEGException) {
 
     return FfmpegSingleton::getInstance().openCodecContext(codecContext);
+}
+
+std::vector<AVFrame*> decodeAudioFrame(const AVPacket *packet,
+        const AVFormatContext *videoFile) throw (FFMPEGException) {
+
+    return FfmpegSingleton::getInstance().decodeAudioFrame(packet, videoFile);
 }
 
 void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException) {
