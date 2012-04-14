@@ -12,6 +12,7 @@ extern "C" {
 
 AVFormatContext blankFormatContext;
 AVCodecContext blankCodecContext;
+AVPacket blankPacket;
 
 // The media types of the first frames in the media files.
 const AVMediaType FRAME_TYPE_AVI = AVMEDIA_TYPE_VIDEO;
@@ -121,6 +122,36 @@ static AVPacket* getPacket(AVFormatContext *formatContext,
     }
 
     return NULL;
+}
+
+/**
+ * This function will retry decoding an audio up to five times, this
+ * is done because some codecs first packet isn't decodable.
+ *
+ * @param audioPacket - the first packet to try decoding.
+ * @param formatContext - the format context to use in the decoding of the packet.
+ */
+static std::vector<AVFrame*> retryDecodeAudioFrame(AVPacket *audioPacket,
+        AVFormatContext *formatContext) {
+
+    std::vector<AVFrame*> audioFrames;
+
+    // Try to decode an audio frame from one of the first five packets.
+    for (int i = 0; i < 5; i++) {
+
+        audioFrames = transcode::util::decodeAudioFrame(audioPacket,
+                formatContext);
+
+        // If we get a frame return it.
+        if (0 < audioFrames.size()) return audioFrames;
+
+        av_free_packet(audioPacket);
+        for (int i = 0; i < audioFrames.size(); i++) av_free(audioFrames[i]);
+
+        audioPacket = getPacket(formatContext, AVMEDIA_TYPE_AUDIO);
+    }
+
+    return audioFrames;
 }
 
 struct FormatContextFixture {
@@ -482,8 +513,7 @@ struct FramesFixture {
 
         av_free_packet(audioPacket);
         av_free_packet(videoPacket);
-        for (int i = 0; i < audioFrames.size(); i++)
-            av_free(audioFrames[i]);
+        for (int i = 0; i < audioFrames.size(); i++) av_free(audioFrames[i]);
         av_free(videoFrame);
     }
 
@@ -602,6 +632,90 @@ struct FLVInitialisedFramesFixture: public FLVFramesFixture {
         videoFrame = transcode::util::decodeVideoFrame(videoPacket,
                 formatContext);
     }
+};
+
+struct MultiFramesFixture: public MultiInitialisedFormatContextFixture {
+
+    MultiFramesFixture() :
+            MultiInitialisedFormatContextFixture(),
+                    aviAudioPacket(
+                            getPacket(aviFormatContext, AVMEDIA_TYPE_AUDIO)),
+                    aviVideoPacket(
+                            getPacket(aviFormatContext, AVMEDIA_TYPE_VIDEO)),
+                    mkvAudioPacket(
+                            getPacket(mkvFormatContext, AVMEDIA_TYPE_AUDIO)),
+                    mkvVideoPacket(
+                            getPacket(mkvFormatContext, AVMEDIA_TYPE_VIDEO)),
+                    mp4AudioPacket(
+                            getPacket(mp4FormatContext, AVMEDIA_TYPE_AUDIO)),
+                    mp4VideoPacket(
+                            getPacket(mp4FormatContext, AVMEDIA_TYPE_VIDEO)),
+                    ogvAudioPacket(
+                            getPacket(ogvFormatContext, AVMEDIA_TYPE_AUDIO)),
+                    ogvVideoPacket(
+                            getPacket(ogvFormatContext, AVMEDIA_TYPE_VIDEO)),
+                    flvAudioPacket(
+                            getPacket(flvFormatContext, AVMEDIA_TYPE_AUDIO)),
+                    flvVideoPacket(
+                            getPacket(flvFormatContext, AVMEDIA_TYPE_VIDEO)),
+                    aviAudioFrames(std::vector<AVFrame*>()),
+                    aviVideoFrame(NULL),
+                    mkvAudioFrames(std::vector<AVFrame*>()),
+                    mkvVideoFrame(NULL),
+                    mp4AudioFrames(std::vector<AVFrame*>()),
+                    mp4VideoFrame(NULL),
+                    ogvAudioFrames(std::vector<AVFrame*>()),
+                    ogvVideoFrame(NULL),
+                    flvAudioFrames(std::vector<AVFrame*>()),
+                    flvVideoFrame(NULL)
+    {
+    }
+
+    virtual ~MultiFramesFixture() {
+
+        av_free_packet(aviAudioPacket);
+        av_free_packet(aviVideoPacket);
+        av_free_packet(mkvAudioPacket);
+        av_free_packet(mkvVideoPacket);
+        av_free_packet(mp4AudioPacket);
+        av_free_packet(mp4VideoPacket);
+        av_free_packet(ogvAudioPacket);
+        av_free_packet(ogvVideoPacket);
+        av_free_packet(flvAudioPacket);
+        av_free_packet(flvVideoPacket);
+        for (int i = 0; i < aviAudioFrames.size(); i++) av_free(aviAudioFrames[i]);
+        av_free(aviVideoFrame);
+        for (int i = 0; i < mkvAudioFrames.size(); i++) av_free(mkvAudioFrames[i]);
+        av_free(mkvVideoFrame);
+        for (int i = 0; i < mp4AudioFrames.size(); i++) av_free(mp4AudioFrames[i]);
+        av_free(mp4VideoFrame);
+        for (int i = 0; i < ogvAudioFrames.size(); i++) av_free(ogvAudioFrames[i]);
+        av_free(ogvVideoFrame);
+        for (int i = 0; i < flvAudioFrames.size(); i++) av_free(flvAudioFrames[i]);
+        av_free(flvVideoFrame);
+    }
+
+    AVPacket *aviAudioPacket;
+    AVPacket *aviVideoPacket;
+    AVPacket *mkvAudioPacket;
+    AVPacket *mkvVideoPacket;
+    AVPacket *mp4AudioPacket;
+    AVPacket *mp4VideoPacket;
+    AVPacket *ogvAudioPacket;
+    AVPacket *ogvVideoPacket;
+    AVPacket *flvAudioPacket;
+    AVPacket *flvVideoPacket;
+
+    std::vector<AVFrame*> aviAudioFrames;
+    AVFrame *aviVideoFrame;
+    std::vector<AVFrame*> mkvAudioFrames;
+    AVFrame *mkvVideoFrame;
+    std::vector<AVFrame*> mp4AudioFrames;
+    AVFrame *mp4VideoFrame;
+    std::vector<AVFrame*> ogvAudioFrames;
+    AVFrame *ogvVideoFrame;
+    std::vector<AVFrame*> flvAudioFrames;
+    AVFrame *flvVideoFrame;
 };
 
 
@@ -1304,6 +1418,9 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_open_codecs, MultiInitialisedCodecContextFi
     flvVideoCodec = transcode::util::openCodecContext(flvVideoCodec);
 }
 
+/**
+ * Test to make sure an exception is thrown if a NULL codec context is opened.
+ */
 BOOST_AUTO_TEST_CASE( test_ffmpeg_open_null_codec )
 {
 
@@ -1311,11 +1428,126 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_open_null_codec )
             transcode::util::FFMPEGException);
 }
 
+/**
+ * Test to make sure an exception is thrown if a blank codec context is opened.
+ */
 BOOST_AUTO_TEST_CASE( test_ffmpeg_open_empty_codec )
 {
 
     BOOST_REQUIRE_THROW( transcode::util::openCodecContext(&blankCodecContext),
             transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure that an audio packet can be decoded from all the differnet media files.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_audio_packet, MultiFramesFixture )
+{
+
+    aviAudioFrames = transcode::util::decodeAudioFrame(aviAudioPacket, aviFormatContext);
+    mkvAudioFrames = transcode::util::decodeAudioFrame(mkvAudioPacket, mkvFormatContext);
+    mp4AudioFrames = transcode::util::decodeAudioFrame(mp4AudioPacket, mp4FormatContext);
+    ogvAudioFrames = transcode::util::decodeAudioFrame(ogvAudioPacket, ogvFormatContext);
+    flvAudioFrames = transcode::util::decodeAudioFrame(flvAudioPacket, flvFormatContext);
+}
+
+/**
+ * Test to make sure an exception is thrown if a NULL packet is decoded.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_null_audio_packet, AVIFormatContextFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeAudioFrame(NULL, formatContext),
+            transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure an exception is thrown if a blank packet is decoded.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_blank_audio_packet, AVIFormatContextFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeAudioFrame(&blankPacket, formatContext),
+                transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure an exception is thrown if a blank packet is decoded.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_audio_packet_with_null_format_context,
+        AVIFramesFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeAudioFrame(audioPacket, NULL),
+                transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure an exception is thrown if a blank packet is decoded.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_audio_packet_with_blank_format_context,
+        AVIFramesFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeAudioFrame(audioPacket,
+            &blankFormatContext), transcode::util::FFMPEGException);
+}
+
+/**
+ * Test to make sure the an audio packet can be decoded from an avi media file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_avi_audio_packet, AVIFramesFixture )
+{
+
+    audioFrames = transcode::util::decodeAudioFrame(audioPacket, formatContext);
+
+    BOOST_REQUIRE( 0 < audioFrames.size() );
+}
+
+/**
+ * Test to make sure the an audio packet can be decoded from an mkv media file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_mkv_audio_packet, MKVFramesFixture )
+{
+
+    audioFrames = transcode::util::decodeAudioFrame(audioPacket, formatContext);
+
+    BOOST_REQUIRE( 0 < audioFrames.size() );
+}
+
+/**
+ * Test to make sure the an audio packet can be decoded from an mp4 media file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_mp4_audio_packet, MP4FramesFixture )
+{
+
+    audioFrames = transcode::util::decodeAudioFrame(audioPacket, formatContext);
+
+    BOOST_REQUIRE( 0 < audioFrames.size() );
+}
+
+/**
+ * Test to make sure the an audio packet can be decoded from an ogv media file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_ogv_audio_packet, OGVFramesFixture )
+{
+
+    // Try five times to decode the vorbis stream because the first packet
+    // doesn't seem to work.
+    audioFrames = retryDecodeAudioFrame(audioPacket, formatContext);
+
+    BOOST_REQUIRE( 0 < audioFrames.size() );
+}
+
+/**
+ * Test to make sure the an audio packet can be decoded from an flv media file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_ffmpeg_decode_flv_audio_packet, FLVFramesFixture )
+{
+
+    audioFrames = transcode::util::decodeAudioFrame(audioPacket, formatContext);
+
+    BOOST_REQUIRE( 0 < audioFrames.size() );
 }
 
 /**
