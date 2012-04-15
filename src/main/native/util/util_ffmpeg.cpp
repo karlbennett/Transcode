@@ -240,6 +240,62 @@ static void checkFormatContext(const AVFormatContext *formatContext)
 }
 
 /**
+ * Extract the media meta data of the given type from the libav AVFormatContext struct
+ * using the provided get meta data function.
+ *
+ * @param videoFile - the av format context that contains the audio meta data to
+ *          extract.
+ * @param mediaType - the type of media stream that should have it's codec inspected.
+ * @param metadataCallback - the function to use to get the correct meta data out of
+ *          the codec.
+ *
+ * @return a vector containing all the extracted meta data.
+ */
+template<typename T> std::vector<T> extractMetaData(
+        const AVFormatContext *videoFile, AVMediaType mediatype,
+        std::tr1::function<T(const AVStream&)> metadataCallback)
+                throw (transcode::util::FFMPEGException) {
+
+    checkFormatContext(videoFile);
+
+    std::vector<T> details;
+
+    AVStream *stream;
+    AVCodecContext *codecContext;
+    AVMediaType codecType;
+
+    // Iterate through the streams searching for any audio streams.
+    for (int i = 0; i < videoFile->nb_streams; i++) {
+
+        stream = videoFile->streams[i];
+        if (NULL == stream) {
+            std::stringstream errorMessage;
+
+            errorMessage << "Media stream ("
+                    << i << ") was NULL." << std::endl;
+
+            throw transcode::util::FFMPEGException(errorMessage.str());
+        }
+
+        codecContext = stream->codec;
+        if (NULL == codecContext) {
+            throw transcode::util::FFMPEGException("A codec was null.");
+        }
+
+        codecType = codecContext->codec_type;
+
+        // If we find a stream that matches the provided type use its details to
+        // construct a struct of the requested type.
+        if (codecType == mediatype) {
+
+            details.push_back(metadataCallback(*stream));
+        }
+    }
+
+    return details;
+}
+
+/**
  * Get the AVStream from the supplied AVFormatContext at the supplied index.
  *
  * @param videoFile - the format context that contains the required stream.
@@ -545,62 +601,6 @@ public:
 };
 
 
-/**
- * Extract the media meta data of the given type from the libav AVFormatContext struct
- * using the provided get meta data function.
- *
- * @param videoFile - the av format context that contains the audio meta data to
- *          extract.
- * @param mediaType - the type of media stream that should have it's codec inspected.
- * @param metadataCallback - the function to use to get the correct meta data out of
- *          the codec.
- *
- * @return a vector containing all the extracted meta data.
- */
-template<typename T> std::vector<T> extractMetaData(
-        const AVFormatContext *videoFile, AVMediaType mediatype,
-        std::tr1::function<T(const AVStream&)> metadataCallback)
-                throw (FFMPEGException) {
-
-    helper::checkFormatContext(videoFile);
-
-    std::vector<T> details;
-
-    AVStream *stream;
-    AVCodecContext *codecContext;
-    AVMediaType codecType;
-
-    // Iterate through the streams searching for any audio streams.
-    for (int i = 0; i < videoFile->nb_streams; i++) {
-
-        stream = videoFile->streams[i];
-        if (NULL == stream) {
-            std::stringstream errorMessage;
-
-            errorMessage << "Media stream ("
-                    << i << ") was NULL." << std::endl;
-
-            throw FFMPEGException(errorMessage.str());
-        }
-
-        codecContext = stream->codec;
-        if (NULL == codecContext) {
-            throw FFMPEGException("A codec was null.");
-        }
-
-        codecType = codecContext->codec_type;
-
-        // If we find a stream that matches the provided type use its details to
-        // construct a struct of the requested type.
-        if (codecType == mediatype) {
-
-            details.push_back(metadataCallback(*stream));
-        }
-    }
-
-    return details;
-}
-
 FfmpegSingleton::FfmpegSingleton() {
 
     // Initialise the libav library so we can use it to inspect
@@ -654,21 +654,21 @@ AVFormatContext* FfmpegSingleton::retrieveAVFormatContext(
 std::vector<SubtitleMetaData> FfmpegSingleton::extractSubtitleDetails(
         const AVFormatContext *videoFile) const throw (FFMPEGException) {
 
-    return extractMetaData<SubtitleMetaData>(videoFile, AVMEDIA_TYPE_SUBTITLE,
+    return helper::extractMetaData<SubtitleMetaData>(videoFile, AVMEDIA_TYPE_SUBTITLE,
             callback::extractSubtitleMetaData);
 }
 
 std::vector<AudioMetaData> FfmpegSingleton::extractAudioDetails(
         const AVFormatContext *videoFile) const throw (FFMPEGException) {
 
-    return extractMetaData<AudioMetaData>(videoFile, AVMEDIA_TYPE_AUDIO,
+    return helper::extractMetaData<AudioMetaData>(videoFile, AVMEDIA_TYPE_AUDIO,
             callback::extractAudioMetaData);
 }
 
 std::vector<VideoMetaData> FfmpegSingleton::extractVideoDetails(
         const AVFormatContext *videoFile) const throw (FFMPEGException) {
 
-    return extractMetaData<VideoMetaData>(videoFile, AVMEDIA_TYPE_VIDEO,
+    return helper::extractMetaData<VideoMetaData>(videoFile, AVMEDIA_TYPE_VIDEO,
             callback::extractVideoMetaData);
 }
 
