@@ -132,6 +132,11 @@ const std::map<AVMediaType, std::string> MEDIA_TYPE_NAMES =
         initialiseMediaTypeNames();
 
 /**
+ * The buffer size of a decoded packet, this is hopefully big enough for any packet.
+ */
+const int BUFFER_SIZE = AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE;
+
+/**
  * Find the audio or video mediatype for the provided codec id.
  *
  * @param codecId - the codec id that will be used to find the mimetype.
@@ -432,7 +437,8 @@ static void checkBytesDecoded(int bytesDecoded, int streamIndex)
         std::stringstream errorMessage;
 
         errorMessage << "Error while decoding a packet from stream: " <<
-                streamIndex << std::endl;
+                streamIndex << " Error: " <<
+                transcode::util::ffmpegErrorMessage(bytesDecoded) << std::endl;
 
         throw transcode::util::FFMPEGException(errorMessage.str());
     }
@@ -778,7 +784,16 @@ std::vector<AVFrame*> FfmpegSingleton::decodeAudioFrame(const AVPacket *packet,
     // A copy of the supplied packet that will be used during the decoding so that we
     // don't mutate the supplied packet. If we mutated the supplied packet it would no
     // longer be able to be correctly deleted.
-    AVPacket packetCopy = helper::copyPacket(packet);
+    AVPacket packetCopy;
+    // Create a new large buffer array to hold the audio packet.
+    uint8_t buffer[helper::BUFFER_SIZE];
+    // Set all the values within to 0 so that there is no question about the data end.
+    memset(buffer, 0, helper::BUFFER_SIZE);
+    // Copy the packet data into the new buffer.
+    memcpy(buffer, packet->data, packet->size);
+    // Set the copy packets data and size.
+    packetCopy.data = buffer;
+    packetCopy.size = packet->size;
 
     // The frame pointer that will hold each new frame before it is placed in the vector.
     AVFrame *decodedFrame = NULL;
@@ -790,8 +805,8 @@ std::vector<AVFrame*> FfmpegSingleton::decodeAudioFrame(const AVPacket *packet,
     int bytesDecoded = 0; // The number of bytes that were decoded in each iteration.
 
     while (0 < packetCopy.size) {
-
-        decodedFrame = avcodec_alloc_frame(); // Create a new frame to contain the decoded data.
+        // Create a new frame to contain the decoded data if one is required.
+        if (NULL == decodedFrame) decodedFrame = avcodec_alloc_frame();
 
         // Decode the packet and store it in the new frame.
         // Also record how many bytes were decoded because it might not have been all of them.
@@ -800,8 +815,20 @@ std::vector<AVFrame*> FfmpegSingleton::decodeAudioFrame(const AVPacket *packet,
 
         helper::checkBytesDecoded(bytesDecoded, packet->stream_index);
 
-        // If a frame was successfully decoded add it the vector to be returned.
-        if (0 != frameDecoded) frames.push_back(decodedFrame);
+        // If a frame was successfully decoded add it the vector to be returned and set the
+        // pointer to null to indicate we need a new frame allocated.
+        if (0 != frameDecoded) {
+
+            frames.push_back(decodedFrame);
+
+            decodedFrame = NULL;
+
+        } else {
+            // If we haven't successfully decoded a frame reset the decode frames values to make
+            // sure it's ready for another decode attempt.
+            avcodec_get_frame_defaults(decodedFrame);
+        }
+
 
         // Push the data pointer down the byte array passed the last byte that we decoded.
         packetCopy.data += bytesDecoded;
@@ -817,7 +844,12 @@ AVFrame* FfmpegSingleton::decodeVideoFrame(const AVPacket *packet,
 
     AVCodecContext *codec = helper::getOpenedCodec(packet, videoFile, AVMEDIA_TYPE_VIDEO);
 
-    AVPacket packetCopy = helper::copyPacket(packet);
+    AVPacket packetCopy;
+    uint8_t buffer[helper::BUFFER_SIZE];
+    memset(buffer, 0, helper::BUFFER_SIZE);
+    memcpy(buffer, packet->data, packet->size);
+    packetCopy.data = buffer;
+    packetCopy.size = packet->size;
 
     AVFrame *decodedFrame = avcodec_alloc_frame();
 
