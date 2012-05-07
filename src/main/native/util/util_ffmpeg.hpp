@@ -131,8 +131,7 @@ public:
  *
  * @return the AVFormatContext for the provided media file.
  */
-AVFormatContext* retrieveAVFormatContext(const std::string& filePath)
-        throw (FFMPEGException);
+AVFormatContext* retrieveAVFormatContext(const std::string& filePath);
 
 /**
  * Extract the subtitle details from the provided libav AVFormatContext.
@@ -143,7 +142,7 @@ AVFormatContext* retrieveAVFormatContext(const std::string& filePath)
  *      values within the media file.
  */
 std::vector<SubtitleMetaData> extractSubtitleDetails(
-        const AVFormatContext *videoFile) throw (FFMPEGException);
+        const AVFormatContext *videoFile);
 
 /**
  * Extract the audio detail from the provided libav AVFormatContext.
@@ -153,8 +152,7 @@ std::vector<SubtitleMetaData> extractSubtitleDetails(
  * @return a vector containing audio detail structs populated from values
  *      within the media file.
  */
-std::vector<AudioMetaData> extractAudioDetails(const AVFormatContext *videoFile)
-        throw (FFMPEGException);
+std::vector<AudioMetaData> extractAudioDetails(const AVFormatContext *videoFile);
 
 /**
  * Extract the video detail from the provided libav AVFormatContext.
@@ -164,8 +162,7 @@ std::vector<AudioMetaData> extractAudioDetails(const AVFormatContext *videoFile)
  * @return a vector containing video detail structs populated from values
  *      within the media file.
  */
-std::vector<VideoMetaData> extractVideoDetails(const AVFormatContext *videoFile)
-        throw (FFMPEGException);
+std::vector<VideoMetaData> extractVideoDetails(const AVFormatContext *videoFile);
 
 /**
  * Build a ContainerDetail struct out of the details in the provided
@@ -176,8 +173,7 @@ std::vector<VideoMetaData> extractVideoDetails(const AVFormatContext *videoFile)
  *
  * @return a populated ContainerDetail struct.
  */
-ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile)
-        throw (FFMPEGException);
+ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile);
 
 /**
  * Get the next generic packet from the AVFormatContext.
@@ -189,7 +185,7 @@ ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile)
  *          from it.
  * @return the next packet or NULL if we have reached the end of the file.
  */
-AVPacket* readNextPacket(AVFormatContext *videoFile) throw (FFMPEGException);
+AVPacket* readNextPacket(AVFormatContext *videoFile);
 
 /**
  * Find the type of the provided packet. That is if it is an audio or video
@@ -200,7 +196,7 @@ AVPacket* readNextPacket(AVFormatContext *videoFile) throw (FFMPEGException);
  * @return the type of the packet.
  */
 AVMediaType findPacketType(const AVPacket *packet,
-        const AVFormatContext *videoFile) throw (FFMPEGException);
+        const AVFormatContext *videoFile);
 
 /**
  * Opens the supplied ocdec context and then returns it.
@@ -212,8 +208,7 @@ AVMediaType findPacketType(const AVPacket *packet,
  * @return the newly opened codec context.
  * @throws an FFMPEGException if the supplied codec context could not be opened.
  */
-AVCodecContext* openCodecContext(AVCodecContext* codecContext)
-        throw (FFMPEGException);
+AVCodecContext* openCodecContext(AVCodecContext* codecContext);
 
 /**
  * Decode the provided packet into decoded audio frames.
@@ -223,7 +218,7 @@ AVCodecContext* openCodecContext(AVCodecContext* codecContext)
  * @return a vector of AVFrames generated from the provided packet.
  */
 std::vector<AVFrame*> decodeAudioFrame(const AVPacket *packet,
-        const AVFormatContext *videoFile) throw (FFMPEGException);
+        const AVFormatContext *videoFile);
 
 /**
  * Decode the provided packet into a decoded video frames.
@@ -233,14 +228,14 @@ std::vector<AVFrame*> decodeAudioFrame(const AVPacket *packet,
  * @return an AVFrame generated from the provided packet.
  */
 AVFrame* decodeVideoFrame(const AVPacket *packet,
-        const AVFormatContext *videoFile) throw (FFMPEGException);
+        const AVFormatContext *videoFile);
 
 /**
  * Close any codecs that are related to the provided AVFormatContext.
  *
  * @param videoFile - the AVFormatContext that will have all it's codecs closed.
  */
-void closeCodecs(AVFormatContext *videoFile) throw (FFMPEGException);
+void closeCodecs(AVFormatContext *videoFile);
 
 } /* namspace util */
 } /* namspace transcode */
