@@ -105,17 +105,19 @@ static AVPacket* getPacket(AVFormatContext *formatContext,
     // referenced against the packets stream index.
     AVStream *stream = getStream(formatContext, mediaType);
 
-    AVPacket *packet = new AVPacket();
-
-    av_init_packet(packet);
+    AVPacket *packet = NULL;
 
     int error = 0;
     // Only try 1000 packets, we don't want to read the whole file.
     for (int i = 0; i < 1000; i++) {
 
+        packet = new AVPacket();
+
+        av_init_packet(packet);
+
         error = av_read_frame(formatContext, packet);
 
-        if (0 != error) return NULL; // If there is an error quit.
+        if (0 > error) return NULL; // If there is an error quit.
 
         if (stream->index == packet->stream_index) return packet;
 
