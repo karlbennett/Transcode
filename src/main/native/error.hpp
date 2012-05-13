@@ -47,6 +47,51 @@ public:
     }
 };
 
+class IOException: public MediaException {
+
+public:
+    IOException() throw () :
+            MediaException() {
+    }
+
+    IOException(std::string message) throw () :
+            MediaException(message) {
+    }
+
+    ~IOException() throw () {
+    }
+};
+
+class IllegalArgumentException: public MediaException {
+
+public:
+    IllegalArgumentException() throw () :
+            MediaException() {
+    }
+
+    IllegalArgumentException(std::string message) throw () :
+            MediaException(message) {
+    }
+
+    ~IllegalArgumentException() throw () {
+    }
+};
+
+class IllegalStateException: public MediaException {
+
+public:
+    IllegalStateException() throw () :
+            MediaException() {
+    }
+
+    IllegalStateException(std::string message) throw () :
+            MediaException(message) {
+    }
+
+    ~IllegalStateException() throw () {
+    }
+};
+
 } /* transcode */
 
 #endif /* __ERROR_HPP__ */
