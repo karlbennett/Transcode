@@ -15,6 +15,7 @@ extern "C" {
 #include <error.hpp>
 #include <sstream>
 
+
 /**
  * Transcode namespace, all the top level transcode functions and classes are in
  * this namespace. So this namespace holds officially public API.
@@ -28,6 +29,11 @@ namespace transcode {
  * look in here.
  */
 namespace util {
+
+/**
+ * The buffer size of a decoded packet, this is hopefully big enough for any packet.
+ */
+const int BUFFER_SIZE = AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE;
 
 class LibavSingleton
 {
@@ -55,21 +61,21 @@ public:
 
     void closeFormatContext(AVFormatContext *formatContext) const;
 
-    AVPacket* readNextPacket(AVFormatContext *videoFile) const;
+    AVPacket* readNextPacket(AVFormatContext *formatContext) const;
 
     AVMediaType findStreamType(const AVStream *stream) const;
 
     AVMediaType findCodecType(const AVCodecContext *codecContext) const;
 
-    AVMediaType findPacketType(const AVFormatContext *videoFile,
+    AVMediaType findPacketType(const AVFormatContext *formatContext,
             const AVPacket *packet) const;
 
     AVCodecContext* openCodecContext(AVCodecContext *codecContext) const;
 
-    std::vector<AVFrame*> decodeAudioPacket(const AVCodecContext *codecContext,
+    std::vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
             const AVPacket *packet) const;
 
-    AVFrame decodeVideoPacket(const AVCodecContext *codecContext,
+    AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
             const AVPacket *packet) const;
 };
 
@@ -139,13 +145,13 @@ void LibavSingleton::closeFormatContext(AVFormatContext *formatContext) const {
     avformat_close_input(&formatContext);
 }
 
-AVPacket* LibavSingleton::readNextPacket(AVFormatContext *videoFile) const {
+AVPacket* LibavSingleton::readNextPacket(AVFormatContext *formatContext) const {
 
     AVPacket *packet = new AVPacket();
 
     av_init_packet(packet);
 
-    int error = av_read_frame(videoFile, packet);
+    int error = av_read_frame(formatContext, packet);
 
     // If error equals 0 then we have a valid packet so return it.
     if (0 == error) return packet;
@@ -155,7 +161,7 @@ AVPacket* LibavSingleton::readNextPacket(AVFormatContext *videoFile) const {
 
     // Double check to see if we have reached the end of the file.
     // Because the AVERROR_EOF error code isn't always returned.
-    AVIOContext *ioContext = videoFile->pb;
+    AVIOContext *ioContext = formatContext->pb;
     if (NULL != ioContext && ioContext->eof_reached) return NULL;
 
     // Otherwise throw an exception with the error message.
@@ -167,7 +173,7 @@ AVMediaType LibavSingleton::findStreamType(const AVStream *stream) const {
     if (NULL == stream) {
 
         throw IllegalArgumentException(
-                "The supplied stream for findStreamType(AVStream) cannot be null.");
+                "The supplied stream for findStreamType(AVStream*) cannot be null.");
     }
 
     return findCodecType(stream->codec);
@@ -179,17 +185,29 @@ AVMediaType LibavSingleton::findCodecType(
     if (NULL == codecContext) {
 
         throw IllegalArgumentException(
-                "The supplied codec context for findCodecType(AVCodecContext) cannot be null.");
+                "The supplied codec context for findCodecType(AVCodecContext*) cannot be null.");
     }
 
     return codecContext->codec_type;
 }
 
-AVMediaType LibavSingleton::findPacketType(const AVFormatContext *videoFile,
+AVMediaType LibavSingleton::findPacketType(const AVFormatContext *formatContext,
         const AVPacket *packet) const {
 
+    if (NULL == formatContext) {
+
+        throw IllegalArgumentException(
+                "The supplied format context for findPacketType(AVFormatContext*,AVPacket*) cannot be null.");
+    }
+
+    if (NULL == packet) {
+
+        throw IllegalArgumentException(
+                "The supplied packet for findPacketType(AVFormatContext*,AVPacket*) cannot be null.");
+    }
+
     int packetIndex = packet->stream_index;
-    int streamNumber = videoFile->nb_streams;
+    int streamNumber = formatContext->nb_streams;
 
     // Check to make sure the packet index isn't out of bounds.
     if (streamNumber < packetIndex) {
@@ -200,20 +218,21 @@ AVMediaType LibavSingleton::findPacketType(const AVFormatContext *videoFile,
         << "Packet index greater than stream number. Packet index: "
                 << packetIndex << " Stream number: "
                 << streamNumber << " File name: "
-                << videoFile->filename << std::endl;
+                << formatContext->filename << std::endl;
 
         throw IllegalStateException(errorMessage.str());
     }
 
-    return findStreamType(videoFile->streams[packetIndex]);
+    return findStreamType(formatContext->streams[packetIndex]);
 }
 
-AVCodecContext* LibavSingleton::openCodecContext(AVCodecContext *codecContext) const {
+AVCodecContext* LibavSingleton::openCodecContext(
+        AVCodecContext *codecContext) const {
 
     if (NULL == codecContext) {
 
         throw IllegalArgumentException(
-                "The supplied codec context for openCodecContext(AVCodecContext) cannot be null.");
+                "The supplied codec context for openCodecContext(AVCodecContext*) cannot be null.");
     }
 
     // Find the codec for the provided codec context.
@@ -223,18 +242,214 @@ AVCodecContext* LibavSingleton::openCodecContext(AVCodecContext *codecContext) c
 
     int codecOpenResult = avcodec_open2(codecContext, codec, NULL);
 
-    if (0 > codecOpenResult) {
-        std::stringstream errorMessage;
+    if (0 == codecOpenResult)
+        return codecContext;;
 
-        errorMessage << "Could not open " << codec->long_name
-                << " codec. Error: "
-                << codecOpenResult << std::endl;
+    throw CodecException(errorMessage(codecOpenResult));
+}
 
-        throw FFMPEGException(errorMessage.str());
+std::vector<AVFrame*> LibavSingleton::decodeAudioPacket(
+        AVCodecContext *codecContext,
+        const AVPacket *packet) const {
+
+    if (NULL == codecContext) {
+
+        throw IllegalArgumentException(
+                "The supplied codec context for decodeAudioPacket(AVCodecContext*,AVPacket*) cannot be null.");
     }
 
-    return codecContext;
+    if (AVMEDIA_TYPE_AUDIO != findCodecType(codecContext)) {
+
+        throw IllegalArgumentException(
+                "The supplied codec context for decodeAudioPacket(AVCodecContext*,AVPacket*) must have media type AVMEDIA_TYPE_AUDIO.");
+    }
+
+    if (NULL == packet) {
+
+        throw IllegalArgumentException(
+                "The supplied packet for decodeAudioPacket(AVCodecContext*,AVPacket*) cannot be null.");
+    }
+
+    // This vector will contain all the audio frames decoded from the supplied packet.
+    std::vector<AVFrame*> frames;
+
+    // A copy of the supplied packet that will be used during the decoding so that we
+    // don't mutate the supplied packet. If we mutated the supplied packet it would no
+    // longer be able to be correctly deleted.
+    AVPacket packetCopy;
+    // Create a new large buffer array to hold the audio packet.
+    uint8_t buffer[BUFFER_SIZE];
+    // Set all the values within to 0 so that there is no question about the data end.
+    memset(buffer, 0, BUFFER_SIZE);
+    // Copy the packet data into the new buffer.
+    memcpy(buffer, packet->data, packet->size);
+    // Set the copy packets data and size.
+    packetCopy.data = buffer;
+    packetCopy.size = packet->size;
+
+    // The frame pointer that will hold each new frame before it is placed in the vector.
+    AVFrame *decodedFrame = NULL;
+
+    // This will be set to 1 if a frame has successfully been decoded with the
+    // avcodec_decode_audio4() function.
+    int frameDecoded = 0;
+
+    int bytesDecoded = 0; // The number of bytes that were decoded in each iteration.
+
+    while (0 < packetCopy.size) {
+        // Create a new frame to contain the decoded data if one is required.
+        if (NULL == decodedFrame) decodedFrame = avcodec_alloc_frame();
+
+        // Decode the packet and store it in the new frame.
+        // Also record how many bytes were decoded because it might not have been all
+        // of them.
+        bytesDecoded = avcodec_decode_audio4(codecContext, decodedFrame,
+                &frameDecoded,
+                &packetCopy);
+
+        // If there is an invalid data error throw a more specific exception.
+        if (AVERROR_INVALIDDATA == bytesDecoded) {
+
+            throw PacketDecodeException(errorMessage(bytesDecoded));
+        }
+
+        if (0 != bytesDecoded) {
+
+            throw PacketDecodeException(errorMessage(bytesDecoded));
+        }
+
+        // If a frame was successfully decoded add it the vector to be returned and
+        // set the pointer to null to indicate we need a new frame allocated.
+        if (0 != frameDecoded) {
+
+            frames.push_back(decodedFrame);
+
+            decodedFrame = NULL;
+
+        } else {
+            // If we haven't successfully decoded a frame reset the decode frame
+            // values to make sure it's ready for another decode attempt.
+            avcodec_get_frame_defaults(decodedFrame);
+        }
+
+        // Push the data pointer down the byte array passed the last byte that we
+        // decoded.
+        packetCopy.data += bytesDecoded;
+        // Reduce the relative size of the data to the amount that is yet to be
+        // decoded.
+        packetCopy.size -= bytesDecoded;
+    }
+
+    return frames;
 }
+
+AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
+        const AVPacket *packet) const {
+
+    if (NULL == codecContext) {
+
+        throw IllegalArgumentException(
+                "The supplied codec context for decodeVideoPacket(AVCodecContext*,AVPacket*) cannot be null.");
+    }
+
+    if (AVMEDIA_TYPE_VIDEO != findCodecType(codecContext)) {
+
+        throw IllegalArgumentException(
+                "The supplied codec context for decodeVideoPacket(AVCodecContext*,AVPacket*) must have media type AVMEDIA_TYPE_VIDEO.");
+    }
+
+    if (NULL == packet) {
+
+        throw IllegalArgumentException(
+                "The supplied packet for decodeVideoPacket(AVCodecContext*,AVPacket*) cannot be null.");
+    }
+
+    AVPacket packetCopy;
+    uint8_t buffer[BUFFER_SIZE];
+    memset(buffer, 0, BUFFER_SIZE);
+    memcpy(buffer, packet->data, packet->size);
+    packetCopy.data = buffer;
+    packetCopy.size = packet->size;
+
+    AVFrame *decodedFrame = avcodec_alloc_frame();
+
+    int bytesDecoded = 0;
+
+    int frameDecoded = 0;
+
+    bytesDecoded = avcodec_decode_video2(codecContext, decodedFrame,
+            &frameDecoded,
+            &packetCopy);
+
+    if (AVERROR_INVALIDDATA == bytesDecoded) {
+
+        throw PacketDecodeException(errorMessage(bytesDecoded));
+    }
+
+    if (0 != bytesDecoded) {
+
+        throw PacketDecodeException(errorMessage(bytesDecoded));
+    }
+
+    if (0 == frameDecoded) return decodedFrame;
+
+    return NULL;
+}
+
+
+std::string errorMessage(const int& errorCode) {
+
+    return LibavSingleton::getInstance().errorMessage(errorCode);
+}
+
+AVFormatContext* openFormatContext(const std::string& fileName) {
+
+    return LibavSingleton::getInstance().openFormatContext(fileName);
+}
+
+void closeFormatContext(AVFormatContext *formatContext) {
+
+    return LibavSingleton::getInstance().closeFormatContext(formatContext);
+}
+
+AVPacket* readNextPacket(AVFormatContext *formatContext) {
+
+    return LibavSingleton::getInstance().readNextPacket(formatContext);
+}
+
+AVMediaType findStreamType(const AVStream *stream) {
+
+    return LibavSingleton::getInstance().findStreamType(stream);
+}
+
+AVMediaType findCodecType(const AVCodecContext *codecContext) {
+
+    return LibavSingleton::getInstance().findCodecType(codecContext);
+}
+
+AVMediaType findPacketType(const AVFormatContext *formatContext,
+        const AVPacket *packet) {
+
+    return LibavSingleton::getInstance().findPacketType(formatContext, packet);
+}
+
+AVCodecContext* openCodecContext(AVCodecContext *codecContext) {
+
+    return LibavSingleton::getInstance().openCodecContext(codecContext);
+}
+
+std::vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
+        const AVPacket *packet) {
+
+    return LibavSingleton::getInstance().decodeAudioPacket(codecContext, packet);
+}
+
+AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
+        const AVPacket *packet) {
+
+    return LibavSingleton::getInstance().decodeVideoPacket(codecContext, packet);
+}
+
 
 } /* namespace util */
 } /* namespace transcode */

@@ -56,7 +56,7 @@ public:
 
 /**
  * A <code>CodecException</code> is thrown if a required
- * codec cannot be found.
+ * codec cannot be found or opened.
  */
 class CodecException: public IllegalStateException {
 
@@ -73,27 +73,65 @@ public:
     }
 };
 
+/**
+ * A <code>PacketDecodeException</code> is thrown if there
+ * was an error during the decode of a packet.
+ */
+class PacketDecodeException: public MediaException {
+
+public:
+    PacketDecodeException() throw () :
+            MediaException() {
+    }
+
+    PacketDecodeException(std::string message) throw () :
+            MediaException(message) {
+    }
+
+    ~PacketDecodeException() throw () {
+    }
+};
+
+/**
+ * An <code>InvalidPacketDataException</code> is thrown if a
+ * decode was attempted on a packet containing invalid data.
+ */
+class InvalidPacketDataException: public MediaException {
+
+public:
+    InvalidPacketDataException() throw () :
+        MediaException() {
+    }
+
+    InvalidPacketDataException(std::string message) throw () :
+        MediaException(message) {
+    }
+
+    ~InvalidPacketDataException() throw () {
+    }
+};
+
 std::string errorMessage(const int& errorCode);
 
 AVFormatContext* openFormatContext(const std::string& fileName);
 
 void closeFormatContext(AVFormatContext *formatContext);
 
-AVPacket* readNextPacket(AVFormatContext *videoFile);
+AVPacket* readNextPacket(AVFormatContext *fomratContext);
 
 AVMediaType findStreamType(const AVStream *stream);
 
 AVMediaType findCodecType(const AVCodecContext *codecContext);
 
-AVMediaType findPacketType(const AVFormatContext *videoFile,
+AVMediaType findPacketType(const AVFormatContext *formatContext,
         const AVPacket *packet);
 
 AVCodecContext* openCodecContext(AVCodecContext *codecContext);
 
-std::vector<AVFrame*> decodeAudioPacket(const AVCodecContext *codecContext,
+std::vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
         const AVPacket *packet);
 
-AVFrame decodeVideoPacket(const AVCodecContext *codecContext,
+AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
         const AVPacket *packet);
 
 }
