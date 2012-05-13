@@ -32,7 +32,8 @@ CCC = g++
 INCLUDES = -D__STDC_CONSTANT_MACROS -I/opt/libav/include/ -I/usr/include/ -I$(SRC_DIR) -I./
 
 LIBS = -L/usr/lib/i386-linux-gnu -L/opt/libav/lib/ -L/usr/lib/ -L$(LIB_DIR) -lboost_test_exec_monitor \
--lavformat -lavcodec -lavutil -lx264 -lboost_filesystem -lutil_file -lutil_ffmpeg -lutil_media_ffmpeg
+-lavformat -lavcodec -lavutil -lx264 -lboost_filesystem -lutil_file -lutil_ffmpeg -lutil_media_ffmpeg \
+-lutil_libav
 
 # The C++ test source files.
 SRC_TEST_ONE = example_test.cpp
@@ -41,6 +42,7 @@ SRC_TEST_THREE = util_standard_test.cpp
 SRC_TEST_FOUR = util_ffmpeg_test.cpp
 SRC_TEST_FIVE = util_file_test.cpp
 SRC_TEST_SIX = media_test.cpp
+SRC_TEST_SEVEN = util_libav_test.cpp
 
 BIN_TEST_ONE = $(LIB_TEST_DIR)$(basename $(SRC_TEST_ONE))
 BIN_TEST_TWO = $(LIB_TEST_DIR)$(basename $(SRC_TEST_TWO))
@@ -48,6 +50,7 @@ BIN_TEST_THREE = $(LIB_TEST_DIR)$(basename $(SRC_TEST_THREE))
 BIN_TEST_FOUR = $(LIB_TEST_DIR)$(basename $(SRC_TEST_FOUR))
 BIN_TEST_FIVE = $(LIB_TEST_DIR)$(basename $(SRC_TEST_FIVE))
 BIN_TEST_SIX = $(LIB_TEST_DIR)$(basename $(SRC_TEST_SIX))
+BIN_TEST_SEVEN = $(LIB_TEST_DIR)$(basename $(SRC_TEST_SEVEN))
 
 # The compile command for the first C++ test source file. This places the binary file into the standard lib directory.
 COMPILE_NATIVE_ONE_CMD = $(CCC) $(INCLUDES) $(SRC_TEST_ONE) $(LIBS) -o $(BIN_TEST_ONE)
@@ -56,6 +59,7 @@ COMPILE_NATIVE_THREE_CMD = $(CCC) $(INCLUDES) $(SRC_TEST_THREE) $(LIBS) -o $(BIN
 COMPILE_NATIVE_FOUR_CMD = $(CCC) $(INCLUDES) $(SRC_TEST_FOUR) $(LIBS) -o $(BIN_TEST_FOUR)
 COMPILE_NATIVE_FIVE_CMD = $(CCC) $(INCLUDES) $(SRC_TEST_FIVE) $(LIBS) -o $(BIN_TEST_FIVE)
 COMPILE_NATIVE_SIX_CMD = $(CCC) $(INCLUDES) $(SRC_TEST_SIX) $(LIBS) -o $(BIN_TEST_SIX)
+COMPILE_NATIVE_SEVEN_CMD = $(CCC) $(INCLUDES) $(SRC_TEST_SEVEN) $(LIBS) -o $(BIN_TEST_SEVEN)
 
 all:
 	$(COMPILE_NATIVE_ONE_CMD)
@@ -64,12 +68,14 @@ all:
 	$(COMPILE_NATIVE_FOUR_CMD)
 	$(COMPILE_NATIVE_FIVE_CMD)
 	$(COMPILE_NATIVE_SIX_CMD)
+	$(COMPILE_NATIVE_SEVEN_CMD)
 	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_ONE)
 	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_TWO)
 	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_THREE)
 	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_FOUR)
 	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_FIVE)
 	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_SIX)
+	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_SEVEN)
 
 clean:
 	rm $(LIB_TEST_DIR)*
