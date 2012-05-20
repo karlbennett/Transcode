@@ -15,6 +15,7 @@ extern "C" {
 #include <error.hpp>
 #include <sstream>
 
+using namespace std;
 
 /**
  * Transcode namespace, all the top level transcode functions and classes are in
@@ -55,9 +56,9 @@ public:
         return instance;
     }
 
-    std::string errorMessage(const int& errorCode) const;
+    string errorMessage(const int& errorCode) const;
 
-    AVFormatContext* openFormatContext(const std::string& fileName) const;
+    AVFormatContext* openFormatContext(const string& fileName) const;
 
     void closeFormatContext(AVFormatContext *formatContext) const;
 
@@ -72,7 +73,7 @@ public:
 
     AVCodecContext* openCodecContext(AVCodecContext *codecContext) const;
 
-    std::vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
+    vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
             const AVPacket *packet) const;
 
     AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
@@ -90,7 +91,7 @@ LibavSingleton::LibavSingleton() {
     av_log_set_level(AV_LOG_ERROR);
 }
 
-std::string LibavSingleton::errorMessage(const int& errorCode) const {
+string LibavSingleton::errorMessage(const int& errorCode) const {
 
     size_t bufferSize = 1024;
 
@@ -98,11 +99,11 @@ std::string LibavSingleton::errorMessage(const int& errorCode) const {
 
     int err = av_strerror(errorCode, buffer, bufferSize);
 
-    return err == 0 ? buffer : UNKNOWN;
+    return err == 0 ? string(buffer) : UNKNOWN;
 }
 
 AVFormatContext* LibavSingleton::openFormatContext(
-        const std::string& filePath) const {
+        const string& filePath) const {
 
     // Open the media file. This will populate the AVFormatContext
     // with all the information about this media file.
@@ -212,13 +213,13 @@ AVMediaType LibavSingleton::findPacketType(const AVFormatContext *formatContext,
     // Check to make sure the packet index isn't out of bounds.
     if (streamNumber < packetIndex) {
 
-        std::stringstream errorMessage;
+        stringstream errorMessage;
 
         errorMessage
         << "Packet index greater than stream number. Packet index: "
                 << packetIndex << " Stream number: "
                 << streamNumber << " File name: "
-                << formatContext->filename << std::endl;
+                << formatContext->filename << endl;
 
         throw IllegalStateException(errorMessage.str());
     }
@@ -248,7 +249,7 @@ AVCodecContext* LibavSingleton::openCodecContext(
     throw CodecException(errorMessage(codecOpenResult));
 }
 
-std::vector<AVFrame*> LibavSingleton::decodeAudioPacket(
+vector<AVFrame*> LibavSingleton::decodeAudioPacket(
         AVCodecContext *codecContext,
         const AVPacket *packet) const {
 
@@ -271,7 +272,7 @@ std::vector<AVFrame*> LibavSingleton::decodeAudioPacket(
     }
 
     // This vector will contain all the audio frames decoded from the supplied packet.
-    std::vector<AVFrame*> frames;
+    vector<AVFrame*> frames;
 
     // A copy of the supplied packet that will be used during the decoding so that we
     // don't mutate the supplied packet. If we mutated the supplied packet it would no
@@ -397,12 +398,12 @@ AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
 }
 
 
-std::string errorMessage(const int& errorCode) {
+string errorMessage(const int& errorCode) {
 
     return LibavSingleton::getInstance().errorMessage(errorCode);
 }
 
-AVFormatContext* openFormatContext(const std::string& fileName) {
+AVFormatContext* openFormatContext(const string& fileName) {
 
     return LibavSingleton::getInstance().openFormatContext(fileName);
 }
@@ -438,7 +439,7 @@ AVCodecContext* openCodecContext(AVCodecContext *codecContext) {
     return LibavSingleton::getInstance().openCodecContext(codecContext);
 }
 
-std::vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
+vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
         const AVPacket *packet) {
 
     return LibavSingleton::getInstance().decodeAudioPacket(codecContext, packet);
