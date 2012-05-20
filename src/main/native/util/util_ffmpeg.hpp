@@ -185,7 +185,7 @@ ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile);
  *          from it.
  * @return the next packet or NULL if we have reached the end of the file.
  */
-AVPacket* readNextPacket(AVFormatContext *videoFile);
+AVPacket* readNextPacketFFMPEG(AVFormatContext *videoFile);
 
 /**
  * Find the type of the provided packet. That is if it is an audio or video

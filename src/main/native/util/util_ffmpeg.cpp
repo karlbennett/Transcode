@@ -917,7 +917,7 @@ ContainerMetaData buildContainerDetail(const AVFormatContext *videoFile) {
     return FfmpegSingleton::getInstance().buildContainerDetail(videoFile);
 }
 
-AVPacket* readNextPacket(AVFormatContext *videoFile) {
+AVPacket* readNextPacketFFMPEG(AVFormatContext *videoFile) {
 
     return FfmpegSingleton::getInstance().readNextPacket(videoFile);
 }

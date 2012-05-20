@@ -31,7 +31,7 @@ static void testReadPackets(AVFormatContext *formatContext) {
 
     AVPacket *packet = NULL;
 
-    while (NULL != (packet = transcode::util::readNextPacket(formatContext))) {
+    while (NULL != (packet = transcode::util::readNextPacketFFMPEG(formatContext))) {
 
         // The packet should not be empty.
         BOOST_REQUIRE( 0 < packet->size);
@@ -317,7 +317,7 @@ struct AVIPacketFixture : public AVIFormatContextFixture, PacketFixture {
 
     AVIPacketFixture() : AVIFormatContextFixture(), PacketFixture() {
 
-        packet = transcode::util::readNextPacket(formatContext);
+        packet = transcode::util::readNextPacketFFMPEG(formatContext);
     }
 };
 
@@ -330,7 +330,7 @@ struct MKVPacketFixture : public MKVFormatContextFixture, PacketFixture {
 
     MKVPacketFixture() : MKVFormatContextFixture(), PacketFixture() {
 
-        packet = transcode::util::readNextPacket(formatContext);
+        packet = transcode::util::readNextPacketFFMPEG(formatContext);
     }
 };
 
@@ -343,7 +343,7 @@ struct MP4PacketFixture : public MP4FormatContextFixture, PacketFixture {
 
     MP4PacketFixture() : MP4FormatContextFixture(), PacketFixture() {
 
-        packet = transcode::util::readNextPacket(formatContext);
+        packet = transcode::util::readNextPacketFFMPEG(formatContext);
     }
 };
 
@@ -356,7 +356,7 @@ struct OGVPacketFixture : public OGVFormatContextFixture, PacketFixture {
 
     OGVPacketFixture() : OGVFormatContextFixture(), PacketFixture() {
 
-        packet = transcode::util::readNextPacket(formatContext);
+        packet = transcode::util::readNextPacketFFMPEG(formatContext);
     }
 };
 
@@ -369,7 +369,7 @@ struct FLVPacketFixture : public FLVFormatContextFixture, PacketFixture {
 
     FLVPacketFixture() : FLVFormatContextFixture(), PacketFixture() {
 
-        packet = transcode::util::readNextPacket(formatContext);
+        packet = transcode::util::readNextPacketFFMPEG(formatContext);
     }
 };
 
@@ -402,11 +402,11 @@ struct MultiInitialisedPacketFixture: public MultiPacketFixture {
     MultiInitialisedPacketFixture() :
             MultiPacketFixture() {
 
-        aviPacket = transcode::util::readNextPacket(aviFormatContext);
-        mkvPacket = transcode::util::readNextPacket(mkvFormatContext);
-        mp4Packet = transcode::util::readNextPacket(mp4FormatContext);
-        ogvPacket = transcode::util::readNextPacket(ogvFormatContext);
-        flvPacket = transcode::util::readNextPacket(flvFormatContext);
+        aviPacket = transcode::util::readNextPacketFFMPEG(aviFormatContext);
+        mkvPacket = transcode::util::readNextPacketFFMPEG(mkvFormatContext);
+        mp4Packet = transcode::util::readNextPacketFFMPEG(mp4FormatContext);
+        ogvPacket = transcode::util::readNextPacketFFMPEG(ogvFormatContext);
+        flvPacket = transcode::util::readNextPacketFFMPEG(flvFormatContext);
     }
 };
 
@@ -1238,24 +1238,24 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_build_flv_container, FLVFormatContextFixtur
 BOOST_FIXTURE_TEST_CASE( test_read_next_packet, MultiInitialisedFormatContextFixture )
 {
 
-    av_free_packet(transcode::util::readNextPacket(aviFormatContext));
-    av_free_packet(transcode::util::readNextPacket(mkvFormatContext));
-    av_free_packet(transcode::util::readNextPacket(mp4FormatContext));
-    av_free_packet(transcode::util::readNextPacket(ogvFormatContext));
-    av_free_packet(transcode::util::readNextPacket(flvFormatContext));
+    av_free_packet(transcode::util::readNextPacketFFMPEG(aviFormatContext));
+    av_free_packet(transcode::util::readNextPacketFFMPEG(mkvFormatContext));
+    av_free_packet(transcode::util::readNextPacketFFMPEG(mp4FormatContext));
+    av_free_packet(transcode::util::readNextPacketFFMPEG(ogvFormatContext));
+    av_free_packet(transcode::util::readNextPacketFFMPEG(flvFormatContext));
 }
 
 BOOST_AUTO_TEST_CASE( test_read_next_packet_from_null )
 {
 
-    BOOST_REQUIRE_THROW( transcode::util::readNextPacket(NULL),
+    BOOST_REQUIRE_THROW( transcode::util::readNextPacketFFMPEG(NULL),
             transcode::util::FFMPEGException);
 }
 
 BOOST_AUTO_TEST_CASE( test_read_next_packet_from_blank_format_context )
 {
 
-    BOOST_REQUIRE_THROW( transcode::util::readNextPacket(&blankFormatContext),
+    BOOST_REQUIRE_THROW( transcode::util::readNextPacketFFMPEG(&blankFormatContext),
             transcode::util::FFMPEGException);
 }
 
@@ -1266,7 +1266,7 @@ BOOST_AUTO_TEST_CASE( test_read_next_packet_from_blank_format_context )
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_avi_packet, AVINullPacketFixture )
 {
 
-    packet = transcode::util::readNextPacket(formatContext);
+    packet = transcode::util::readNextPacketFFMPEG(formatContext);
 
     BOOST_REQUIRE( NULL != packet );
 }
@@ -1288,7 +1288,7 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_avi_packets, AVIFormatContextFixture )
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_mkv_packet, MKVNullPacketFixture )
 {
 
-    packet = transcode::util::readNextPacket(formatContext);
+    packet = transcode::util::readNextPacketFFMPEG(formatContext);
 
     BOOST_REQUIRE( NULL != packet);
 }
@@ -1310,7 +1310,7 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_mkv_packets, MKVFormatContextFixture )
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_mp4_packet, MP4NullPacketFixture )
 {
 
-    packet = transcode::util::readNextPacket(formatContext);
+    packet = transcode::util::readNextPacketFFMPEG(formatContext);
 
     BOOST_REQUIRE( NULL != packet);
 }
@@ -1332,7 +1332,7 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_mp4_packets, MP4FormatContextFixture )
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_ogv_packet, OGVNullPacketFixture )
 {
 
-    packet = transcode::util::readNextPacket(formatContext);
+    packet = transcode::util::readNextPacketFFMPEG(formatContext);
 
     BOOST_REQUIRE( NULL != packet);
 }
@@ -1354,7 +1354,7 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_ogv_packets, OGVFormatContextFixture )
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_read_flv_packet, FLVNullPacketFixture )
 {
 
-    packet = transcode::util::readNextPacket(formatContext);
+    packet = transcode::util::readNextPacketFFMPEG(formatContext);
 
     BOOST_REQUIRE( NULL != packet);
 }
