@@ -11,6 +11,8 @@
 #include <exception>
 #include <string>
 
+#include <iostream>
+
 namespace transcode {
 
 /**
@@ -20,14 +22,14 @@ namespace transcode {
 class MediaException: public std::exception {
 
 private:
-    std::string message_;
+    std::string _message;
 
 public:
     /**
      * Instantiate an empty MediaException object.
      */
     MediaException() throw () :
-            exception(), message_("") {
+            exception(), _message("") {
     }
 
     /**
@@ -35,15 +37,15 @@ public:
      *
      * @param message - the message for the new exception.
      */
-    MediaException(std::string message) throw () :
-            exception(), message_(message) {
+    MediaException(const std::string& message) throw () :
+            exception(), _message(message) {
     }
 
     ~MediaException() throw () {
     }
 
     const char* what() const throw () {
-        return message_.c_str();
+        return _message.c_str();
     }
 };
 
@@ -54,7 +56,7 @@ public:
             MediaException() {
     }
 
-    IOException(std::string message) throw () :
+    IOException(const std::string& message) throw () :
             MediaException(message) {
     }
 
@@ -69,7 +71,7 @@ public:
             MediaException() {
     }
 
-    IllegalArgumentException(std::string message) throw () :
+    IllegalArgumentException(const std::string& message) throw () :
             MediaException(message) {
     }
 
@@ -84,7 +86,7 @@ public:
             MediaException() {
     }
 
-    IllegalStateException(std::string message) throw () :
+    IllegalStateException(const std::string& message) throw () :
             MediaException(message) {
     }
 
