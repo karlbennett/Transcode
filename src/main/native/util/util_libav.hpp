@@ -115,7 +115,7 @@ std::string errorMessage(const int& errorCode);
 
 AVFormatContext* openFormatContext(const std::string& fileName);
 
-void closeFormatContext(AVFormatContext *formatContext);
+void closeFormatContext(AVFormatContext **formatContext);
 
 AVPacket* readNextPacket(AVFormatContext *fomratContext);
 

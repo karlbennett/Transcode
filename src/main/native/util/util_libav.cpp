@@ -62,7 +62,7 @@ public:
 
     AVFormatContext* openFormatContext(const string& fileName) const;
 
-    void closeFormatContext(AVFormatContext *formatContext) const;
+    void closeFormatContext(AVFormatContext **formatContext) const;
 
     AVPacket* readNextPacket(AVFormatContext *formatContext) const;
 
@@ -130,29 +130,52 @@ AVFormatContext* LibavSingleton::openFormatContext(
     errorCode = avformat_find_stream_info(formatContext, NULL);
 
     // If all is successful return the newly opened format context.
-    if (0 == errorCode) return formatContext;
+    if (0 <= errorCode) return formatContext;
 
     // Other wise fail.
     throw IOException(errorMessage(errorCode));
 }
 
-void LibavSingleton::closeFormatContext(AVFormatContext *formatContext) const {
+void LibavSingleton::closeFormatContext(AVFormatContext **formatContext) const {
+
+    if (NULL == (*formatContext)) {
+
+        throw IllegalArgumentException("Cannot close a NULL AVFormatContext");
+    }
+
+    if (0 >= (*formatContext)->nb_streams) {
+
+        throw IllegalStateException(
+                "The AVFormatContext does not contain any valid streams");
+    }
 
     AVStream *stream = NULL;
 
     // Close all the codec contexts within the format context to make sure they
     // are cleaned up.
-    for (int i = 0; i < formatContext->nb_streams; i++) {
+    for (int i = 0; i < (*formatContext)->nb_streams; i++) {
 
-        stream = formatContext->streams[i];
+        stream = (*formatContext)->streams[i];
 
         if (NULL != stream) avcodec_close(stream->codec);
     }
 
-    avformat_close_input(&formatContext);
+    avformat_close_input(formatContext);
 }
 
 AVPacket* LibavSingleton::readNextPacket(AVFormatContext *formatContext) const {
+
+    if (NULL == formatContext) {
+
+        throw IllegalArgumentException(
+                "Cannot read a packet from a NULL AVFormatContext");
+    }
+
+    if (0 >= formatContext->nb_streams) {
+
+        throw IllegalStateException(
+                "There are no streams within the AVFormatContext to read a packet from.");
+    }
 
     AVPacket *packet = new AVPacket();
 
@@ -414,7 +437,7 @@ AVFormatContext* openFormatContext(const string& fileName) {
     return LibavSingleton::getInstance().openFormatContext(fileName);
 }
 
-void closeFormatContext(AVFormatContext *formatContext) {
+void closeFormatContext(AVFormatContext **formatContext) {
 
     return LibavSingleton::getInstance().closeFormatContext(formatContext);
 }
