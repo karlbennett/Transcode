@@ -15,6 +15,8 @@ extern "C" {
 #include <error.hpp>
 #include <sstream>
 
+#include <iostream>
+
 using namespace std;
 
 /**
@@ -96,6 +98,10 @@ string LibavSingleton::errorMessage(const int& errorCode) const {
     size_t bufferSize = 1024;
 
     char buffer[bufferSize];
+
+    // Make sure that the buffer is null terminated so that it
+    // represents a valid C++ string.
+    memset(buffer, 0, bufferSize);
 
     int err = av_strerror(errorCode, buffer, bufferSize);
 
