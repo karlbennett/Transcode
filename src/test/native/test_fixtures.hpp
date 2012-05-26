@@ -30,6 +30,15 @@ struct FormatContextFixture {
     AVFormatContext *formatContext;
 };
 
+struct StreamFixture {
+
+    StreamFixture(const AVFormatContext *fc) : streams(fc->streams) {}
+
+    virtual ~StreamFixture() {}
+
+    AVStream **streams;
+};
+
 struct AVIFormatContextFixture: public FormatContextFixture {
 
     AVIFormatContextFixture() : FormatContextFixture() {
@@ -82,6 +91,31 @@ struct TextFormatContextFixture: public FormatContextFixture {
         avformat_open_input(&formatContext, TEXT_FILE.c_str(), NULL,
                     NULL);
     }
+};
+
+struct AVIStreamFixture: public AVIFormatContextFixture, public StreamFixture {
+
+    AVIStreamFixture() : AVIFormatContextFixture(), StreamFixture(formatContext) {}
+};
+
+struct MKVStreamFixture: public MKVFormatContextFixture, public StreamFixture {
+
+    MKVStreamFixture() : MKVFormatContextFixture(), StreamFixture(formatContext) {}
+};
+
+struct OGVStreamFixture: public OGVFormatContextFixture, public StreamFixture {
+
+    OGVStreamFixture() : OGVFormatContextFixture(), StreamFixture(formatContext) {}
+};
+
+struct MP4StreamFixture: public MP4FormatContextFixture, public StreamFixture {
+
+    MP4StreamFixture() : MP4FormatContextFixture(), StreamFixture(formatContext) {}
+};
+
+struct FLVStreamFixture: public FLVFormatContextFixture, public StreamFixture {
+
+    FLVStreamFixture() : FLVFormatContextFixture(), StreamFixture(formatContext) {}
 };
 
 }
