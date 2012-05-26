@@ -338,3 +338,76 @@ BOOST_AUTO_TEST_CASE( test_find_type_for_null_stream )
     BOOST_REQUIRE_THROW( transcode::util::findStreamType(NULL),
             transcode::IllegalArgumentException );
 }
+
+/**
+ * Test find codec type from an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_avi_file, test::AVICodecContextFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( DIVX_STREAM_ONE, transcode::util::findCodecType(codecs[0]) );
+    BOOST_REQUIRE_EQUAL( DIVX_STREAM_TWO, transcode::util::findCodecType(codecs[1]) );
+}
+
+/**
+ * Test find codec type from an mkv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_mkv_file, test::MKVCodecContextFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( MKV_STREAM_ONE, transcode::util::findCodecType(codecs[0]) );
+    BOOST_REQUIRE_EQUAL( MKV_STREAM_TWO, transcode::util::findCodecType(codecs[1]) );
+}
+
+/**
+ * Test find codec type from an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_ogv_file, test::OGVCodecContextFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( OGV_STREAM_ONE, transcode::util::findCodecType(codecs[0]) );
+    BOOST_REQUIRE_EQUAL( OGV_STREAM_TWO, transcode::util::findCodecType(codecs[1]) );
+    BOOST_REQUIRE_EQUAL( OGV_STREAM_THREE, transcode::util::findCodecType(codecs[2]) );
+}
+
+/**
+ * Test find codec type from an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_mp4_file, test::MP4CodecContextFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( MP4_STREAM_ONE, transcode::util::findCodecType(codecs[0]) );
+    BOOST_REQUIRE_EQUAL( MP4_STREAM_TWO, transcode::util::findCodecType(codecs[1]) );
+}
+
+/**
+ * Test find codec type from an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_flv_file, test::FLVCodecContextFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( FLV_STREAM_ONE, transcode::util::findCodecType(codecs[0]) );
+    BOOST_REQUIRE_EQUAL( FLV_STREAM_TWO, transcode::util::findCodecType(codecs[1]) );
+}
+
+/**
+ * Test find type for an empty codec.
+ */
+BOOST_AUTO_TEST_CASE( test_find_type_for_empty_codec )
+{
+
+    AVCodecContext codec;
+
+    BOOST_REQUIRE_THROW( transcode::util::findCodecType(&codec),
+            transcode::IllegalStateException );
+}
+
+/**
+ * Test find type for a null codec.
+ */
+BOOST_AUTO_TEST_CASE( test_find_type_for_null_codec )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::findCodecType(NULL),
+            transcode::IllegalArgumentException );
+}
