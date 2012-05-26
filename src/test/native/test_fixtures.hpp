@@ -61,6 +61,27 @@ struct CodecContextFixture {
     AVCodecContext **codecs;
 };
 
+struct PacketFixture {
+
+    PacketFixture(AVFormatContext *fc) {
+
+        packet = new AVPacket();
+
+        av_init_packet(packet);
+
+        int error = av_read_frame(fc, packet);
+
+        if (0 != error) throw "Failed to read AVPacket in test fixture.";
+    }
+
+    virtual ~PacketFixture() {
+
+        av_free_packet(packet);
+    }
+
+    AVPacket *packet;
+};
+
 
 /** FORMAT CONTEXT FIXTURES **/
 
@@ -179,6 +200,33 @@ struct FLVCodecContextFixture: public FLVStreamFixture, public CodecContextFixtu
             CodecContextFixture(streams, formatContext->nb_streams) {}
 };
 
+
+/** PACKET CONTEXT FIXTURES **/
+
+struct AVIPacketFixture: public AVIFormatContextFixture, public PacketFixture {
+
+    AVIPacketFixture() : AVIFormatContextFixture(), PacketFixture(formatContext) {}
+};
+
+struct MKVPacketFixture: public MKVFormatContextFixture, public PacketFixture {
+
+    MKVPacketFixture() : MKVFormatContextFixture(), PacketFixture(formatContext) {}
+};
+
+struct OGVPacketFixture: public OGVFormatContextFixture, public PacketFixture {
+
+    OGVPacketFixture() : OGVFormatContextFixture(), PacketFixture(formatContext) {}
+};
+
+struct MP4PacketFixture: public MP4FormatContextFixture, public PacketFixture {
+
+    MP4PacketFixture() : MP4FormatContextFixture(), PacketFixture(formatContext) {}
+};
+
+struct FLVPacketFixture: public FLVFormatContextFixture, public PacketFixture {
+
+    FLVPacketFixture() : FLVFormatContextFixture(), PacketFixture(formatContext) {}
+};
 }
 
 #endif /* __TEST_FIXTURES_HPP__ */
