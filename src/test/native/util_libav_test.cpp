@@ -411,3 +411,68 @@ BOOST_AUTO_TEST_CASE( test_find_type_for_null_codec )
     BOOST_REQUIRE_THROW( transcode::util::findCodecType(NULL),
             transcode::IllegalArgumentException );
 }
+
+/**
+ * Test find packet type from an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_packet_type_from_avi_file, test::AVIPacketFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( DIVX_STREAM_ONE, transcode::util::findPacketType(formatContext, packet) );
+}
+
+/**
+ * Test find packet type from an mkvfile.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_packet_type_from_mkv_file, test::AVIPacketFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( MKV_STREAM_ONE, transcode::util::findPacketType(formatContext, packet) );
+}
+
+/**
+ * Test find packet type from an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_packet_type_from_ogv_file, test::OGVPacketFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( OGV_STREAM_THREE, transcode::util::findPacketType(formatContext, packet) );
+}
+
+/**
+ * Test find packet type from an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_packet_type_from_mp4_file, test::MP4PacketFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( MP4_STREAM_TWO, transcode::util::findPacketType(formatContext, packet) );
+}
+
+/**
+ * Test find packet type from an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_packet_type_from_flv_file, test::FLVPacketFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( FLV_STREAM_TWO, transcode::util::findPacketType(formatContext, packet) );
+}
+
+/**
+ * Test find type for a null format context.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_type_for_null_format_context, test::AVIPacketFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::findPacketType(NULL, packet),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test find type for a null packet.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_type_for_null_packet, test::AVIFormatContextFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::findPacketType(formatContext, NULL),
+            transcode::IllegalArgumentException );
+}
