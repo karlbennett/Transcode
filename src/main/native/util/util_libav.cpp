@@ -218,7 +218,22 @@ AVMediaType LibavSingleton::findCodecType(
                 "The supplied codec context for findCodecType(AVCodecContext*) cannot be null.");
     }
 
-    return codecContext->codec_type;
+    AVMediaType type = codecContext->codec_type;
+
+    // If the type value is within the bounds of the
+    // AVMediaType enum then return it.
+    // This check is unfortunately tightly coupled to
+    // libav version, but I think the benefit of the check
+    // out ways the burden of keeping the values in sync
+    // with the compiled libav version.
+    if (-1 <= type && 5 >= type) return type;
+
+    stringstream errorMessage;
+
+    errorMessage << "Invalid AVMediaType value: "
+            << type << endl;
+
+    throw IllegalStateException(errorMessage.str());
 }
 
 AVMediaType LibavSingleton::findPacketType(const AVFormatContext *formatContext,
