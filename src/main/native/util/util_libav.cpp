@@ -255,7 +255,7 @@ AVMediaType LibavSingleton::findPacketType(const AVFormatContext *formatContext,
     int streamNumber = formatContext->nb_streams;
 
     // Check to make sure the packet index isn't out of bounds.
-    if (streamNumber < packetIndex) {
+    if (0 <= packetIndex && streamNumber < packetIndex) {
 
         stringstream errorMessage;
 
