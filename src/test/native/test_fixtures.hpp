@@ -18,6 +18,8 @@ extern "C" {
 
 namespace test {
 
+/** BASE FIXTURES **/
+
 struct FormatContextFixture {
 
     FormatContextFixture() : formatContext(NULL) {}
@@ -38,6 +40,29 @@ struct StreamFixture {
 
     AVStream **streams;
 };
+
+struct CodecContextFixture {
+
+    CodecContextFixture(AVStream **streams, const int& size) {
+
+        codecs = new AVCodecContext*[size];
+
+        for (int i = 0; i < size; i++) {
+
+            codecs[i] = streams[i]->codec;
+        }
+    }
+
+    virtual ~CodecContextFixture() {
+
+        delete codecs;
+    }
+
+    AVCodecContext **codecs;
+};
+
+
+/** FORMAT CONTEXT FIXTURES **/
 
 struct AVIFormatContextFixture: public FormatContextFixture {
 
@@ -93,6 +118,9 @@ struct TextFormatContextFixture: public FormatContextFixture {
     }
 };
 
+
+/** STREAM FIXTURES **/
+
 struct AVIStreamFixture: public AVIFormatContextFixture, public StreamFixture {
 
     AVIStreamFixture() : AVIFormatContextFixture(), StreamFixture(formatContext) {}
@@ -116,6 +144,39 @@ struct MP4StreamFixture: public MP4FormatContextFixture, public StreamFixture {
 struct FLVStreamFixture: public FLVFormatContextFixture, public StreamFixture {
 
     FLVStreamFixture() : FLVFormatContextFixture(), StreamFixture(formatContext) {}
+};
+
+
+/** CODEC CONTEXT FIXTURES **/
+
+struct AVICodecContextFixture: public AVIStreamFixture, public CodecContextFixture {
+
+    AVICodecContextFixture() : AVIStreamFixture(),
+            CodecContextFixture(streams, formatContext->nb_streams) {}
+};
+
+struct MKVCodecContextFixture: public MKVStreamFixture, public CodecContextFixture {
+
+    MKVCodecContextFixture() : MKVStreamFixture(),
+            CodecContextFixture(streams, formatContext->nb_streams) {}
+};
+
+struct OGVCodecContextFixture: public OGVStreamFixture, public CodecContextFixture {
+
+    OGVCodecContextFixture() : OGVStreamFixture(),
+            CodecContextFixture(streams, formatContext->nb_streams) {}
+};
+
+struct MP4CodecContextFixture: public MP4StreamFixture, public CodecContextFixture {
+
+    MP4CodecContextFixture() : MP4StreamFixture(),
+            CodecContextFixture(streams, formatContext->nb_streams) {}
+};
+
+struct FLVCodecContextFixture: public FLVStreamFixture, public CodecContextFixture {
+
+    FLVCodecContextFixture() : FLVStreamFixture(),
+            CodecContextFixture(streams, formatContext->nb_streams) {}
 };
 
 }
