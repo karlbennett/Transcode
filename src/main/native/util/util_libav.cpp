@@ -355,7 +355,7 @@ vector<AVFrame*> LibavSingleton::decodeAudioPacket(
         // If there is an invalid data error throw a more specific exception.
         if (AVERROR_INVALIDDATA == bytesDecoded) {
 
-            throw PacketDecodeException(errorMessage(bytesDecoded));
+            throw InvalidPacketDataException(errorMessage(bytesDecoded));
         }
 
         if (0 != bytesDecoded) {
@@ -428,7 +428,7 @@ AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
 
     if (AVERROR_INVALIDDATA == bytesDecoded) {
 
-        throw PacketDecodeException(errorMessage(bytesDecoded));
+        throw InvalidPacketDataException(errorMessage(bytesDecoded));
     }
 
     if (0 != bytesDecoded) {
