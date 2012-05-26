@@ -45,6 +45,22 @@ const std::string MPG_AUDIO = "audio/mpeg";
 const std::string AC3_AUDIO = "audio/x-ac3";
 const std::string VORBIS_AUDIO = "audio/x-vorbis";
 
+// The stream types that will be tested.
+// 0 - AVMEDIA_TYPE_VIDEO
+// 1 - AVMEDIA_TYPE_AUDIO
+// 2 - AVMEDIA_TYPE_SUBTITLE
+const int DIVX_STREAM_ONE = 0;
+const int DIVX_STREAM_TWO = 1;
+const int MKV_STREAM_ONE = 0;
+const int MKV_STREAM_TWO = 1;
+const int OGV_STREAM_ONE = 2;
+const int OGV_STREAM_TWO = 0;
+const int OGV_STREAM_THREE = 1;
+const int MP4_STREAM_ONE = 0;
+const int MP4_STREAM_TWO = 1;
+const int FLV_STREAM_ONE = 0;
+const int FLV_STREAM_TWO = 1;
+
 // The video types that will be tested.
 const std::string DIVX_VIDEO = "video/x-divx";
 const std::string H264_VIDEO = "video/x-h264";
