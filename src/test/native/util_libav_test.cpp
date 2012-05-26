@@ -264,3 +264,77 @@ BOOST_AUTO_TEST_CASE( test_read_packet_from_null_format_context )
     BOOST_REQUIRE_THROW( transcode::util::readNextPacket((AVFormatContext*) NULL),
             transcode::IllegalArgumentException );
 }
+
+/**
+ * Test find stream type from an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_stream_type_from_avi_file, test::AVIStreamFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( DIVX_STREAM_ONE, transcode::util::findStreamType(streams[0]) );
+    BOOST_REQUIRE_EQUAL( DIVX_STREAM_TWO, transcode::util::findStreamType(streams[1]) );
+}
+
+/**
+ * Test find stream type from an mkv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_stream_type_from_mkv_file, test::AVIStreamFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( MKV_STREAM_ONE, transcode::util::findStreamType(streams[0]) );
+    BOOST_REQUIRE_EQUAL( MKV_STREAM_TWO, transcode::util::findStreamType(streams[1]) );
+}
+
+/**
+ * Test find stream type from an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_stream_type_from_ogv_file, test::OGVStreamFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( OGV_STREAM_ONE, transcode::util::findStreamType(streams[0]) );
+    BOOST_REQUIRE_EQUAL( OGV_STREAM_TWO, transcode::util::findStreamType(streams[1]) );
+    BOOST_REQUIRE_EQUAL( OGV_STREAM_THREE, transcode::util::findStreamType(streams[2]) );
+}
+
+/**
+ * Test find stream type from an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_stream_type_from_mp4_file, test::MP4StreamFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( MP4_STREAM_ONE, transcode::util::findStreamType(streams[0]) );
+    BOOST_REQUIRE_EQUAL( MP4_STREAM_TWO, transcode::util::findStreamType(streams[1]) );
+}
+
+/**
+ * Test find stream type from an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_find_stream_type_from_flv_file, test::FLVStreamFixture )
+{
+
+    BOOST_REQUIRE_EQUAL( FLV_STREAM_ONE, transcode::util::findStreamType(streams[0]) );
+    BOOST_REQUIRE_EQUAL( FLV_STREAM_TWO, transcode::util::findStreamType(streams[1]) );
+}
+
+/**
+ * Test find type for an empty stream.
+ */
+BOOST_AUTO_TEST_CASE( test_find_type_for_empty_stream )
+{
+
+    AVStream stream;
+    stream.codec = NULL; // Only way for this test to be ok.
+
+    BOOST_REQUIRE_THROW( transcode::util::findStreamType(&stream),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test find type for a null stream.
+ */
+BOOST_AUTO_TEST_CASE( test_find_type_for_null_stream )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::findStreamType(NULL),
+            transcode::IllegalArgumentException );
+}
