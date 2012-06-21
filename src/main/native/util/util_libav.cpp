@@ -380,7 +380,7 @@ vector<AVFrame*> LibavSingleton::decodeAudioPacket(
             throw InvalidPacketDataException(errorMessage(bytesDecoded));
         }
 
-        if (0 != bytesDecoded) {
+        if (0 > bytesDecoded) {
 
             throw PacketDecodeException(errorMessage(bytesDecoded));
         }
