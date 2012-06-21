@@ -136,7 +136,7 @@ std::vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
 AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
         const AVPacket *packet);
 
-}
-}
+} /* namespace util */
+} /* namespace transcode */
 
 #endif /* __UTIL_LIBAV_HPP__ */
