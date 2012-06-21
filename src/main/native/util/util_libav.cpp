@@ -75,6 +75,8 @@ public:
 
     AVCodecContext* openCodecContext(AVCodecContext *codecContext) const;
 
+    void closeCodecContext(AVCodecContext **codecContext) const;
+
     vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
             const AVPacket *packet) const;
 
@@ -89,8 +91,8 @@ LibavSingleton::LibavSingleton() {
     avcodec_register_all();
     av_register_all();
 
-    // Set the log level to error to stop any warnings.
-    av_log_set_level(AV_LOG_ERROR);
+    // Set the log level to fatal to stop any warnings.
+    av_log_set_level(AV_LOG_FATAL);
 }
 
 string LibavSingleton::errorMessage(const int& errorCode) const {
@@ -287,10 +289,30 @@ AVCodecContext* LibavSingleton::openCodecContext(
 
     int codecOpenResult = avcodec_open2(codecContext, codec, NULL);
 
-    if (0 == codecOpenResult)
-        return codecContext;;
+    if (0 == codecOpenResult) return codecContext;
 
     throw CodecException(errorMessage(codecOpenResult));
+}
+
+void LibavSingleton::closeCodecContext(AVCodecContext **codecContext) const {
+
+    if (NULL == codecContext) {
+
+        throw IllegalArgumentException(
+                "The supplied codec context pointer for closeCodecContext(AVCodecContext**) cannot be null.");
+    }
+
+    if (NULL == *codecContext) {
+
+        throw IllegalArgumentException(
+                "The supplied codec context for openCodecContext(AVCodecContext**) cannot be null.");
+    }
+
+    int codecCloseResult = avcodec_close(*codecContext);
+
+    if (0 == codecCloseResult) return;
+
+    throw CodecException(errorMessage(codecCloseResult));
 }
 
 vector<AVFrame*> LibavSingleton::decodeAudioPacket(
@@ -481,6 +503,11 @@ AVMediaType findPacketType(const AVFormatContext *formatContext,
 AVCodecContext* openCodecContext(AVCodecContext *codecContext) {
 
     return LibavSingleton::getInstance().openCodecContext(codecContext);
+}
+
+void closeCodecContext(AVCodecContext **codecContext) {
+
+    LibavSingleton::getInstance().closeCodecContext(codecContext);
 }
 
 vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,

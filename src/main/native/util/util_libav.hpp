@@ -128,6 +128,8 @@ AVMediaType findPacketType(const AVFormatContext *formatContext,
 
 AVCodecContext* openCodecContext(AVCodecContext *codecContext);
 
+void closeCodecContext(AVCodecContext **codecContext);
+
 std::vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
         const AVPacket *packet);
 
