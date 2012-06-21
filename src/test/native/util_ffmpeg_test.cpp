@@ -1439,16 +1439,16 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_find_flv_packet_type, FLVPacketFixture )
 BOOST_FIXTURE_TEST_CASE( test_ffmpeg_open_codecs, MultiInitialisedCodecContextFixture )
 {
 
-    aviAudioCodec = transcode::util::openCodecContext(aviAudioCodec);
-    aviVideoCodec = transcode::util::openCodecContext(aviVideoCodec);
-    mkvAudioCodec = transcode::util::openCodecContext(mkvAudioCodec);
-    mkvVideoCodec = transcode::util::openCodecContext(mkvVideoCodec);
-    mp4AudioCodec = transcode::util::openCodecContext(mp4AudioCodec);
-    mp4VideoCodec = transcode::util::openCodecContext(mp4VideoCodec);
-    ogvAudioCodec = transcode::util::openCodecContext(ogvAudioCodec);
-    ogvVideoCodec = transcode::util::openCodecContext(ogvVideoCodec);
-    flvAudioCodec = transcode::util::openCodecContext(flvAudioCodec);
-    flvVideoCodec = transcode::util::openCodecContext(flvVideoCodec);
+    aviAudioCodec = transcode::util::openCodecContextOld(aviAudioCodec);
+    aviVideoCodec = transcode::util::openCodecContextOld(aviVideoCodec);
+    mkvAudioCodec = transcode::util::openCodecContextOld(mkvAudioCodec);
+    mkvVideoCodec = transcode::util::openCodecContextOld(mkvVideoCodec);
+    mp4AudioCodec = transcode::util::openCodecContextOld(mp4AudioCodec);
+    mp4VideoCodec = transcode::util::openCodecContextOld(mp4VideoCodec);
+    ogvAudioCodec = transcode::util::openCodecContextOld(ogvAudioCodec);
+    ogvVideoCodec = transcode::util::openCodecContextOld(ogvVideoCodec);
+    flvAudioCodec = transcode::util::openCodecContextOld(flvAudioCodec);
+    flvVideoCodec = transcode::util::openCodecContextOld(flvVideoCodec);
 }
 
 /**
@@ -1457,7 +1457,7 @@ BOOST_FIXTURE_TEST_CASE( test_ffmpeg_open_codecs, MultiInitialisedCodecContextFi
 BOOST_AUTO_TEST_CASE( test_ffmpeg_open_null_codec )
 {
 
-    BOOST_REQUIRE_THROW( transcode::util::openCodecContext(NULL),
+    BOOST_REQUIRE_THROW( transcode::util::openCodecContextOld(NULL),
             transcode::util::FFMPEGException);
 }
 
@@ -1467,7 +1467,7 @@ BOOST_AUTO_TEST_CASE( test_ffmpeg_open_null_codec )
 BOOST_AUTO_TEST_CASE( test_ffmpeg_open_empty_codec )
 {
 
-    BOOST_REQUIRE_THROW( transcode::util::openCodecContext(&blankCodecContext),
+    BOOST_REQUIRE_THROW( transcode::util::openCodecContextOld(&blankCodecContext),
             transcode::util::FFMPEGException);
 }
 

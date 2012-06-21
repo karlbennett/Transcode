@@ -208,7 +208,7 @@ AVMediaType findPacketType(const AVPacket *packet,
  * @return the newly opened codec context.
  * @throws an FFMPEGException if the supplied codec context could not be opened.
  */
-AVCodecContext* openCodecContext(AVCodecContext* codecContext);
+AVCodecContext* openCodecContextOld(AVCodecContext* codecContext);
 
 /**
  * Decode the provided packet into decoded audio frames.

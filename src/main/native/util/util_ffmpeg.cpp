@@ -395,7 +395,7 @@ static AVCodecContext* getOpenedCodec(const AVPacket *packet,
 
     // Lastly open the codec if it hasn't been already.
     if (0 == avcodec_is_open(codec)) {
-        codec = transcode::util::openCodecContext(codec);
+        codec = transcode::util::openCodecContextOld(codec);
     }
 
     return codec;
@@ -928,7 +928,7 @@ AVMediaType findPacketType(const AVPacket *packet,
     return FfmpegSingleton::getInstance().findPacketType(packet, videoFile);
 }
 
-AVCodecContext* openCodecContext(AVCodecContext* codecContext) {
+AVCodecContext* openCodecContextOld(AVCodecContext* codecContext) {
 
     return FfmpegSingleton::getInstance().openCodecContext(codecContext);
 }
