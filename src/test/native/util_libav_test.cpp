@@ -542,7 +542,7 @@ BOOST_AUTO_TEST_CASE( test_open_codec_for_null_codec )
 /**
  * Test close codecs for an avi file.
  */
-BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_avi_file, test::AVICodecContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_avi_file, test::AVIOpenedCodecContextFixture )
 {
 
     transcode::util::closeCodecContext(&(codecs[0]));
@@ -552,7 +552,7 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_avi_file, test::AVICodecContextFi
 /**
  * Test close codecs for an mkv file.
  */
-BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mkv_file, test::MKVCodecContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mkv_file, test::MKVOpenedCodecContextFixture )
 {
 
     transcode::util::closeCodecContext(&(codecs[0]));
@@ -562,7 +562,7 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mkv_file, test::MKVCodecContextFi
 /**
  * Test close codecs for an ogv file.
  */
-BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_ogv_file, test::OGVCodecContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_ogv_file, test::OGVOpenedCodecContextFixture )
 {
 
     transcode::util::closeCodecContext(&(codecs[0]));
@@ -573,7 +573,7 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_ogv_file, test::OGVCodecContextFi
 /**
  * Test close codecs for an mp4 file.
  */
-BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mp4_file, test::MP4CodecContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mp4_file, test::MP4OpenedCodecContextFixture )
 {
 
     transcode::util::closeCodecContext(&(codecs[0]));
@@ -583,9 +583,125 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mp4_file, test::MP4CodecContextFi
 /**
  * Test close codecs for an flv file.
  */
-BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_flv_file, test::FLVCodecContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_flv_file, test::FLVOpenedCodecContextFixture )
 {
 
     transcode::util::closeCodecContext(&(codecs[0]));
     transcode::util::closeCodecContext(&(codecs[1]));
+}
+
+/**
+ * Test close codec for a null codec pointer.
+ */
+BOOST_AUTO_TEST_CASE( test_close_codec_for_null_codec_pointer )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::closeCodecContext(NULL),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test close codec for a null codec.
+ */
+BOOST_AUTO_TEST_CASE( test_close_codec_for_null_codec )
+{
+
+    AVCodecContext *codecs[1];
+    codecs[0] = NULL;
+
+    BOOST_REQUIRE_THROW( transcode::util::closeCodecContext(codecs),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test decode audio packet for an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_avi_file, test::AVIAudioPacketFixture )
+{
+
+    std::vector<AVFrame*> frames = transcode::util::decodeAudioPacket(codecs[packet->stream_index], packet);
+
+    BOOST_REQUIRE_EQUAL( 1, frames.size() );
+}
+
+/**
+ * Test decode audio packet for an mkv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_mkv_file, test::MKVAudioPacketFixture )
+{
+
+    std::vector<AVFrame*> frames = transcode::util::decodeAudioPacket(codecs[packet->stream_index], packet);
+
+    BOOST_REQUIRE_EQUAL( 1, frames.size() );
+}
+
+/**
+ * Test decode audio packet for an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_ogv_file, test::OGVAudioPacketFixture )
+{
+
+    std::vector<AVFrame*> frames;
+
+    // Try a few times to get a valid vorbis frame because the first few packets aren't always valid.
+    for (int i = 0; i < 5; i++) {
+
+        frames = transcode::util::decodeAudioPacket(codecs[packet->stream_index], packet);
+
+        if (0 < frames.size()) break;
+    }
+
+    BOOST_REQUIRE_EQUAL( 1, frames.size() );
+}
+
+/**
+ * Test decode audio packet for an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_mp4_file, test::MP4AudioPacketFixture )
+{
+
+    std::vector<AVFrame*> frames = transcode::util::decodeAudioPacket(codecs[packet->stream_index], packet);
+
+    BOOST_REQUIRE_EQUAL( 1, frames.size() );
+}
+
+/**
+ * Test decode audio packet for an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_flv_file, test::FLVAudioPacketFixture )
+{
+
+    std::vector<AVFrame*> frames = transcode::util::decodeAudioPacket(codecs[packet->stream_index], packet);
+
+    BOOST_REQUIRE_EQUAL( 1, frames.size() );
+}
+
+/**
+ * Test decode audio packet with null codec.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_with_null_codec, test::AVIAudioPacketFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeAudioPacket(NULL, packet),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test decode audio packet with null packet.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_with_null_packet, test::AVIAudioPacketFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeAudioPacket(codecs[packet->stream_index], NULL),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test decode audio packet with null codec and packet.
+ */
+BOOST_AUTO_TEST_CASE( test_decode_audio_packet_with_null_codec_and_packet )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeAudioPacket(NULL, NULL),
+            transcode::IllegalArgumentException );
 }
