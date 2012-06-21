@@ -250,6 +250,7 @@ BOOST_AUTO_TEST_CASE( test_read_packet_from_empty_format_context )
 {
 
     AVFormatContext formatContext;
+    formatContext.nb_streams = 0; // Only way to guaranty a packet read failure.
 
     BOOST_REQUIRE_THROW( transcode::util::readNextPacket(&formatContext),
             transcode::IllegalStateException );
@@ -424,7 +425,7 @@ BOOST_FIXTURE_TEST_CASE( test_find_packet_type_from_avi_file, test::AVIPacketFix
 /**
  * Test find packet type from an mkvfile.
  */
-BOOST_FIXTURE_TEST_CASE( test_find_packet_type_from_mkv_file, test::AVIPacketFixture )
+BOOST_FIXTURE_TEST_CASE( test_find_packet_type_from_mkv_file, test::MKVPacketFixture )
 {
 
     BOOST_REQUIRE_EQUAL( MKV_STREAM_ONE, transcode::util::findPacketType(formatContext, packet) );
@@ -475,4 +476,116 @@ BOOST_FIXTURE_TEST_CASE( test_find_type_for_null_packet, test::AVIFormatContextF
 
     BOOST_REQUIRE_THROW( transcode::util::findPacketType(formatContext, NULL),
             transcode::IllegalArgumentException );
+}
+
+/**
+ * Test open codecs for an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_avi_file, test::AVICodecContextFixture )
+{
+
+    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[0]) );
+    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[1]) );
+}
+
+/**
+ * Test open codecs for an mkv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mkv_file, test::MKVCodecContextFixture )
+{
+
+    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[0]) );
+    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[1]) );
+}
+
+/**
+ * Test open codecs for an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_ogv_file, test::OGVCodecContextFixture )
+{
+// TODO: Subtitle codecs not yet supported.
+//    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[0]) );
+    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[1]) );
+    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[2]) );
+}
+
+/**
+ * Test open codecs for an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mp4_file, test::MP4CodecContextFixture )
+{
+
+    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[0]) );
+    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[1]) );
+}
+
+/**
+ * Test open codecs for an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_flv_file, test::FLVCodecContextFixture )
+{
+
+    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[0]) );
+    BOOST_REQUIRE( transcode::util::openCodecContext(codecs[1]) );
+}
+
+/**
+ * Test open codec for a null codec.
+ */
+BOOST_AUTO_TEST_CASE( test_open_codec_for_null_codec )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::openCodecContext(NULL),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test close codecs for an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_avi_file, test::AVICodecContextFixture )
+{
+
+    transcode::util::closeCodecContext(&(codecs[0]));
+    transcode::util::closeCodecContext(&(codecs[1]));
+}
+
+/**
+ * Test close codecs for an mkv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mkv_file, test::MKVCodecContextFixture )
+{
+
+    transcode::util::closeCodecContext(&(codecs[0]));
+    transcode::util::closeCodecContext(&(codecs[1]));
+}
+
+/**
+ * Test close codecs for an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_ogv_file, test::OGVCodecContextFixture )
+{
+
+    transcode::util::closeCodecContext(&(codecs[0]));
+    transcode::util::closeCodecContext(&(codecs[1]));
+    transcode::util::closeCodecContext(&(codecs[2]));
+}
+
+/**
+ * Test close codecs for an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mp4_file, test::MP4CodecContextFixture )
+{
+
+    transcode::util::closeCodecContext(&(codecs[0]));
+    transcode::util::closeCodecContext(&(codecs[1]));
+}
+
+/**
+ * Test close codecs for an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_flv_file, test::FLVCodecContextFixture )
+{
+
+    transcode::util::closeCodecContext(&(codecs[0]));
+    transcode::util::closeCodecContext(&(codecs[1]));
 }
