@@ -15,6 +15,7 @@ extern "C" {
 #include <util_test.hpp>
 
 #include <iostream>
+#include <string>
 
 namespace test {
 
@@ -24,6 +25,13 @@ struct FormatContextFixture {
 
     FormatContextFixture() : formatContext(NULL) {}
     FormatContextFixture(AVFormatContext *fc) : formatContext(fc) {}
+    FormatContextFixture(std::string fileName) : formatContext(NULL) {
+
+        avformat_open_input(&formatContext, fileName.c_str(), NULL,
+                            NULL);
+
+        avformat_find_stream_info(formatContext, NULL);
+    }
 
     virtual ~FormatContextFixture() {
         if (NULL != formatContext) avformat_close_input(&formatContext);
@@ -34,11 +42,13 @@ struct FormatContextFixture {
 
 struct StreamFixture {
 
-    StreamFixture(const AVFormatContext *fc) : streams(fc->streams) {}
+    StreamFixture(const AVFormatContext *fc) : streams(fc->streams),
+            streamNumber(fc->nb_streams) {}
 
     virtual ~StreamFixture() {}
 
     AVStream **streams;
+    int streamNumber;
 };
 
 struct CodecContextFixture {
@@ -87,56 +97,32 @@ struct PacketFixture {
 
 struct AVIFormatContextFixture: public FormatContextFixture {
 
-    AVIFormatContextFixture() : FormatContextFixture() {
-
-        avformat_open_input(&formatContext, VIDEO_AVI.c_str(), NULL,
-                    NULL);
-    }
+    AVIFormatContextFixture() : FormatContextFixture(VIDEO_AVI) {}
 };
 
 struct MKVFormatContextFixture: public FormatContextFixture {
 
-    MKVFormatContextFixture() : FormatContextFixture() {
-
-        avformat_open_input(&formatContext, VIDEO_MKV.c_str(), NULL,
-                    NULL);
-    }
+    MKVFormatContextFixture() : FormatContextFixture(VIDEO_MKV) {}
 };
 
 struct OGVFormatContextFixture: public FormatContextFixture {
 
-    OGVFormatContextFixture() : FormatContextFixture() {
-
-        avformat_open_input(&formatContext, VIDEO_OGV.c_str(), NULL,
-                    NULL);
-    }
+    OGVFormatContextFixture() : FormatContextFixture(VIDEO_OGV) {}
 };
 
 struct MP4FormatContextFixture: public FormatContextFixture {
 
-    MP4FormatContextFixture() : FormatContextFixture() {
-
-        avformat_open_input(&formatContext, VIDEO_MP4.c_str(), NULL,
-                    NULL);
-    }
+    MP4FormatContextFixture() : FormatContextFixture(VIDEO_MP4) {}
 };
 
 struct FLVFormatContextFixture: public FormatContextFixture {
 
-    FLVFormatContextFixture() : FormatContextFixture() {
-
-        avformat_open_input(&formatContext, VIDEO_FLV.c_str(), NULL,
-                    NULL);
-    }
+    FLVFormatContextFixture() : FormatContextFixture(VIDEO_FLV) {}
 };
 
 struct TextFormatContextFixture: public FormatContextFixture {
 
-    TextFormatContextFixture() : FormatContextFixture() {
-
-        avformat_open_input(&formatContext, TEXT_FILE.c_str(), NULL,
-                    NULL);
-    }
+    TextFormatContextFixture() : FormatContextFixture(TEXT_FILE) {}
 };
 
 
@@ -173,31 +159,31 @@ struct FLVStreamFixture: public FLVFormatContextFixture, public StreamFixture {
 struct AVICodecContextFixture: public AVIStreamFixture, public CodecContextFixture {
 
     AVICodecContextFixture() : AVIStreamFixture(),
-            CodecContextFixture(streams, formatContext->nb_streams) {}
+            CodecContextFixture(streams, streamNumber) {}
 };
 
 struct MKVCodecContextFixture: public MKVStreamFixture, public CodecContextFixture {
 
     MKVCodecContextFixture() : MKVStreamFixture(),
-            CodecContextFixture(streams, formatContext->nb_streams) {}
+            CodecContextFixture(streams, streamNumber) {}
 };
 
 struct OGVCodecContextFixture: public OGVStreamFixture, public CodecContextFixture {
 
     OGVCodecContextFixture() : OGVStreamFixture(),
-            CodecContextFixture(streams, formatContext->nb_streams) {}
+            CodecContextFixture(streams, streamNumber) {}
 };
 
 struct MP4CodecContextFixture: public MP4StreamFixture, public CodecContextFixture {
 
     MP4CodecContextFixture() : MP4StreamFixture(),
-            CodecContextFixture(streams, formatContext->nb_streams) {}
+            CodecContextFixture(streams, streamNumber) {}
 };
 
 struct FLVCodecContextFixture: public FLVStreamFixture, public CodecContextFixture {
 
     FLVCodecContextFixture() : FLVStreamFixture(),
-            CodecContextFixture(streams, formatContext->nb_streams) {}
+            CodecContextFixture(streams, streamNumber) {}
 };
 
 
