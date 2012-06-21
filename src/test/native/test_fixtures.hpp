@@ -10,6 +10,7 @@
 
 extern "C" {
 #include "libavformat/avformat.h"
+#include "libavutil/avutil.h"
 }
 
 #include <util_test.hpp>
@@ -24,13 +25,18 @@ namespace test {
 struct FormatContextFixture {
 
     FormatContextFixture() : formatContext(NULL) {}
-    FormatContextFixture(AVFormatContext *fc) : formatContext(fc) {}
+    FormatContextFixture(AVFormatContext *fc) : formatContext(fc) {
+
+        checkStreams();
+    }
     FormatContextFixture(std::string fileName) : formatContext(NULL) {
 
         avformat_open_input(&formatContext, fileName.c_str(), NULL,
                             NULL);
 
         avformat_find_stream_info(formatContext, NULL);
+
+        checkStreams();
     }
 
     virtual ~FormatContextFixture() {
@@ -38,6 +44,14 @@ struct FormatContextFixture {
     }
 
     AVFormatContext *formatContext;
+
+    void checkStreams() {
+
+        if (0 >= formatContext->nb_streams) {
+
+            throw "The fixture format context does not contain any streams.";
+        }
+    }
 };
 
 struct StreamFixture {
@@ -53,11 +67,11 @@ struct StreamFixture {
 
 struct CodecContextFixture {
 
-    CodecContextFixture(AVStream **streams, const int& size) {
+    CodecContextFixture(AVStream **streams, const int& size): codecNumber(size) {
 
-        codecs = new AVCodecContext*[size];
+        codecs = new AVCodecContext*[codecNumber];
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < codecNumber; i++) {
 
             codecs[i] = streams[i]->codec;
         }
@@ -69,19 +83,56 @@ struct CodecContextFixture {
     }
 
     AVCodecContext **codecs;
+    int codecNumber;
+};
+
+struct OpenedCodecContextFixture: public CodecContextFixture {
+
+    OpenedCodecContextFixture(AVStream **streams, const int& size) :
+            CodecContextFixture(streams, size) {
+
+        AVCodecContext *codecContext = NULL;
+        AVCodec *codec = NULL;
+
+        int codecOpenResult = 0;
+
+        for (int i = 0; i < codecNumber; i++) {
+
+            codecContext = codecs[i];
+
+            // Can only handle audio and video codecs at this time.
+            if (AVMEDIA_TYPE_AUDIO == codecContext->codec_type
+                    || AVMEDIA_TYPE_VIDEO == codecContext->codec_type) {
+
+                codec = avcodec_find_decoder(codecContext->codec_id);
+
+                if (NULL == codec) {
+
+                    throw "Fixture codec context codec could not be found.";
+                }
+
+                codecOpenResult = avcodec_open2(codecContext, codec, NULL);
+
+                if (0 != codecOpenResult)
+                    throw "Fixture codec context could not be opened.";
+            }
+        }
+    }
+
+    virtual ~OpenedCodecContextFixture() {}
 };
 
 struct PacketFixture {
 
-    PacketFixture(AVFormatContext *fc) {
+    PacketFixture(AVFormatContext *fc): packet(readPacket(fc)) {}
+    PacketFixture(AVFormatContext *fc, AVMediaType type): packet(readPacket(fc)) {
 
-        packet = new AVPacket();
+        while (!checkPacketType(fc, packet, type)) {
 
-        av_init_packet(packet);
+            av_free_packet(packet);
 
-        int error = av_read_frame(fc, packet);
-
-        if (0 != error) throw "Failed to read AVPacket in test fixture.";
+            packet = readPacket(fc);
+        }
     }
 
     virtual ~PacketFixture() {
@@ -90,6 +141,55 @@ struct PacketFixture {
     }
 
     AVPacket *packet;
+
+    static AVPacket* readPacket(AVFormatContext *fc) {
+
+        AVPacket *packet = new AVPacket();
+
+        av_init_packet(packet);
+
+        int error = av_read_frame(fc, packet);
+
+        if (0 == error) return packet;
+
+        throw "Failed to read AVPacket in test fixture.";
+    }
+
+    static bool checkPacketType(AVFormatContext *fc, AVPacket *packet,
+            AVMediaType type) {
+
+        int streamIndex = packet->stream_index;
+
+        if (fc->nb_streams <= streamIndex) {
+
+            throw "Fixture packet stream index is out of bounds.";
+        }
+
+        AVStream *stream = fc->streams[streamIndex];
+
+        AVCodecContext *codec = stream->codec;
+
+        if (NULL == codec) {
+
+            throw "Fixture stream codec is null.";
+        }
+
+        return type == codec->codec_type;
+    }
+};
+
+struct AudioPacketFixture: public PacketFixture {
+
+    AudioPacketFixture(AVFormatContext *fc) : PacketFixture(fc, AVMEDIA_TYPE_AUDIO) {}
+
+    virtual ~AudioPacketFixture() {}
+};
+
+struct VideoPacketFixture: public PacketFixture {
+
+    VideoPacketFixture(AVFormatContext *fc) : PacketFixture(fc, AVMEDIA_TYPE_VIDEO) {}
+
+    virtual ~VideoPacketFixture() {}
 };
 
 
@@ -162,10 +262,22 @@ struct AVICodecContextFixture: public AVIStreamFixture, public CodecContextFixtu
             CodecContextFixture(streams, streamNumber) {}
 };
 
+struct AVIOpenedCodecContextFixture: public AVIStreamFixture, public OpenedCodecContextFixture {
+
+    AVIOpenedCodecContextFixture() : AVIStreamFixture(),
+            OpenedCodecContextFixture(streams, streamNumber) {}
+};
+
 struct MKVCodecContextFixture: public MKVStreamFixture, public CodecContextFixture {
 
     MKVCodecContextFixture() : MKVStreamFixture(),
             CodecContextFixture(streams, streamNumber) {}
+};
+
+struct MKVOpenedCodecContextFixture: public MKVStreamFixture, public OpenedCodecContextFixture {
+
+    MKVOpenedCodecContextFixture() : MKVStreamFixture(),
+            OpenedCodecContextFixture(streams, streamNumber) {}
 };
 
 struct OGVCodecContextFixture: public OGVStreamFixture, public CodecContextFixture {
@@ -174,16 +286,34 @@ struct OGVCodecContextFixture: public OGVStreamFixture, public CodecContextFixtu
             CodecContextFixture(streams, streamNumber) {}
 };
 
+struct OGVOpenedCodecContextFixture: public OGVStreamFixture, public OpenedCodecContextFixture {
+
+    OGVOpenedCodecContextFixture() : OGVStreamFixture(),
+            OpenedCodecContextFixture(streams, streamNumber) {}
+};
+
 struct MP4CodecContextFixture: public MP4StreamFixture, public CodecContextFixture {
 
     MP4CodecContextFixture() : MP4StreamFixture(),
             CodecContextFixture(streams, streamNumber) {}
 };
 
+struct MP4OpenedCodecContextFixture: public MP4StreamFixture, public OpenedCodecContextFixture {
+
+    MP4OpenedCodecContextFixture() : MP4StreamFixture(),
+            OpenedCodecContextFixture(streams, streamNumber) {}
+};
+
 struct FLVCodecContextFixture: public FLVStreamFixture, public CodecContextFixture {
 
     FLVCodecContextFixture() : FLVStreamFixture(),
             CodecContextFixture(streams, streamNumber) {}
+};
+
+struct FLVOpenedCodecContextFixture: public FLVStreamFixture, public OpenedCodecContextFixture {
+
+    FLVOpenedCodecContextFixture() : FLVStreamFixture(),
+            OpenedCodecContextFixture(streams, streamNumber) {}
 };
 
 
@@ -213,6 +343,63 @@ struct FLVPacketFixture: public FLVFormatContextFixture, public PacketFixture {
 
     FLVPacketFixture() : FLVFormatContextFixture(), PacketFixture(formatContext) {}
 };
-}
+
+
+/** AUDIO PACKET CONTEXT FIXTURES **/
+
+struct AVIAudioPacketFixture: public AVIOpenedCodecContextFixture, public AudioPacketFixture {
+
+    AVIAudioPacketFixture() : AVIOpenedCodecContextFixture(), AudioPacketFixture(formatContext) {}
+};
+
+struct MKVAudioPacketFixture: public MKVOpenedCodecContextFixture, public AudioPacketFixture {
+
+    MKVAudioPacketFixture() : MKVOpenedCodecContextFixture(), AudioPacketFixture(formatContext) {}
+};
+
+struct OGVAudioPacketFixture: public OGVOpenedCodecContextFixture, public AudioPacketFixture {
+
+    OGVAudioPacketFixture() : OGVOpenedCodecContextFixture(), AudioPacketFixture(formatContext) {}
+};
+
+struct MP4AudioPacketFixture: public MP4OpenedCodecContextFixture, public AudioPacketFixture {
+
+    MP4AudioPacketFixture() : MP4OpenedCodecContextFixture(), AudioPacketFixture(formatContext) {}
+};
+
+struct FLVAudioPacketFixture: public FLVOpenedCodecContextFixture, public AudioPacketFixture {
+
+    FLVAudioPacketFixture() : FLVOpenedCodecContextFixture(), AudioPacketFixture(formatContext) {}
+};
+
+
+/** VIDEO PACKET CONTEXT FIXTURES **/
+
+struct AVIVideoPacketFixture: public AVIOpenedCodecContextFixture, public VideoPacketFixture {
+
+    AVIVideoPacketFixture() : AVIOpenedCodecContextFixture(), VideoPacketFixture(formatContext) {}
+};
+
+struct MKVVideoPacketFixture: public MKVOpenedCodecContextFixture, public VideoPacketFixture {
+
+    MKVVideoPacketFixture() : MKVOpenedCodecContextFixture(), VideoPacketFixture(formatContext) {}
+};
+
+struct OGVVideoPacketFixture: public OGVOpenedCodecContextFixture, public VideoPacketFixture {
+
+    OGVVideoPacketFixture() : OGVOpenedCodecContextFixture(), VideoPacketFixture(formatContext) {}
+};
+
+struct MP4VideoPacketFixture: public MP4OpenedCodecContextFixture, public VideoPacketFixture {
+
+    MP4VideoPacketFixture() : MP4OpenedCodecContextFixture(), VideoPacketFixture(formatContext) {}
+};
+
+struct FLVVideoPacketFixture: public FLVOpenedCodecContextFixture, public VideoPacketFixture {
+
+    FLVVideoPacketFixture() : FLVOpenedCodecContextFixture(), VideoPacketFixture(formatContext) {}
+};
+
+} /* namespace test */
 
 #endif /* __TEST_FIXTURES_HPP__ */
