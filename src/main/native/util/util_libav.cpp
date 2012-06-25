@@ -453,12 +453,12 @@ AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
         throw InvalidPacketDataException(errorMessage(bytesDecoded));
     }
 
-    if (0 != bytesDecoded) {
+    if (0 > bytesDecoded) {
 
         throw PacketDecodeException(errorMessage(bytesDecoded));
     }
 
-    if (0 == frameDecoded) return decodedFrame;
+    if (0 != frameDecoded) return decodedFrame;
 
     return NULL;
 }
