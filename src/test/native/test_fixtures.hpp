@@ -25,10 +25,28 @@ namespace test {
 struct FormatContextFixture {
 
     FormatContextFixture() : formatContext(NULL) {}
+
+    /**
+     * Instantiate a new <code>FormatContextFixture</code> with the supplied
+     * format context, also check the format context to make sure it contains
+     * some media streams.
+     *
+     * @param fc - the format context to use within this fixture.
+     */
     FormatContextFixture(AVFormatContext *fc) : formatContext(fc) {
 
         checkStreams();
     }
+
+    /**
+     * Instantiate a new <code>FormatContextFixture</code> with a format
+     * context that is populated with the data from the media file with the
+     * supplied file name. Also check the format context to make sure it contains
+     * some media streams.
+     *
+     * @param fileName - the path to the file that will be used to populate
+     *      the format context within this fixture.
+     */
     FormatContextFixture(std::string fileName) : formatContext(NULL) {
 
         avformat_open_input(&formatContext, fileName.c_str(), NULL,
@@ -67,6 +85,17 @@ struct StreamFixture {
 
 struct CodecContextFixture {
 
+    /**
+     * Instantiate a new <code>CodecContextFixture</code> and populate the
+     * codecs array from by extracting the codec contexts from the supplied
+     * media streams. The size of the stream array must also be supplied so
+     * the fixture know how many codecs to populate.
+     *
+     * @param streams   - an array of pointers to AVStreams that contain the
+     *      codec contexts for this fixture.
+     * @param size      - the size of the streams array supplied to this
+     *      fixture.
+     */
     CodecContextFixture(AVStream **streams, const int& size): codecNumber(size) {
 
         codecs = new AVCodecContext*[codecNumber];
@@ -88,6 +117,18 @@ struct CodecContextFixture {
 
 struct OpenedCodecContextFixture: public CodecContextFixture {
 
+    /**
+     * Instantiate a new <code>OpenedCodecContextFixture</code> and populate
+     * the codecs array from by extracting the codec contexts from the
+     * supplied media streams. The codec contexts within the array are also
+     * opened. The size of the stream array must also be supplied so the
+     * fixture know how many codecs to populate.
+     *
+     * @param streams   - an array of pointers to AVStreams that contain the
+     *      codec contexts for this fixture.
+     * @param size      - the size of the streams array supplied to this
+     *      fixture.
+     */
     OpenedCodecContextFixture(AVStream **streams, const int& size) :
             CodecContextFixture(streams, size) {
 
@@ -124,15 +165,28 @@ struct OpenedCodecContextFixture: public CodecContextFixture {
 
 struct PacketFixture {
 
-    PacketFixture(AVFormatContext *fc): packet(readPacket(fc)) {}
-    PacketFixture(AVFormatContext *fc, AVMediaType type): packet(readPacket(fc)) {
+    /**
+     * Instantiate a new <code>PacketFixture</code> and populate it's
+     * packet attribute by reading the first packet from the supplied
+     * format context.
+     *
+     * @param fc - the format context to read the packet from.
+     */
+    PacketFixture(AVFormatContext *fc): packet(NULL) {
 
-        while (!checkPacketType(fc, packet, type)) {
+        packet = readPacket(fc);
+    }
 
-            av_free_packet(packet);
+    /**
+     * Instantiate a new <code>PacketFixture</code> and populate it's
+     * packet attribute by reading the first packet of the supplied
+     * type from the supplied format context.
+     *
+     * @param fc - the format context to read the typed packet from.
+     */
+    PacketFixture(AVFormatContext *fc, AVMediaType type): packet(NULL) {
 
-            packet = readPacket(fc);
-        }
+        packet = readPacket(fc, type);
     }
 
     virtual ~PacketFixture() {
@@ -142,19 +196,16 @@ struct PacketFixture {
 
     AVPacket *packet;
 
-    static AVPacket* readPacket(AVFormatContext *fc) {
-
-        AVPacket *packet = new AVPacket();
-
-        av_init_packet(packet);
-
-        int error = av_read_frame(fc, packet);
-
-        if (0 == error) return packet;
-
-        throw "Failed to read AVPacket in test fixture.";
-    }
-
+    /**
+     * Check the type of the supplied packet to make sure that it matches
+     * the supplied type.
+     *
+     * @param fc        - the format context that contains the streams
+     *      that will be used to check the packets type.
+     * @param packet    - the packet that will be checked.
+     * @param type      - the required type of the packet.
+     * @return true if the packet is of the supplied type otherwise false.
+     */
     static bool checkPacketType(AVFormatContext *fc, AVPacket *packet,
             AVMediaType type) {
 
@@ -175,6 +226,51 @@ struct PacketFixture {
         }
 
         return type == codec->codec_type;
+    }
+
+    /**
+     * Read the next packet from the supplied format context.
+     *
+     * @param fc - the format context to read the next packet from.
+     * @return the next packet if one is available.
+     */
+    static AVPacket* readPacket(AVFormatContext *fc) {
+
+        AVPacket *packet = new AVPacket();
+
+        av_init_packet(packet);
+
+        int error = av_read_frame(fc, packet);
+
+        if (0 == error) return packet;
+
+        throw "Failed to read AVPacket in test fixture.";
+    }
+
+    /**
+     * Read the next packet of the supplied type from the supplied
+     * format context.
+     *
+     * Note: This method will read then discard packets that don't
+     * match the required type.
+     *
+     * @param fc    - the format context to read the next packet from.
+     * @param type  - the ype of packet that should be returned.
+     * @return the next packet if one is available.
+     */
+    static AVPacket* readPacket(AVFormatContext *fc, AVMediaType type) {
+
+        AVPacket *packet = NULL;
+
+        do {
+
+            av_free_packet(packet);
+
+            packet = readPacket(fc);
+
+        } while (!checkPacketType(fc, packet, type));
+
+        return packet;
     }
 };
 
