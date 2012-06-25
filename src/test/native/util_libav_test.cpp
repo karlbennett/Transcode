@@ -648,9 +648,12 @@ BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_ogv_file, test::OGVAudioPa
 
         frames = transcode::util::decodeAudioPacket(codecs[packet->stream_index], packet);
 
+        // If the first audio packet doesn't decode read in the next one audio packet.
         if (0 < frames.size()) break;
 
-        readPacket(formatContext);
+        av_free_packet(packet);
+
+        packet = readPacket(formatContext, AVMEDIA_TYPE_AUDIO);
     }
 
     BOOST_REQUIRE_EQUAL( 1, frames.size() );
