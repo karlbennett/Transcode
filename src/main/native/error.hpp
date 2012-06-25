@@ -16,8 +16,7 @@
 namespace transcode {
 
 /**
- * An exception that is thrown if something goes wrong during
- * media processing.
+ * A generic exception.
  */
 class Exception: public std::exception {
 
@@ -26,14 +25,14 @@ private:
 
 public:
     /**
-     * Instantiate an empty MediaException object.
+     * Instantiate an empty Exception object.
      */
     Exception() throw () :
             exception(), _message("") {
     }
 
     /**
-     * Instantiate a MediaException object with the provided message.
+     * Instantiate a Exception object with the provided message.
      *
      * @param message - the message for the new exception.
      */
@@ -49,6 +48,10 @@ public:
     }
 };
 
+/**
+ * An exception that is thrown when there is an issue reading
+ * or writing to an iostream.
+ */
 class IOException: public Exception {
 
 public:
@@ -64,6 +67,10 @@ public:
     }
 };
 
+/**
+ * An exception that is thrown when a method has been supplied
+ * with an invalid argument.
+ */
 class IllegalArgumentException: public Exception {
 
 public:
@@ -79,6 +86,10 @@ public:
     }
 };
 
+/**
+ * An exception that is thrown when something within a method has
+ * reached an invalid state.
+ */
 class IllegalStateException: public Exception {
 
 public:
