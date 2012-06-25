@@ -10,7 +10,7 @@
 #include <test_fixtures.hpp>
 #include <util_test.hpp>
 
-#include <util/util_libav.hpp>
+#include <libav/libav.hpp>
 
 #include <iostream>
 

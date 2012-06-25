@@ -32,12 +32,12 @@ CCC = g++
 INCLUDES = -D__STDC_CONSTANT_MACROS -I/opt/libav/include/ -I/usr/include/ -I$(SRC_DIR) -I./
 
 LIBS = -L/usr/lib/i386-linux-gnu -L/opt/libav/lib/ -L/usr/lib/ -L$(LIB_DIR) -lboost_test_exec_monitor \
--lavformat -lavcodec -lavutil -lx264 -lboost_filesystem -lutil_libav
+-lavformat -lavcodec -lavutil -lx264 -lboost_filesystem -llibav
 
 # The C++ test source files.
 SRC_TEST_ONE = example_test.cpp
 SRC_TEST_TWO = util_standard_test.cpp
-SRC_TEST_THREE = util_libav_test.cpp
+SRC_TEST_THREE = libav_test.cpp
 
 BIN_TEST_ONE = $(LIB_TEST_DIR)$(basename $(SRC_TEST_ONE))
 BIN_TEST_TWO = $(LIB_TEST_DIR)$(basename $(SRC_TEST_TWO))
