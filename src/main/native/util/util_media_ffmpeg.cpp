@@ -75,7 +75,7 @@ static AVFormatContext* retrieveCheckedAVFormatContext(
 
         return retrieveAVFormatContext(file.getPath());
 
-    } catch (transcode::MediaException& e) {
+    } catch (transcode::Exception& e) {
 
         throw transcode::util::UtilMediaException(e.what());
     }

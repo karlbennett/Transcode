@@ -45,14 +45,14 @@ namespace util {
 /**
  * An exception that is thrown from within the MediaUtils functions.
  */
-class UtilMediaException: public MediaException {
+class UtilMediaException: public Exception {
 
 public:
     /**
-     * Instantiate an empty MediaException object.
+     * Instantiate an empty Exception object.
      */
     UtilMediaException() throw () :
-            MediaException() {
+            Exception() {
     }
 
     /**
@@ -61,7 +61,7 @@ public:
      * @param message - the message for the new exception.
      */
     UtilMediaException(std::string message) throw () :
-            MediaException(message) {
+            Exception(message) {
     }
 
     ~UtilMediaException() throw () {

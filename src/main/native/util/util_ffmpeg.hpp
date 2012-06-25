@@ -67,7 +67,7 @@ std::string ffmpegErrorMessage(int errorCode);
 /**
  * Exception that is thrown if something goes wrong with the FFMPEG library.
  */
-class FFMPEGException: public MediaException {
+class FFMPEGException: public Exception {
 
 private:
     int errorCode;
@@ -77,7 +77,7 @@ public:
      * Default constructor, set message to empty string and error code to 0.
      */
     FFMPEGException() throw () :
-            MediaException(), errorCode(0) {
+            Exception(), errorCode(0) {
     }
 
     /**
@@ -87,7 +87,7 @@ public:
      * @param msg - the message for this exception.
      */
     FFMPEGException(const std::string& msg) throw () :
-            MediaException(msg), errorCode(0) {
+            Exception(msg), errorCode(0) {
     }
 
     /**
@@ -97,7 +97,7 @@ public:
      * @param ec - the FFMPEG error code for this exception.
      */
     FFMPEGException(const int& ec) throw () :
-            MediaException(ffmpegErrorMessage(ec)), errorCode(ec) {
+            Exception(ffmpegErrorMessage(ec)), errorCode(ec) {
     }
 
     /**
@@ -107,7 +107,7 @@ public:
      * @param ec - the FFMPEG error code for this exception.
      */
     FFMPEGException(const std::string& msg, const int& ec) throw () :
-            MediaException(msg), errorCode(ec) {
+            Exception(msg), errorCode(ec) {
     }
 
     ~FFMPEGException() throw () {

@@ -77,15 +77,15 @@ public:
  * A <code>PacketDecodeException</code> is thrown if there
  * was an error during the decode of a packet.
  */
-class PacketDecodeException: public MediaException {
+class PacketDecodeException: public Exception {
 
 public:
     PacketDecodeException() throw () :
-            MediaException() {
+            Exception() {
     }
 
     PacketDecodeException(std::string message) throw () :
-            MediaException(message) {
+            Exception(message) {
     }
 
     ~PacketDecodeException() throw () {
@@ -96,15 +96,15 @@ public:
  * An <code>InvalidPacketDataException</code> is thrown if a
  * decode was attempted on a packet containing invalid data.
  */
-class InvalidPacketDataException: public MediaException {
+class InvalidPacketDataException: public Exception {
 
 public:
     InvalidPacketDataException() throw () :
-        MediaException() {
+        Exception() {
     }
 
     InvalidPacketDataException(std::string message) throw () :
-        MediaException(message) {
+        Exception(message) {
     }
 
     ~InvalidPacketDataException() throw () {

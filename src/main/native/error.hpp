@@ -19,7 +19,7 @@ namespace transcode {
  * An exception that is thrown if something goes wrong during
  * media processing.
  */
-class MediaException: public std::exception {
+class Exception: public std::exception {
 
 private:
     std::string _message;
@@ -28,7 +28,7 @@ public:
     /**
      * Instantiate an empty MediaException object.
      */
-    MediaException() throw () :
+    Exception() throw () :
             exception(), _message("") {
     }
 
@@ -37,11 +37,11 @@ public:
      *
      * @param message - the message for the new exception.
      */
-    MediaException(const std::string& message) throw () :
+    Exception(const std::string& message) throw () :
             exception(), _message(message) {
     }
 
-    ~MediaException() throw () {
+    ~Exception() throw () {
     }
 
     const char* what() const throw () {
@@ -49,45 +49,45 @@ public:
     }
 };
 
-class IOException: public MediaException {
+class IOException: public Exception {
 
 public:
     IOException() throw () :
-            MediaException() {
+            Exception() {
     }
 
     IOException(const std::string& message) throw () :
-            MediaException(message) {
+            Exception(message) {
     }
 
     ~IOException() throw () {
     }
 };
 
-class IllegalArgumentException: public MediaException {
+class IllegalArgumentException: public Exception {
 
 public:
     IllegalArgumentException() throw () :
-            MediaException() {
+            Exception() {
     }
 
     IllegalArgumentException(const std::string& message) throw () :
-            MediaException(message) {
+            Exception(message) {
     }
 
     ~IllegalArgumentException() throw () {
     }
 };
 
-class IllegalStateException: public MediaException {
+class IllegalStateException: public Exception {
 
 public:
     IllegalStateException() throw () :
-            MediaException() {
+            Exception() {
     }
 
     IllegalStateException(const std::string& message) throw () :
-            MediaException(message) {
+            Exception(message) {
     }
 
     ~IllegalStateException() throw () {
