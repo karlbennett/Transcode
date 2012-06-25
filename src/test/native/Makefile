@@ -36,7 +36,7 @@ LIBS = -L/usr/lib/i386-linux-gnu -L/opt/libav/lib/ -L/usr/lib/ -L$(LIB_DIR) -lbo
 
 # The C++ test source files.
 SRC_TEST_ONE = example_test.cpp
-SRC_TEST_TWO = util_standard_test.cpp
+SRC_TEST_TWO = standard_test.cpp
 SRC_TEST_THREE = libav_test.cpp
 
 BIN_TEST_ONE = $(LIB_TEST_DIR)$(basename $(SRC_TEST_ONE))
