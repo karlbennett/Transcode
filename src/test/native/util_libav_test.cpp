@@ -682,6 +682,22 @@ BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_flv_file, test::FLVAudioPa
 }
 
 /**
+ * Test audio decode video packet.
+ */
+BOOST_FIXTURE_TEST_CASE( test_audio_decode_video_packet, test::AVIAudioPacketFixture )
+{
+
+    AVCodecContext *codec = codecs[packet->stream_index];
+
+    av_free_packet(packet);
+
+    packet = readPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeAudioPacket(codec, packet),
+                transcode::util::InvalidPacketDataException );
+}
+
+/**
  * Test decode audio packet with null codec.
  */
 BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_with_null_codec, test::AVIAudioPacketFixture )
@@ -708,5 +724,141 @@ BOOST_AUTO_TEST_CASE( test_decode_audio_packet_with_null_codec_and_packet )
 {
 
     BOOST_REQUIRE_THROW( transcode::util::decodeAudioPacket(NULL, NULL),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Keep trying to decode a video frame till success or the end of the file is reached.
+ * This is done because the first few packets of most video codecs cannot be decoded
+ * into a valid frame.
+ *
+ * @param formatContext - the format context to decode the video frame from.
+ * @param packet - the initial packet to try and decode, if this packet fails each
+ *      consecutive packet will be tried until a frame is successfully decoded. This
+ *      packet is also used to select the codec that will be used for the decoding.
+ */
+static AVFrame* retryVideoFrameDecode(AVFormatContext *formatContext, AVPacket *packet) {
+
+    AVFrame *frame = NULL;
+
+    AVCodecContext *codec = formatContext->streams[packet->stream_index]->codec;
+
+    // Keep reading packets till we successfully decode a video frame or there are no more
+    // packets left to read from the media file.
+    while (NULL != packet) {
+
+        frame = transcode::util::decodeVideoPacket(codec, packet);
+
+        // If we get a frame return it.
+        if (NULL != frame) return frame;
+
+        av_free_packet(packet);
+
+        packet = test::PacketFixture::readPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+    }
+
+    return frame;
+}
+
+/**
+ * Test decode video packet for an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_video_packet_for_avi_file, test::AVIVideoPacketFixture )
+{
+
+    AVFrame *frame = retryVideoFrameDecode(formatContext, packet);
+
+    BOOST_REQUIRE( NULL != frame );
+}
+
+/**
+ * Test decode video packet for an mkv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_video_packet_for_mkv_file, test::MKVVideoPacketFixture )
+{
+
+    AVFrame *frame = retryVideoFrameDecode(formatContext, packet);
+
+    BOOST_REQUIRE( NULL != frame );
+}
+
+/**
+ * Test decode video packet for an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_video_packet_for_ogv_file, test::OGVVideoPacketFixture )
+{
+
+    AVFrame *frame = retryVideoFrameDecode(formatContext, packet);
+
+    BOOST_REQUIRE( NULL != frame );
+}
+
+/**
+ * Test decode video packet for an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_video_packet_for_mp4_file, test::MP4VideoPacketFixture )
+{
+
+    AVFrame *frame = retryVideoFrameDecode(formatContext, packet);
+
+    BOOST_REQUIRE( NULL != frame );
+}
+
+/**
+ * Test decode video packet for an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_video_packet_for_flv_file, test::FLVVideoPacketFixture )
+{
+
+    AVFrame *frame = retryVideoFrameDecode(formatContext, packet);
+
+    BOOST_REQUIRE( NULL != frame );
+}
+
+/**
+ * Test video decode audio packet.
+ */
+BOOST_FIXTURE_TEST_CASE( test_video_decode_audio_packet, test::AVIVideoPacketFixture )
+{
+
+    AVCodecContext *codec = codecs[packet->stream_index];
+
+    av_free_packet(packet);
+
+    packet = readPacket(formatContext, AVMEDIA_TYPE_AUDIO);
+
+    // Unfortunately it appears that some audio packets will successfully decode when
+    // passed through a video codec. This means it is almost impossible to check that
+    // the right type of packet has been sent to this method.
+    transcode::util::decodeVideoPacket(codec, packet);
+}
+
+/**
+ * Test decode video packet with null codec.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_video_packet_with_null_codec, test::AVIVideoPacketFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeVideoPacket(NULL, packet),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test decode audio packet with null packet.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_video_packet_with_null_packet, test::AVIVideoPacketFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeVideoPacket(codecs[packet->stream_index], NULL),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test decode audio packet with null codec and packet.
+ */
+BOOST_AUTO_TEST_CASE( test_decode_video_packet_with_null_codec_and_packet )
+{
+
+    BOOST_REQUIRE_THROW( transcode::util::decodeVideoPacket(NULL, NULL),
             transcode::IllegalArgumentException );
 }
