@@ -19,19 +19,16 @@ extern "C" {
 
 using namespace std;
 
-/**
- * Transcode namespace, all the top level transcode functions and classes are in
- * this namespace. So this namespace holds officially public API.
- */
-namespace transcode {
 
 /**
- * Util namespace, all the utility functions and classes are found within this
- * namespace. You might find something useful here but hopefully everything in the
- * {@see transcode} namespace should provide what you need so you shouldn't have to
- * look in here.
+ * @file libav.cpp
+ *
+ * The implementation of the libav.chpp functions.
  */
-namespace util {
+
+
+namespace transcode {
+namespace libav {
 
 /**
  * The buffer size of a decoded packet, this is hopefully big enough for any packet.

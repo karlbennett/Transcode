@@ -13,6 +13,12 @@
 
 #include <iostream>
 
+/**
+ * @file error.hpp
+ *
+ * All the project wide exceptions are contained within this file.
+ */
+
 namespace transcode {
 
 /**

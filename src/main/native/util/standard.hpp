@@ -5,21 +5,18 @@
  *      Author: karl
  */
 
-#ifndef __UTIL_STANDARD_HPP__
-#define __UTIL_STANDARD_HPP__
+#ifndef __STANDARD_HPP__
+#define __STANDARD_HPP__
 
 #include <map>
 
 /**
- * @file util_standard.hpp
+ * @file standard.hpp
  *
  * An API that provided utility functions to help simplify some usages of the STL.
  */
 
-/**
- * Transcode namespace, all the top level transcode functions and classes are in
- * this namespace. So this namespace holds officially public API.
- */
+
 namespace transcode {
 
 /**
@@ -60,4 +57,4 @@ template<typename K, typename V> V get(const std::map<K, V>& map
 } /* namespace util */
 } /* namespace transcode */
 
-#endif /* __UTIL_STANDARD_HPP__ */
+#endif /* __STANDARD_HPP__ */
