@@ -2,54 +2,43 @@ var NAVTREE =
 [
   [ "Transcode", "index.html", [
     [ "Class List", "annotated.html", [
-      [ "transcode::AudioMetaData", "structtranscode_1_1AudioMetaData.html", null ],
-      [ "transcode::ContainerMetaData", "structtranscode_1_1ContainerMetaData.html", null ],
-      [ "transcode::util::FFMPEGException", "classtranscode_1_1util_1_1FFMPEGException.html", null ],
-      [ "transcode::util::FfmpegSingleton", "classtranscode_1_1util_1_1FfmpegSingleton.html", null ],
-      [ "transcode::util::File", "classtranscode_1_1util_1_1File.html", null ],
-      [ "transcode::util::FileException", "classtranscode_1_1util_1_1FileException.html", null ],
-      [ "transcode::MediaException", "classtranscode_1_1MediaException.html", null ],
-      [ "transcode::MediaFileMetaData", "structtranscode_1_1MediaFileMetaData.html", null ],
-      [ "transcode::MediaMetaData", "structtranscode_1_1MediaMetaData.html", null ],
-      [ "transcode::SubtitleMetaData", "structtranscode_1_1SubtitleMetaData.html", null ],
-      [ "transcode::util::UtilMediaException", "classtranscode_1_1util_1_1UtilMediaException.html", null ],
-      [ "transcode::VideoMetaData", "structtranscode_1_1VideoMetaData.html", null ]
+      [ "transcode::libav::CodecException", "classtranscode_1_1libav_1_1CodecException.html", null ],
+      [ "transcode::Exception", "classtranscode_1_1Exception.html", null ],
+      [ "transcode::IllegalArgumentException", "classtranscode_1_1IllegalArgumentException.html", null ],
+      [ "transcode::IllegalStateException", "classtranscode_1_1IllegalStateException.html", null ],
+      [ "transcode::libav::InvalidPacketDataException", "classtranscode_1_1libav_1_1InvalidPacketDataException.html", null ],
+      [ "transcode::IOException", "classtranscode_1_1IOException.html", null ],
+      [ "transcode::libav::LibavSingleton", "classtranscode_1_1libav_1_1LibavSingleton.html", null ],
+      [ "transcode::libav::PacketDecodeException", "classtranscode_1_1libav_1_1PacketDecodeException.html", null ],
+      [ "transcode::libav::PacketReadException", "classtranscode_1_1libav_1_1PacketReadException.html", null ]
     ] ],
     [ "Class Index", "classes.html", null ],
     [ "Class Hierarchy", "hierarchy.html", [
-      [ "transcode::util::FfmpegSingleton", "classtranscode_1_1util_1_1FfmpegSingleton.html", null ],
-      [ "transcode::util::File", "classtranscode_1_1util_1_1File.html", null ],
-      [ "transcode::util::FileException", "classtranscode_1_1util_1_1FileException.html", null ],
-      [ "transcode::MediaException", "classtranscode_1_1MediaException.html", [
-        [ "transcode::util::FFMPEGException", "classtranscode_1_1util_1_1FFMPEGException.html", null ],
-        [ "transcode::util::UtilMediaException", "classtranscode_1_1util_1_1UtilMediaException.html", null ]
+      [ "transcode::Exception", "classtranscode_1_1Exception.html", [
+        [ "transcode::IllegalArgumentException", "classtranscode_1_1IllegalArgumentException.html", null ],
+        [ "transcode::IllegalStateException", "classtranscode_1_1IllegalStateException.html", [
+          [ "transcode::libav::CodecException", "classtranscode_1_1libav_1_1CodecException.html", null ]
+        ] ],
+        [ "transcode::IOException", "classtranscode_1_1IOException.html", [
+          [ "transcode::libav::PacketReadException", "classtranscode_1_1libav_1_1PacketReadException.html", null ]
+        ] ],
+        [ "transcode::libav::InvalidPacketDataException", "classtranscode_1_1libav_1_1InvalidPacketDataException.html", null ],
+        [ "transcode::libav::PacketDecodeException", "classtranscode_1_1libav_1_1PacketDecodeException.html", null ]
       ] ],
-      [ "transcode::MediaFileMetaData", "structtranscode_1_1MediaFileMetaData.html", null ],
-      [ "transcode::MediaMetaData", "structtranscode_1_1MediaMetaData.html", [
-        [ "transcode::AudioMetaData", "structtranscode_1_1AudioMetaData.html", null ],
-        [ "transcode::ContainerMetaData", "structtranscode_1_1ContainerMetaData.html", null ],
-        [ "transcode::SubtitleMetaData", "structtranscode_1_1SubtitleMetaData.html", null ],
-        [ "transcode::VideoMetaData", "structtranscode_1_1VideoMetaData.html", null ]
-      ] ]
+      [ "transcode::libav::LibavSingleton", "classtranscode_1_1libav_1_1LibavSingleton.html", null ]
     ] ],
     [ "Class Members", "functions.html", null ],
     [ "Namespace List", "namespaces.html", [
-      [ "callback", "namespacecallback.html", null ],
-      [ "helper", "namespacehelper.html", null ],
       [ "transcode", "namespacetranscode.html", null ],
+      [ "transcode::libav", "namespacetranscode_1_1libav.html", null ],
       [ "transcode::util", "namespacetranscode_1_1util.html", null ]
     ] ],
     [ "Namespace Members", "namespacemembers.html", null ],
     [ "File List", "files.html", [
-      [ "src/main/native/error.hpp", null, null ],
-      [ "src/main/native/metadata.hpp", null, null ],
-      [ "src/main/native/util/util_ffmpeg.cpp", "util__ffmpeg_8cpp.html", null ],
-      [ "src/main/native/util/util_ffmpeg.hpp", "util__ffmpeg_8hpp.html", null ],
-      [ "src/main/native/util/util_file.cpp", "util__file_8cpp.html", null ],
-      [ "src/main/native/util/util_file.hpp", "util__file_8hpp.html", null ],
-      [ "src/main/native/util/util_media.hpp", null, null ],
-      [ "src/main/native/util/util_media_ffmpeg.cpp", "util__media__ffmpeg_8cpp.html", null ],
-      [ "src/main/native/util/util_standard.hpp", "util__standard_8hpp.html", null ]
+      [ "src/main/native/error.hpp", "error_8hpp.html", null ],
+      [ "src/main/native/libav/libav.cpp", "libav_8cpp.html", null ],
+      [ "src/main/native/libav/libav.hpp", "libav_8hpp.html", null ],
+      [ "src/main/native/util/standard.hpp", "standard_8hpp.html", null ]
     ] ]
   ] ]
 ];
