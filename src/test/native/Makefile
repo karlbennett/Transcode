@@ -35,26 +35,17 @@ LIBS = -L/usr/lib/i386-linux-gnu -L/opt/libav/lib/ -L/usr/lib/ -L$(LIB_DIR) -lbo
 -lavformat -lavcodec -lavutil -lx264 -lboost_filesystem -llibav
 
 # The C++ test source files.
-SRC_TEST_ONE = example_test.cpp
-SRC_TEST_TWO = standard_test.cpp
-SRC_TEST_THREE = libav_test.cpp
+SRC = example_test.cpp standard_test.cpp libav_test.cpp
 
-BIN_TEST_ONE = $(LIB_TEST_DIR)$(basename $(SRC_TEST_ONE))
-BIN_TEST_TWO = $(LIB_TEST_DIR)$(basename $(SRC_TEST_TWO))
-BIN_TEST_THREE = $(LIB_TEST_DIR)$(basename $(SRC_TEST_THREE))
+TESTS = $(SRC:.cpp=.test)
 
-# The compile command for the first C++ test source file. This places the binary file into the standard lib directory.
-COMPILE_NATIVE_ONE_CMD = $(CCC) $(INCLUDES) $(SRC_TEST_ONE) $(LIBS) -o $(BIN_TEST_ONE)
-COMPILE_NATIVE_TWO_CMD = $(CCC) $(INCLUDES) $(SRC_TEST_TWO) $(LIBS) -o $(BIN_TEST_TWO)
-COMPILE_NATIVE_THREE_CMD = $(CCC) $(INCLUDES) $(SRC_TEST_THREE) $(LIBS) -o $(BIN_TEST_THREE)
+# The rule for how a ".cpp" file should be compiled into a ".test" file.
+%.test : %.cpp
+	$(CCC) $(INCLUDES) $< $(LIBS) -o $(LIB_TEST_DIR)$@
 
-all:
-	$(COMPILE_NATIVE_ONE_CMD)
-	$(COMPILE_NATIVE_TWO_CMD)
-	$(COMPILE_NATIVE_THREE_CMD)
-	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_ONE)
-	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_TWO)
-	LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(BIN_TEST_THREE)
+# Compile all the test files then run one after the other.
+all: $(TESTS)
+	$(foreach test, $(TESTS), LD_LIBRARY_PATH="$(LIB_DIR):/opt/libav/lib" $(LIB_TEST_DIR)$(test);) 
 
 clean:
 	rm $(LIB_TEST_DIR)*
