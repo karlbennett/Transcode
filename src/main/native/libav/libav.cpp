@@ -17,6 +17,8 @@ extern "C" {
 
 #include <iostream>
 
+#include <tr1/functional>
+
 using namespace std;
 
 
@@ -312,30 +314,18 @@ void LibavSingleton::closeCodecContext(AVCodecContext **codecContext) const {
     throw CodecException(errorMessage(codecCloseResult));
 }
 
-vector<AVFrame*> LibavSingleton::decodeAudioPacket(
-        AVCodecContext *codecContext,
-        const AVPacket *packet) const {
+template<typename T> T decodePacketTemplate(AVCodecContext *codecContext, const AVPacket *packet,
+        std::tr1::function<T(AVCodecContext *codecContext, AVPacket *packet)> decodeCallback) {
 
     if (NULL == codecContext) {
 
-        throw IllegalArgumentException(
-                "The supplied codec context for decodeAudioPacket(AVCodecContext*,AVPacket*) cannot be null.");
-    }
-
-    if (AVMEDIA_TYPE_AUDIO != findCodecType(codecContext)) {
-
-        throw IllegalArgumentException(
-                "The supplied codec context for decodeAudioPacket(AVCodecContext*,AVPacket*) must have media type AVMEDIA_TYPE_AUDIO.");
+        throw IllegalArgumentException("The codec context for decoding cannot be null.");
     }
 
     if (NULL == packet) {
 
-        throw IllegalArgumentException(
-                "The supplied packet for decodeAudioPacket(AVCodecContext*,AVPacket*) cannot be null.");
+        throw IllegalArgumentException("The packet for decoding cannot be null.");
     }
-
-    // This vector will contain all the audio frames decoded from the supplied packet.
-    vector<AVFrame*> frames;
 
     // A copy of the supplied packet that will be used during the decoding so that we
     // don't mutate the supplied packet. If we mutated the supplied packet it would no
@@ -351,6 +341,21 @@ vector<AVFrame*> LibavSingleton::decodeAudioPacket(
     packetCopy.data = buffer;
     packetCopy.size = packet->size;
 
+    return decodeCallback(codecContext, &packetCopy);
+}
+
+static vector<AVFrame*> decodeAudioPacketCallback(AVCodecContext *codecContext,
+        AVPacket *packet) {
+
+    if (AVMEDIA_TYPE_AUDIO != findCodecType(codecContext)) {
+
+        throw IllegalArgumentException(
+                "The supplied codec context for decoding audio must have media type AVMEDIA_TYPE_AUDIO.");
+    }
+
+    // This vector will contain all the audio frames decoded from the supplied packet.
+    vector<AVFrame*> frames;
+
     // The frame pointer that will hold each new frame before it is placed in the vector.
     AVFrame *decodedFrame = NULL;
 
@@ -360,7 +365,7 @@ vector<AVFrame*> LibavSingleton::decodeAudioPacket(
 
     int bytesDecoded = 0; // The number of bytes that were decoded in each iteration.
 
-    while (0 < packetCopy.size) {
+    while (0 < packet->size) {
         // Create a new frame to contain the decoded data if one is required.
         if (NULL == decodedFrame) decodedFrame = avcodec_alloc_frame();
 
@@ -369,7 +374,7 @@ vector<AVFrame*> LibavSingleton::decodeAudioPacket(
         // of them.
         bytesDecoded = avcodec_decode_audio4(codecContext, decodedFrame,
                 &frameDecoded,
-                &packetCopy);
+                packet);
 
         // If there is an invalid data error throw a more specific exception.
         if (AVERROR_INVALIDDATA == bytesDecoded) {
@@ -398,42 +403,23 @@ vector<AVFrame*> LibavSingleton::decodeAudioPacket(
 
         // Push the data pointer down the byte array passed the last byte that we
         // decoded.
-        packetCopy.data += bytesDecoded;
+        packet->data += bytesDecoded;
         // Reduce the relative size of the data to the amount that is yet to be
         // decoded.
-        packetCopy.size -= bytesDecoded;
+        packet->size -= bytesDecoded;
     }
 
     return frames;
 }
 
-AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
-        const AVPacket *packet) const {
-
-    if (NULL == codecContext) {
-
-        throw IllegalArgumentException(
-                "The supplied codec context for decodeVideoPacket(AVCodecContext*,AVPacket*) cannot be null.");
-    }
+static AVFrame* decodeVideoPacketCallBack(AVCodecContext *codecContext,
+        AVPacket *packet) {
 
     if (AVMEDIA_TYPE_VIDEO != findCodecType(codecContext)) {
 
         throw IllegalArgumentException(
                 "The supplied codec context for decodeVideoPacket(AVCodecContext*,AVPacket*) must have media type AVMEDIA_TYPE_VIDEO.");
     }
-
-    if (NULL == packet) {
-
-        throw IllegalArgumentException(
-                "The supplied packet for decodeVideoPacket(AVCodecContext*,AVPacket*) cannot be null.");
-    }
-
-    AVPacket packetCopy;
-    uint8_t buffer[BUFFER_SIZE];
-    memset(buffer, 0, BUFFER_SIZE);
-    memcpy(buffer, packet->data, packet->size);
-    packetCopy.data = buffer;
-    packetCopy.size = packet->size;
 
     AVFrame *decodedFrame = avcodec_alloc_frame();
 
@@ -443,7 +429,7 @@ AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
 
     bytesDecoded = avcodec_decode_video2(codecContext, decodedFrame,
             &frameDecoded,
-            &packetCopy);
+            packet);
 
     if (AVERROR_INVALIDDATA == bytesDecoded) {
 
@@ -458,6 +444,21 @@ AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
     if (0 != frameDecoded) return decodedFrame;
 
     return NULL;
+}
+
+vector<AVFrame*> LibavSingleton::decodeAudioPacket(
+        AVCodecContext *codecContext,
+        const AVPacket *packet) const {
+
+    return decodePacketTemplate<vector<AVFrame*> >(codecContext, packet,
+            decodeAudioPacketCallback);
+}
+
+AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
+        const AVPacket *packet) const {
+
+    return decodePacketTemplate<AVFrame*>(codecContext, packet,
+            decodeVideoPacketCallBack);
 }
 
 
