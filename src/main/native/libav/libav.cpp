@@ -314,6 +314,19 @@ void LibavSingleton::closeCodecContext(AVCodecContext **codecContext) const {
     throw CodecException(errorMessage(codecCloseResult));
 }
 
+/**
+ * Template that wraps the supplied callback with default error checking and makes an
+ * internal copy of the supplied packet that is then passed into the callback.
+ *
+ * The callback for this function should then decode the copied packet into it's
+ * desired container.
+ *
+ * @param codecContext - the codec context that will be used to decode the callback.
+ * @param packet - the packet that is to be decoded.
+ * @param decodeCallback - the callback that will carry out the actual decode of the packet.
+ * @param T - the return type of the supplied callback.
+ * @return the result of the callback.
+ */
 template<typename T> T decodePacketTemplate(AVCodecContext *codecContext, const AVPacket *packet,
         std::tr1::function<T(AVCodecContext *codecContext, AVPacket *packet)> decodeCallback) {
 
@@ -344,6 +357,14 @@ template<typename T> T decodePacketTemplate(AVCodecContext *codecContext, const 
     return decodeCallback(codecContext, &packetCopy);
 }
 
+/**
+ * A callback function that decodes an audio packet. This should be supplied
+ * to the <code>decodePacketTemplate</code> template.
+ *
+ * @param codecContext - the codec context that will be used to decode the callback.
+ * @param packet - the packet that is to be decoded.
+ * @return the decoded packet as a vector of AVFrames.
+ */
 static vector<AVFrame*> decodeAudioPacketCallback(AVCodecContext *codecContext,
         AVPacket *packet) {
 
@@ -412,6 +433,14 @@ static vector<AVFrame*> decodeAudioPacketCallback(AVCodecContext *codecContext,
     return frames;
 }
 
+/**
+ * A callback function that decodes a video packet. This should be supplied
+ * to the <code>decodePacketTemplate</code> template.
+ *
+ * @param codecContext - the codec context that will be used to decode the callback.
+ * @param packet - the packet that is to be decoded.
+ * @return the decoded packet as an AVFrame.
+ */
 static AVFrame* decodeVideoPacketCallBack(AVCodecContext *codecContext,
         AVPacket *packet) {
 
