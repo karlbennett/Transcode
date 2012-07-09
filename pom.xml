@@ -61,6 +61,141 @@
 
         <plugins>
             <plugin>
+                <!-- Check to make sure that the required native libraries are all installed. -->
+                <!-- This is horribly verbose and can maybe be fixed with a custom plugin later. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-libraries</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <evaluateBeanshell>
+                                    <condition>
+                                        try {
+
+                                            System.loadLibrary("avformat");
+
+                                        } catch ( UnsatisfiedLinkError e ) {
+
+                                            return false;
+                                        }
+
+                                        return true;
+                                    </condition>
+                                    <message>
+****
+** Error: The libav avformat library is required to build this project.
+****
+                                    </message>
+                                </evaluateBeanshell>
+                                <evaluateBeanshell>
+                                    <condition>
+                                        try {
+
+                                            System.loadLibrary("avcodec");
+
+                                        } catch ( UnsatisfiedLinkError e ) {
+
+                                            return false;
+                                        }
+
+                                        return true;
+                                    </condition>
+                                    <message>
+****
+** Error: The libav avcodec library is required to build this project.
+****
+                                    </message>
+                                </evaluateBeanshell>
+                                <evaluateBeanshell>
+                                    <condition>
+                                        try {
+
+                                            System.loadLibrary("avutil");
+
+                                        } catch ( UnsatisfiedLinkError e ) {
+
+                                            return false;
+                                        }
+
+                                        return true;
+                                    </condition>
+                                    <message>
+****
+** Error: The libav avutil library is required to build this project.
+****
+                                    </message>
+                                </evaluateBeanshell>
+                                <evaluateBeanshell>
+                                    <condition>
+                                        try {
+
+                                            System.loadLibrary("x264");
+
+                                        } catch ( UnsatisfiedLinkError e ) {
+
+                                            return false;
+                                        }
+
+                                        return true;
+                                    </condition>
+                                    <message>
+****
+** Error: The x264 library is required to build this project.
+****
+                                    </message>
+                                </evaluateBeanshell>
+                                <evaluateBeanshell>
+                                    <condition>
+                                        try {
+
+                                            System.loadLibrary("boost_unit_test_framework");
+
+                                        } catch ( UnsatisfiedLinkError e ) {
+
+                                            return false;
+                                        }
+
+                                        return true;
+                                    </condition>
+                                    <message>
+****
+** Error: The boost test library is required to build this project.
+****
+                                    </message>
+                                </evaluateBeanshell>
+                                <evaluateBeanshell>
+                                    <condition>
+                                        try {
+
+                                            System.loadLibrary("boost_filesystem");
+
+                                        } catch ( UnsatisfiedLinkError e ) {
+
+                                            return false;
+                                        }
+
+                                        return true;
+                                    </condition>
+                                    <message>
+****
+** Error: The boost filesystem library is required to build this project.
+****
+                                    </message>
+                                </evaluateBeanshell>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <!-- Exclude the *.cpp files from being packaged in the JAR because this is source code that should only be provided on -->
                 <!-- request. -->
                 <groupId>org.apache.maven.plugins</groupId>
