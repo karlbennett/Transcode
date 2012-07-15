@@ -218,6 +218,17 @@ std::vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
         const AVPacket *packet);
 
 /**
+ * Encode the supplied audio frame.
+ *
+ * @param codecContext - the codec to use to encode the
+ *      audio frame.
+ * @param frame - the audio frame that is to be encoded.
+ * @return the encoded audio packet.
+ */
+AVPacket* encodeAudioFrame(AVCodecContext *codecContext,
+        const AVFrame *frame);
+
+/**
  * Decode the supplied video packet.
  *
  * @param codecContext - the codec to use to decode the
@@ -228,6 +239,17 @@ std::vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
  */
 AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
         const AVPacket *packet);
+
+/**
+ * Encode the supplied video frame.
+ *
+ * @param codecContext - the codec to use to encode the
+ *      video frame.
+ * @param frame - the video frame that is to be encoded.
+ * @return the encoded video packet.
+ */
+AVPacket* encodeVideoFrame(AVCodecContext *codecContext,
+        const AVFrame *frame);
 
 } /* namespace util */
 } /* namespace transcode */

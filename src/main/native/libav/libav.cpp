@@ -79,6 +79,9 @@ public:
     vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
             const AVPacket *packet) const;
 
+    AVPacket* encodeAudioFrame(AVCodecContext *codecContext,
+            const AVFrame *frame) const;
+
     AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
             const AVPacket *packet) const;
 };
@@ -483,6 +486,12 @@ vector<AVFrame*> LibavSingleton::decodeAudioPacket(
             decodeAudioPacketCallback);
 }
 
+AVPacket* LibavSingleton::encodeAudioFrame(AVCodecContext *codecContext,
+        const AVFrame *frame) const {
+
+    return NULL;
+}
+
 AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
         const AVPacket *packet) const {
 
@@ -541,6 +550,12 @@ vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
         const AVPacket *packet) {
 
     return LibavSingleton::getInstance().decodeAudioPacket(codecContext, packet);
+}
+
+AVPacket* encodeAudioFrame(AVCodecContext *codecContext,
+        const AVFrame *frame) {
+
+    return LibavSingleton::getInstance().encodeAudioFrame(codecContext, frame);
 }
 
 AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
