@@ -17,6 +17,7 @@ extern "C" {
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace test {
 
@@ -288,6 +289,161 @@ struct VideoPacketFixture: public PacketFixture {
     virtual ~VideoPacketFixture() {}
 };
 
+struct FrameFixture: public PacketFixture {
+
+    FrameFixture(AVFormatContext *fc, AVMediaType tp) :
+            PacketFixture(fc, tp), type(tp), frames(std::vector<AVFrame*>()) {}
+
+    virtual ~FrameFixture() {
+
+        for (int i = 0; i < frames.size(); i++) {
+
+            av_free(frames[i]);
+        }
+    }
+
+    static const int BUFFER_SIZE = AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE;
+    AVMediaType type;
+    std::vector<AVFrame*> frames;
+
+    std::vector<AVFrame*> retryDecodePacket(AVFormatContext *fc, AVPacket *packet, AVMediaType type) {
+
+        std::vector<AVFrame*> frames = decodePacket(fc, packet);
+
+        // If we haven't been able successfully decode an audio frame on the
+        // first go keep trying till we do.
+        while (1 > frames.size()) {
+
+            av_free_packet(packet);
+
+            packet = readPacket(fc, type);
+
+            frames = decodePacket(fc, packet);
+        }
+
+        return frames;
+    }
+
+    std::vector<AVFrame*> decodePacket(AVFormatContext *fc, AVPacket *packet) {
+
+        AVPacket packetCopy;
+
+        uint8_t buffer[BUFFER_SIZE];
+
+        memset(buffer, 0, BUFFER_SIZE);
+
+        memcpy(buffer, packet->data, packet->size);
+
+        packetCopy.data = buffer;
+        packetCopy.size = packet->size;
+
+        AVCodecContext *codec = fc->streams[packet->stream_index]->codec;
+
+        return decodeStrategy(codec, &packetCopy);
+    }
+
+    virtual std::vector<AVFrame*> decodeStrategy(AVCodecContext *codecContext,
+        AVPacket *packet) = 0;
+};
+
+struct AudioFrameFixture: public FrameFixture {
+
+    AudioFrameFixture(AVFormatContext *fc) :
+            FrameFixture(fc, AVMEDIA_TYPE_AUDIO) {
+
+        frames = retryDecodePacket(fc, packet, type);
+    }
+
+    virtual ~AudioFrameFixture() {}
+
+    std::vector<AVFrame*> decodeStrategy(AVCodecContext *codecContext,
+            AVPacket *packet) {
+
+        std::vector<AVFrame*> frames;
+
+        AVFrame *decodedFrame = NULL;
+
+        int frameDecoded = 0;
+
+        int bytesDecoded = 0; // The number of bytes that were decoded in each iteration.
+
+        while (0 < packet->size) {
+
+            if (NULL == decodedFrame) decodedFrame = avcodec_alloc_frame();
+
+            bytesDecoded = avcodec_decode_audio4(codecContext, decodedFrame,
+                    &frameDecoded,
+                    packet);
+
+            if (AVERROR_INVALIDDATA == bytesDecoded) {
+
+                throw "Invalid data for audio packet decode in test fixture.";
+            }
+
+            if (0 > bytesDecoded) {
+
+                throw "Error decoding audio packet in test fixture.";
+            }
+
+            if (0 != frameDecoded) {
+
+                frames.push_back(decodedFrame);
+
+                decodedFrame = NULL;
+
+            } else {
+
+                avcodec_get_frame_defaults(decodedFrame);
+            }
+
+            packet->data += bytesDecoded;
+            packet->size -= bytesDecoded;
+        }
+
+        return frames;
+    }
+};
+
+struct VideoFrameFixture: public FrameFixture {
+
+    VideoFrameFixture(AVFormatContext *fc) :
+            FrameFixture(fc, AVMEDIA_TYPE_VIDEO) {
+
+        frames = retryDecodePacket(fc, packet, type);
+    }
+
+    virtual ~VideoFrameFixture() {}
+
+    std::vector<AVFrame*> decodeStrategy(AVCodecContext *codecContext,
+            AVPacket *packet) {
+
+        std::vector<AVFrame*> frames;
+
+        AVFrame *decodedFrame = avcodec_alloc_frame();
+
+        int bytesDecoded = 0;
+
+        int frameDecoded = 0;
+
+        bytesDecoded = avcodec_decode_video2(codecContext, decodedFrame,
+                &frameDecoded,
+                packet);
+
+        if (AVERROR_INVALIDDATA == bytesDecoded) {
+
+            throw "Invalid data for video packet decode in test fixture.";
+        }
+
+        if (0 > bytesDecoded) {
+
+            throw "Error decoding video packet in test fixture.";
+        }
+
+        if (0 != frameDecoded) frames.push_back(decodedFrame);
+
+        return frames;
+    }
+};
 
 /** FORMAT CONTEXT FIXTURES **/
 
@@ -494,6 +650,62 @@ struct MP4VideoPacketFixture: public MP4OpenedCodecContextFixture, public VideoP
 struct FLVVideoPacketFixture: public FLVOpenedCodecContextFixture, public VideoPacketFixture {
 
     FLVVideoPacketFixture() : FLVOpenedCodecContextFixture(), VideoPacketFixture(formatContext) {}
+};
+
+
+/** AUDIO FRAME CONTEXT FIXTURES **/
+
+struct AVIAudioFrameFixture: public AVIOpenedCodecContextFixture, public AudioFrameFixture {
+
+    AVIAudioFrameFixture() : AVIOpenedCodecContextFixture(), AudioFrameFixture(formatContext) {}
+};
+
+struct MKVAudioFrameFixture: public MKVOpenedCodecContextFixture, public AudioFrameFixture {
+
+    MKVAudioFrameFixture() : MKVOpenedCodecContextFixture(), AudioFrameFixture(formatContext) {}
+};
+
+struct OGVAudioFrameFixture: public OGVOpenedCodecContextFixture, public AudioFrameFixture {
+
+    OGVAudioFrameFixture() : OGVOpenedCodecContextFixture(), AudioFrameFixture(formatContext) {}
+};
+
+struct MP4AudioFrameFixture: public MP4OpenedCodecContextFixture, public AudioFrameFixture {
+
+    MP4AudioFrameFixture() : MP4OpenedCodecContextFixture(), AudioFrameFixture(formatContext) {}
+};
+
+struct FLVAudioFrameFixture: public FLVOpenedCodecContextFixture, public AudioFrameFixture {
+
+    FLVAudioFrameFixture() : FLVOpenedCodecContextFixture(), AudioFrameFixture(formatContext) {}
+};
+
+
+/** VIDEO FRAME CONTEXT FIXTURES **/
+
+struct AVIVideoFrameFixture: public AVIOpenedCodecContextFixture, public VideoFrameFixture {
+
+    AVIVideoFrameFixture() : AVIOpenedCodecContextFixture(), VideoFrameFixture(formatContext) {}
+};
+
+struct MKVVideoFrameFixture: public MKVOpenedCodecContextFixture, public VideoFrameFixture {
+
+    MKVVideoFrameFixture() : MKVOpenedCodecContextFixture(), VideoFrameFixture(formatContext) {}
+};
+
+struct OGVVideoFrameFixture: public OGVOpenedCodecContextFixture, public VideoFrameFixture {
+
+    OGVVideoFrameFixture() : OGVOpenedCodecContextFixture(), VideoFrameFixture(formatContext) {}
+};
+
+struct MP4VideoFrameFixture: public MP4OpenedCodecContextFixture, public VideoFrameFixture {
+
+    MP4VideoFrameFixture() : MP4OpenedCodecContextFixture(), VideoFrameFixture(formatContext) {}
+};
+
+struct FLVVideoFrameFixture: public FLVOpenedCodecContextFixture, public VideoFrameFixture {
+
+    FLVVideoFrameFixture() : FLVOpenedCodecContextFixture(), VideoFrameFixture(formatContext) {}
 };
 
 } /* namespace test */
