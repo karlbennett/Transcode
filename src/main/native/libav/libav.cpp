@@ -84,6 +84,9 @@ public:
 
     AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
             const AVPacket *packet) const;
+
+    AVPacket* encodeVideoFrame(AVCodecContext *codecContext,
+            const AVFrame *frame) const;
 };
 
 LibavSingleton::LibavSingleton() {
@@ -499,6 +502,12 @@ AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
             decodeVideoPacketCallBack);
 }
 
+AVPacket* LibavSingleton::encodeVideoFrame(AVCodecContext *codecContext,
+        const AVFrame *frame) const {
+
+    return NULL;
+}
+
 
 string errorMessage(const int& errorCode) {
 
@@ -562,6 +571,12 @@ AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
         const AVPacket *packet) {
 
     return LibavSingleton::getInstance().decodeVideoPacket(codecContext, packet);
+}
+
+AVPacket* encodeVideoFrame(AVCodecContext *codecContext,
+        const AVFrame *frame) {
+
+    return LibavSingleton::getInstance().encodeVideoFrame(codecContext, frame);
 }
 
 
