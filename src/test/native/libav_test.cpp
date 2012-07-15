@@ -962,3 +962,106 @@ BOOST_AUTO_TEST_CASE( test_decode_video_packet_with_null_codec_and_packet )
     BOOST_REQUIRE_THROW( transcode::libav::decodeVideoPacket(NULL, NULL),
             transcode::IllegalArgumentException );
 }
+
+
+
+
+/**
+ * Test encode video frame for an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_avi_file, test::AVIVideoFrameFixture )
+{
+    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(codecs[packet->stream_index], NULL);
+
+    BOOST_REQUIRE( NULL != audioPacket );
+}
+
+/**
+ * Test encode video frame for an mkv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_mkv_file, test::MKVVideoFrameFixture )
+{
+
+    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(codecs[packet->stream_index], frames[0]);
+
+    BOOST_REQUIRE( NULL != audioPacket );
+}
+
+/**
+ * Test encode video frame for an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_ogv_file, test::OGVVideoFrameFixture )
+{
+
+    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(codecs[packet->stream_index], frames[0]);
+
+    BOOST_REQUIRE( NULL != audioPacket );
+}
+
+/**
+ * Test encode video frame for an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_mp4_file, test::MP4VideoFrameFixture )
+{
+
+    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(codecs[packet->stream_index], frames[0]);
+
+    BOOST_REQUIRE( NULL != audioPacket );
+}
+
+/**
+ * Test encode video frame for an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_flv_file, test::FLVVideoFrameFixture )
+{
+
+    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(codecs[packet->stream_index], frames[0]);
+
+    BOOST_REQUIRE( NULL != audioPacket );
+}
+
+/**
+ * Test video encode audio frame.
+ */
+BOOST_FIXTURE_TEST_CASE( test_video_encode_audio_frame, test::AVIAudioFrameFixture )
+{
+
+    AVPacket *audioPacket = readPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+
+    AVCodecContext *codec = codecs[audioPacket->stream_index];
+
+    av_free_packet(audioPacket);
+
+    BOOST_REQUIRE_THROW( transcode::libav::encodeVideoFrame(codec, frames[0]),
+                transcode::libav::InvalidPacketDataException );
+}
+
+/**
+ * Test encode video frame with null codec.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_with_null_codec, test::AVIVideoFrameFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::libav::encodeVideoFrame(NULL, frames[0]),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test decode video frame with null packet.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_video_frame_with_null_packet, test::AVIVideoFrameFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::libav::encodeVideoFrame(codecs[packet->stream_index], NULL),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test decode video frame with null codec and packet.
+ */
+BOOST_AUTO_TEST_CASE( test_decode_video_frame_with_null_codec_and_packet )
+{
+
+    BOOST_REQUIRE_THROW( transcode::libav::encodeVideoFrame(NULL, NULL),
+            transcode::IllegalArgumentException );
+}
