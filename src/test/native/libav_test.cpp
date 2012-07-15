@@ -684,14 +684,14 @@ BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_flv_file, test::FLVAudioPa
 /**
  * Test audio decode video packet.
  */
-BOOST_FIXTURE_TEST_CASE( test_audio_decode_video_packet, test::AVIAudioPacketFixture )
+BOOST_FIXTURE_TEST_CASE( test_audio_decode_video_packet, test::AVIVideoPacketFixture )
 {
 
-    AVCodecContext *codec = codecs[packet->stream_index];
+    AVPacket *audioPacket = readPacket(formatContext, AVMEDIA_TYPE_AUDIO);
 
-    av_free_packet(packet);
+    AVCodecContext *codec = codecs[audioPacket->stream_index];
 
-    packet = readPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+    av_free_packet(audioPacket);
 
     BOOST_REQUIRE_THROW( transcode::libav::decodeAudioPacket(codec, packet),
                 transcode::libav::InvalidPacketDataException );
@@ -724,6 +724,106 @@ BOOST_AUTO_TEST_CASE( test_decode_audio_packet_with_null_codec_and_packet )
 {
 
     BOOST_REQUIRE_THROW( transcode::libav::decodeAudioPacket(NULL, NULL),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test encode audio frame for an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_avi_file, test::AVIAudioFrameFixture )
+{
+    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(codecs[packet->stream_index], NULL);
+
+    BOOST_REQUIRE( NULL != audioPacket );
+}
+
+/**
+ * Test encode audio frame for an mkv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_mkv_file, test::MKVAudioFrameFixture )
+{
+
+    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(codecs[packet->stream_index], frames[0]);
+
+    BOOST_REQUIRE( NULL != audioPacket );
+}
+
+/**
+ * Test encode audio frame for an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_ogv_file, test::OGVAudioFrameFixture )
+{
+
+    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(codecs[packet->stream_index], frames[0]);
+
+    BOOST_REQUIRE( NULL != audioPacket );
+}
+
+/**
+ * Test encode audio frame for an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_mp4_file, test::MP4AudioFrameFixture )
+{
+
+    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(codecs[packet->stream_index], frames[0]);
+
+    BOOST_REQUIRE( NULL != audioPacket );
+}
+
+/**
+ * Test encode audio frame for an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_flv_file, test::FLVAudioFrameFixture )
+{
+
+    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(codecs[packet->stream_index], frames[0]);
+
+    BOOST_REQUIRE( NULL != audioPacket );
+}
+
+/**
+ * Test audio encode video frame.
+ */
+BOOST_FIXTURE_TEST_CASE( test_audio_encode_video_frame, test::AVIVideoFrameFixture )
+{
+
+    AVPacket *audioPacket = readPacket(formatContext, AVMEDIA_TYPE_AUDIO);
+
+    AVCodecContext *codec = codecs[audioPacket->stream_index];
+
+    av_free_packet(audioPacket);
+
+    BOOST_REQUIRE_THROW( transcode::libav::encodeAudioFrame(codec, frames[0]),
+                transcode::libav::InvalidPacketDataException );
+}
+
+/**
+ * Test encode audio frame with null codec.
+ */
+BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_with_null_codec, test::AVIAudioFrameFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::libav::encodeAudioFrame(NULL, frames[0]),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test decode audio frame with null packet.
+ */
+BOOST_FIXTURE_TEST_CASE( test_decode_audio_frame_with_null_packet, test::AVIAudioFrameFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::libav::encodeAudioFrame(codecs[packet->stream_index], NULL),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test decode audio frame with null codec and packet.
+ */
+BOOST_AUTO_TEST_CASE( test_decode_audio_frame_with_null_codec_and_packet )
+{
+
+    BOOST_REQUIRE_THROW( transcode::libav::encodeAudioFrame(NULL, NULL),
             transcode::IllegalArgumentException );
 }
 
@@ -818,14 +918,14 @@ BOOST_FIXTURE_TEST_CASE( test_decode_video_packet_for_flv_file, test::FLVVideoPa
 /**
  * Test video decode audio packet.
  */
-BOOST_FIXTURE_TEST_CASE( test_video_decode_audio_packet, test::AVIVideoPacketFixture )
+BOOST_FIXTURE_TEST_CASE( test_video_decode_audio_packet, test::AVIAudioPacketFixture )
 {
 
-    AVCodecContext *codec = codecs[packet->stream_index];
+    AVPacket *videoPacket = readPacket(formatContext, AVMEDIA_TYPE_VIDEO);
 
-    av_free_packet(packet);
+    AVCodecContext *codec = codecs[videoPacket->stream_index];
 
-    packet = readPacket(formatContext, AVMEDIA_TYPE_AUDIO);
+    av_free_packet(videoPacket);
 
     // Unfortunately it appears that some audio packets will successfully decode when
     // passed through a video codec. This means it is almost impossible to check that
