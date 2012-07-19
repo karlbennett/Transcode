@@ -21,11 +21,37 @@ extern "C" {
 
 namespace test {
 
+std::string error(int error) {
+
+    size_t bufferSize = 1024;
+
+    char buffer[bufferSize];
+
+    // Make sure that the buffer is null terminated so that it
+    // represents a valid C++ string.
+    memset(buffer, 0, bufferSize);
+
+    int err = av_strerror(error, buffer, bufferSize);
+
+    return std::string(buffer);
+}
+
+struct LibAvRegisterable {
+
+    LibAvRegisterable() {
+
+        avcodec_register_all();
+        av_register_all();
+
+        av_log_set_level(AV_LOG_INFO);
+    }
+};
+
 /** BASE FIXTURES **/
 
-struct FormatContextFixture {
+struct FormatContextFixture: public LibAvRegisterable {
 
-    FormatContextFixture() : formatContext(NULL) {}
+    FormatContextFixture() : LibAvRegisterable(), formatContext(NULL) {}
 
     /**
      * Instantiate a new <code>FormatContextFixture</code> with the supplied
@@ -34,7 +60,7 @@ struct FormatContextFixture {
      *
      * @param fc - the format context to use within this fixture.
      */
-    FormatContextFixture(AVFormatContext *fc) : formatContext(fc) {
+    FormatContextFixture(AVFormatContext *fc) : LibAvRegisterable(), formatContext(fc) {
 
         checkStreams();
     }
@@ -48,7 +74,7 @@ struct FormatContextFixture {
      * @param fileName - the path to the file that will be used to populate
      *      the format context within this fixture.
      */
-    FormatContextFixture(std::string fileName) : formatContext(NULL) {
+    FormatContextFixture(std::string fileName) : LibAvRegisterable(), formatContext(NULL) {
 
         avformat_open_input(&formatContext, fileName.c_str(), NULL,
                             NULL);
@@ -70,6 +96,11 @@ struct FormatContextFixture {
 
             throw "The fixture format context does not contain any streams.";
         }
+    }
+
+    static void regesterLibAv() {
+
+
     }
 };
 
@@ -99,20 +130,23 @@ struct CodecContextFixture {
      */
     CodecContextFixture(AVStream **streams, const int& size): codecNumber(size) {
 
-        codecs = new AVCodecContext*[codecNumber];
+        decodeCodecs = new AVCodecContext*[codecNumber];
 
         for (int i = 0; i < codecNumber; i++) {
 
-            codecs[i] = streams[i]->codec;
+            decodeCodecs[i] = streams[i]->codec;
         }
     }
 
     virtual ~CodecContextFixture() {
 
-        delete codecs;
+        for (int i = 0; i < codecNumber; i++) {
+
+            avcodec_close(decodeCodecs[i]);
+        }
     }
 
-    AVCodecContext **codecs;
+    AVCodecContext **decodeCodecs;
     int codecNumber;
 };
 
@@ -133,35 +167,113 @@ struct OpenedCodecContextFixture: public CodecContextFixture {
     OpenedCodecContextFixture(AVStream **streams, const int& size) :
             CodecContextFixture(streams, size) {
 
-        AVCodecContext *codecContext = NULL;
-        AVCodec *codec = NULL;
+        encodeCodecs = new AVCodecContext*[codecNumber];
+        // Initialise all the slots to NULL so that we know which pointers
+        // actually contain an AVCodecContext.
+        memset(encodeCodecs, 0, codecNumber);
+
+        AVCodecContext *decodeCodecContext = NULL;
+        AVCodecContext *encodeCodecContext = NULL;
+        AVCodec *decoder = NULL;
+        AVCodec *encoder = NULL;
 
         int codecOpenResult = 0;
 
         for (int i = 0; i < codecNumber; i++) {
 
-            codecContext = codecs[i];
+            encodeCodecs[i] = NULL;
+
+            decodeCodecContext = decodeCodecs[i];
 
             // Can only handle audio and video codecs at this time.
-            if (AVMEDIA_TYPE_AUDIO == codecContext->codec_type
-                    || AVMEDIA_TYPE_VIDEO == codecContext->codec_type) {
+            if (AVMEDIA_TYPE_AUDIO == decodeCodecContext->codec_type
+                    || AVMEDIA_TYPE_VIDEO == decodeCodecContext->codec_type) {
 
-                codec = avcodec_find_decoder(codecContext->codec_id);
+                std::string mediaType;
 
-                if (NULL == codec) {
+                if (AVMEDIA_TYPE_AUDIO == decodeCodecContext->codec_type) {
 
-                    throw "Fixture codec context codec could not be found.";
+                    mediaType = "audio";
+
+                } else {
+
+                    mediaType = "video";
                 }
 
-                codecOpenResult = avcodec_open2(codecContext, codec, NULL);
+                decoder = avcodec_find_decoder(decodeCodecContext->codec_id);
 
-                if (0 != codecOpenResult)
-                    throw "Fixture codec context could not be opened.";
+                if (NULL == decoder) {
+
+                    throw "Fixture " + mediaType
+                            + " decode codec for codec context could not be found.";
+                }
+
+                if (CODEC_ID_AC3 == decodeCodecContext->codec_id
+                        && AV_SAMPLE_FMT_S16 == decodeCodecContext->sample_fmt) {
+                    encoder = avcodec_find_encoder_by_name("ac3_fixed");
+                } else {
+                    encoder = avcodec_find_encoder(decodeCodecContext->codec_id);
+                }
+
+                if (NULL == encoder) {
+
+                    throw "Fixture " + mediaType
+                            + " encode codec for codec context could not be found.";
+                }
+
+                encodeCodecs[i] = avcodec_alloc_context3(encoder);
+                avcodec_copy_context(encodeCodecs[i], decodeCodecContext);
+                encodeCodecContext = encodeCodecs[i];
+
+                if (CODEC_ID_H264 == encodeCodecContext->codec_id) {
+                    encodeCodecContext->me_range = 16;
+                    encodeCodecContext->max_qdiff = 4;
+                    encodeCodecContext->qmin = 10;
+                    encodeCodecContext->qmax = 51;
+                    encodeCodecContext->qcompress = 0.6;
+                }
+
+                if (CODEC_ID_FLV1 == encodeCodecContext->codec_id) {
+                    encodeCodecContext->time_base.num = 1;
+                    encodeCodecContext->time_base.den = 1000;
+                }
+
+                if (NULL == encodeCodecContext || NULL == encodeCodecs[i]) {
+
+                    throw "Fixture " + mediaType
+                            + " encode codec context could not be allocated.";
+                }
+
+                codecOpenResult = avcodec_open2(decodeCodecContext, decoder, NULL);
+
+                if (0 != codecOpenResult) {
+
+                    throw "Fixture " + mediaType
+                            + " decode codec context could not be opened. Error: "
+                            + error(codecOpenResult);
+                }
+
+                codecOpenResult = avcodec_open2(encodeCodecContext, encoder, NULL);
+
+                if (0 != codecOpenResult) {
+
+                    throw "Fixture " + mediaType
+                            + " encode codec context could not be opened. Error: "
+                            + error(codecOpenResult);
+                }
             }
         }
     }
 
-    virtual ~OpenedCodecContextFixture() {}
+    virtual ~OpenedCodecContextFixture() {
+
+        for (int i = 0; i < codecNumber; i++) {
+
+            if (NULL != encodeCodecs[i]) avcodec_close(encodeCodecs[i]);
+        }
+    }
+
+    AVCodecContext **encodeCodecs;
 };
 
 struct PacketFixture {
@@ -241,11 +353,11 @@ struct PacketFixture {
 
         av_init_packet(packet);
 
-        int error = av_read_frame(fc, packet);
+        int result = av_read_frame(fc, packet);
 
-        if (0 == error) return packet;
+        if (0 == result) return packet;
 
-        throw "Failed to read AVPacket in test fixture.";
+        throw "Failed to read AVPacket in test fixture. Error: " + error(result);
     }
 
     /**
@@ -377,12 +489,14 @@ struct AudioFrameFixture: public FrameFixture {
 
             if (AVERROR_INVALIDDATA == bytesDecoded) {
 
-                throw "Invalid data for audio packet decode in test fixture.";
+                throw "Invalid data for audio packet decode in test fixture. Error: "
+                        + error(bytesDecoded);
             }
 
             if (0 > bytesDecoded) {
 
-                throw "Error decoding audio packet in test fixture.";
+                throw "Error decoding audio packet in test fixture. Error: "
+                        + error(bytesDecoded);
             }
 
             if (0 != frameDecoded) {
@@ -431,12 +545,14 @@ struct VideoFrameFixture: public FrameFixture {
 
         if (AVERROR_INVALIDDATA == bytesDecoded) {
 
-            throw "Invalid data for video packet decode in test fixture.";
+            throw "Invalid data for video packet decode in test fixture. Error: "
+                    + error(bytesDecoded);
         }
 
         if (0 > bytesDecoded) {
 
-            throw "Error decoding video packet in test fixture.";
+            throw "Error decoding video packet in test fixture. Error: "
+                    + error(bytesDecoded);
         }
 
         if (0 != frameDecoded) frames.push_back(decodedFrame);

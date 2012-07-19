@@ -346,8 +346,8 @@ BOOST_AUTO_TEST_CASE( test_find_type_for_null_stream )
 BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_avi_file, test::AVICodecContextFixture )
 {
 
-    BOOST_REQUIRE_EQUAL( DIVX_STREAM_ONE, transcode::libav::findCodecType(codecs[0]) );
-    BOOST_REQUIRE_EQUAL( DIVX_STREAM_TWO, transcode::libav::findCodecType(codecs[1]) );
+    BOOST_REQUIRE_EQUAL( DIVX_STREAM_ONE, transcode::libav::findCodecType(decodeCodecs[0]) );
+    BOOST_REQUIRE_EQUAL( DIVX_STREAM_TWO, transcode::libav::findCodecType(decodeCodecs[1]) );
 }
 
 /**
@@ -356,8 +356,8 @@ BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_avi_file, test::AVICodecConte
 BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_mkv_file, test::MKVCodecContextFixture )
 {
 
-    BOOST_REQUIRE_EQUAL( MKV_STREAM_ONE, transcode::libav::findCodecType(codecs[0]) );
-    BOOST_REQUIRE_EQUAL( MKV_STREAM_TWO, transcode::libav::findCodecType(codecs[1]) );
+    BOOST_REQUIRE_EQUAL( MKV_STREAM_ONE, transcode::libav::findCodecType(decodeCodecs[0]) );
+    BOOST_REQUIRE_EQUAL( MKV_STREAM_TWO, transcode::libav::findCodecType(decodeCodecs[1]) );
 }
 
 /**
@@ -366,9 +366,9 @@ BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_mkv_file, test::MKVCodecConte
 BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_ogv_file, test::OGVCodecContextFixture )
 {
 
-    BOOST_REQUIRE_EQUAL( OGV_STREAM_ONE, transcode::libav::findCodecType(codecs[0]) );
-    BOOST_REQUIRE_EQUAL( OGV_STREAM_TWO, transcode::libav::findCodecType(codecs[1]) );
-    BOOST_REQUIRE_EQUAL( OGV_STREAM_THREE, transcode::libav::findCodecType(codecs[2]) );
+    BOOST_REQUIRE_EQUAL( OGV_STREAM_ONE, transcode::libav::findCodecType(decodeCodecs[0]) );
+    BOOST_REQUIRE_EQUAL( OGV_STREAM_TWO, transcode::libav::findCodecType(decodeCodecs[1]) );
+    BOOST_REQUIRE_EQUAL( OGV_STREAM_THREE, transcode::libav::findCodecType(decodeCodecs[2]) );
 }
 
 /**
@@ -377,8 +377,8 @@ BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_ogv_file, test::OGVCodecConte
 BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_mp4_file, test::MP4CodecContextFixture )
 {
 
-    BOOST_REQUIRE_EQUAL( MP4_STREAM_ONE, transcode::libav::findCodecType(codecs[0]) );
-    BOOST_REQUIRE_EQUAL( MP4_STREAM_TWO, transcode::libav::findCodecType(codecs[1]) );
+    BOOST_REQUIRE_EQUAL( MP4_STREAM_ONE, transcode::libav::findCodecType(decodeCodecs[0]) );
+    BOOST_REQUIRE_EQUAL( MP4_STREAM_TWO, transcode::libav::findCodecType(decodeCodecs[1]) );
 }
 
 /**
@@ -387,8 +387,8 @@ BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_mp4_file, test::MP4CodecConte
 BOOST_FIXTURE_TEST_CASE( test_find_codec_type_from_flv_file, test::FLVCodecContextFixture )
 {
 
-    BOOST_REQUIRE_EQUAL( FLV_STREAM_ONE, transcode::libav::findCodecType(codecs[0]) );
-    BOOST_REQUIRE_EQUAL( FLV_STREAM_TWO, transcode::libav::findCodecType(codecs[1]) );
+    BOOST_REQUIRE_EQUAL( FLV_STREAM_ONE, transcode::libav::findCodecType(decodeCodecs[0]) );
+    BOOST_REQUIRE_EQUAL( FLV_STREAM_TWO, transcode::libav::findCodecType(decodeCodecs[1]) );
 }
 
 /**
@@ -484,8 +484,8 @@ BOOST_FIXTURE_TEST_CASE( test_find_type_for_null_packet, test::AVIFormatContextF
 BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_avi_file, test::AVICodecContextFixture )
 {
 
-    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[0]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[1]) );
 }
 
 /**
@@ -494,8 +494,8 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_avi_file, test::AVICodecContextFix
 BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mkv_file, test::MKVCodecContextFixture )
 {
 
-    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[0]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[1]) );
 }
 
 /**
@@ -505,8 +505,8 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_ogv_file, test::OGVCodecContextFix
 {
 // TODO: Subtitle codecs not yet supported.
 //    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[0]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[1]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[2]) );
+    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[2]) );
 }
 
 /**
@@ -515,8 +515,8 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_ogv_file, test::OGVCodecContextFix
 BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mp4_file, test::MP4CodecContextFixture )
 {
 
-    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[0]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[1]) );
 }
 
 /**
@@ -525,8 +525,8 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mp4_file, test::MP4CodecContextFix
 BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_flv_file, test::FLVCodecContextFixture )
 {
 
-    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[0]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[1]) );
 }
 
 /**
@@ -544,9 +544,9 @@ BOOST_AUTO_TEST_CASE( test_open_codec_for_null_codec )
  */
 BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_avi_file, test::AVIOpenedCodecContextFixture )
 {
-
-    transcode::libav::closeCodecContext(&(codecs[0]));
-    transcode::libav::closeCodecContext(&(codecs[1]));
+std::cout << "In Test" << std::endl;
+    transcode::libav::closeCodecContext(&(decodeCodecs[0]));
+    transcode::libav::closeCodecContext(&(decodeCodecs[1]));
 }
 
 /**
@@ -554,9 +554,8 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_avi_file, test::AVIOpenedCodecCon
  */
 BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mkv_file, test::MKVOpenedCodecContextFixture )
 {
-
-    transcode::libav::closeCodecContext(&(codecs[0]));
-    transcode::libav::closeCodecContext(&(codecs[1]));
+    transcode::libav::closeCodecContext(&(decodeCodecs[0]));
+    transcode::libav::closeCodecContext(&(decodeCodecs[1]));
 }
 
 /**
@@ -565,9 +564,9 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mkv_file, test::MKVOpenedCodecCon
 BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_ogv_file, test::OGVOpenedCodecContextFixture )
 {
 
-    transcode::libav::closeCodecContext(&(codecs[0]));
-    transcode::libav::closeCodecContext(&(codecs[1]));
-    transcode::libav::closeCodecContext(&(codecs[2]));
+    transcode::libav::closeCodecContext(&(decodeCodecs[0]));
+    transcode::libav::closeCodecContext(&(decodeCodecs[1]));
+    transcode::libav::closeCodecContext(&(decodeCodecs[2]));
 }
 
 /**
@@ -576,8 +575,8 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_ogv_file, test::OGVOpenedCodecCon
 BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mp4_file, test::MP4OpenedCodecContextFixture )
 {
 
-    transcode::libav::closeCodecContext(&(codecs[0]));
-    transcode::libav::closeCodecContext(&(codecs[1]));
+    transcode::libav::closeCodecContext(&(decodeCodecs[0]));
+    transcode::libav::closeCodecContext(&(decodeCodecs[1]));
 }
 
 /**
@@ -586,8 +585,8 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mp4_file, test::MP4OpenedCodecCon
 BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_flv_file, test::FLVOpenedCodecContextFixture )
 {
 
-    transcode::libav::closeCodecContext(&(codecs[0]));
-    transcode::libav::closeCodecContext(&(codecs[1]));
+    transcode::libav::closeCodecContext(&(decodeCodecs[0]));
+    transcode::libav::closeCodecContext(&(decodeCodecs[1]));
 }
 
 /**
@@ -619,7 +618,7 @@ BOOST_AUTO_TEST_CASE( test_close_codec_for_null_codec )
 BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_avi_file, test::AVIAudioPacketFixture )
 {
 
-    std::vector<AVFrame*> frames = transcode::libav::decodeAudioPacket(codecs[packet->stream_index], packet);
+    std::vector<AVFrame*> frames = transcode::libav::decodeAudioPacket(decodeCodecs[packet->stream_index], packet);
 
     BOOST_REQUIRE_EQUAL( 1, frames.size() );
 }
@@ -630,7 +629,7 @@ BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_avi_file, test::AVIAudioPa
 BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_mkv_file, test::MKVAudioPacketFixture )
 {
 
-    std::vector<AVFrame*> frames = transcode::libav::decodeAudioPacket(codecs[packet->stream_index], packet);
+    std::vector<AVFrame*> frames = transcode::libav::decodeAudioPacket(decodeCodecs[packet->stream_index], packet);
 
     BOOST_REQUIRE_EQUAL( 1, frames.size() );
 }
@@ -646,7 +645,7 @@ BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_ogv_file, test::OGVAudioPa
     // Try a few times to get a valid vorbis frame because the first few packets aren't always valid.
     for (int i = 0; i < 5; i++) {
 
-        frames = transcode::libav::decodeAudioPacket(codecs[packet->stream_index], packet);
+        frames = transcode::libav::decodeAudioPacket(decodeCodecs[packet->stream_index], packet);
 
         // If the first audio packet doesn't decode read in the next one audio packet.
         if (0 < frames.size()) break;
@@ -665,7 +664,7 @@ BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_ogv_file, test::OGVAudioPa
 BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_mp4_file, test::MP4AudioPacketFixture )
 {
 
-    std::vector<AVFrame*> frames = transcode::libav::decodeAudioPacket(codecs[packet->stream_index], packet);
+    std::vector<AVFrame*> frames = transcode::libav::decodeAudioPacket(decodeCodecs[packet->stream_index], packet);
 
     BOOST_REQUIRE_EQUAL( 1, frames.size() );
 }
@@ -676,7 +675,7 @@ BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_mp4_file, test::MP4AudioPa
 BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_for_flv_file, test::FLVAudioPacketFixture )
 {
 
-    std::vector<AVFrame*> frames = transcode::libav::decodeAudioPacket(codecs[packet->stream_index], packet);
+    std::vector<AVFrame*> frames = transcode::libav::decodeAudioPacket(decodeCodecs[packet->stream_index], packet);
 
     BOOST_REQUIRE_EQUAL( 1, frames.size() );
 }
@@ -689,7 +688,7 @@ BOOST_FIXTURE_TEST_CASE( test_audio_decode_video_packet, test::AVIVideoPacketFix
 
     AVPacket *audioPacket = readPacket(formatContext, AVMEDIA_TYPE_AUDIO);
 
-    AVCodecContext *codec = codecs[audioPacket->stream_index];
+    AVCodecContext *codec = decodeCodecs[audioPacket->stream_index];
 
     av_free_packet(audioPacket);
 
@@ -713,7 +712,7 @@ BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_with_null_codec, test::AVIAudi
 BOOST_FIXTURE_TEST_CASE( test_decode_audio_packet_with_null_packet, test::AVIAudioPacketFixture )
 {
 
-    BOOST_REQUIRE_THROW( transcode::libav::decodeAudioPacket(codecs[packet->stream_index], NULL),
+    BOOST_REQUIRE_THROW( transcode::libav::decodeAudioPacket(decodeCodecs[packet->stream_index], NULL),
             transcode::IllegalArgumentException );
 }
 
@@ -732,7 +731,8 @@ BOOST_AUTO_TEST_CASE( test_decode_audio_packet_with_null_codec_and_packet )
  */
 BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_avi_file, test::AVIAudioFrameFixture )
 {
-    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(codecs[packet->stream_index], NULL);
+
+    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], frames[0]);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -743,7 +743,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_avi_file, test::AVIAudioFra
 BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_mkv_file, test::MKVAudioFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(codecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], frames[0]);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -754,7 +754,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_mkv_file, test::MKVAudioFra
 BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_ogv_file, test::OGVAudioFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(codecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], frames[0]);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -765,7 +765,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_ogv_file, test::OGVAudioFra
 BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_mp4_file, test::MP4AudioFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(codecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], frames[0]);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -776,7 +776,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_mp4_file, test::MP4AudioFra
 BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_flv_file, test::FLVAudioFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(codecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], frames[0]);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -789,7 +789,7 @@ BOOST_FIXTURE_TEST_CASE( test_audio_encode_video_frame, test::AVIVideoFrameFixtu
 
     AVPacket *audioPacket = readPacket(formatContext, AVMEDIA_TYPE_AUDIO);
 
-    AVCodecContext *codec = codecs[audioPacket->stream_index];
+    AVCodecContext *codec = decodeCodecs[audioPacket->stream_index];
 
     av_free_packet(audioPacket);
 
@@ -813,7 +813,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_with_null_codec, test::AVIAudio
 BOOST_FIXTURE_TEST_CASE( test_decode_audio_frame_with_null_packet, test::AVIAudioFrameFixture )
 {
 
-    BOOST_REQUIRE_THROW( transcode::libav::encodeAudioFrame(codecs[packet->stream_index], NULL),
+    BOOST_REQUIRE_THROW( transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], NULL),
             transcode::IllegalArgumentException );
 }
 
@@ -923,7 +923,7 @@ BOOST_FIXTURE_TEST_CASE( test_video_decode_audio_packet, test::AVIAudioPacketFix
 
     AVPacket *videoPacket = readPacket(formatContext, AVMEDIA_TYPE_VIDEO);
 
-    AVCodecContext *codec = codecs[videoPacket->stream_index];
+    AVCodecContext *codec = decodeCodecs[videoPacket->stream_index];
 
     av_free_packet(videoPacket);
 
@@ -949,7 +949,7 @@ BOOST_FIXTURE_TEST_CASE( test_decode_video_packet_with_null_codec, test::AVIVide
 BOOST_FIXTURE_TEST_CASE( test_decode_video_packet_with_null_packet, test::AVIVideoPacketFixture )
 {
 
-    BOOST_REQUIRE_THROW( transcode::libav::decodeVideoPacket(codecs[packet->stream_index], NULL),
+    BOOST_REQUIRE_THROW( transcode::libav::decodeVideoPacket(decodeCodecs[packet->stream_index], NULL),
             transcode::IllegalArgumentException );
 }
 
@@ -963,15 +963,13 @@ BOOST_AUTO_TEST_CASE( test_decode_video_packet_with_null_codec_and_packet )
             transcode::IllegalArgumentException );
 }
 
-
-
-
 /**
  * Test encode video frame for an avi file.
  */
 BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_avi_file, test::AVIVideoFrameFixture )
 {
-    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(codecs[packet->stream_index], NULL);
+
+    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(decodeCodecs[packet->stream_index], frames[0]);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -982,7 +980,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_avi_file, test::AVIVideoFra
 BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_mkv_file, test::MKVVideoFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(codecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(decodeCodecs[packet->stream_index], frames[0]);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -993,7 +991,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_mkv_file, test::MKVVideoFra
 BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_ogv_file, test::OGVVideoFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(codecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(decodeCodecs[packet->stream_index], frames[0]);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -1004,7 +1002,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_ogv_file, test::OGVVideoFra
 BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_mp4_file, test::MP4VideoFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(codecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(decodeCodecs[packet->stream_index], frames[0]);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -1015,7 +1013,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_mp4_file, test::MP4VideoFra
 BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_flv_file, test::FLVVideoFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(codecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = transcode::libav::encodeVideoFrame(decodeCodecs[packet->stream_index], frames[0]);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -1028,7 +1026,7 @@ BOOST_FIXTURE_TEST_CASE( test_video_encode_audio_frame, test::AVIAudioFrameFixtu
 
     AVPacket *audioPacket = readPacket(formatContext, AVMEDIA_TYPE_VIDEO);
 
-    AVCodecContext *codec = codecs[audioPacket->stream_index];
+    AVCodecContext *codec = decodeCodecs[audioPacket->stream_index];
 
     av_free_packet(audioPacket);
 
@@ -1052,7 +1050,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_with_null_codec, test::AVIVideo
 BOOST_FIXTURE_TEST_CASE( test_decode_video_frame_with_null_packet, test::AVIVideoFrameFixture )
 {
 
-    BOOST_REQUIRE_THROW( transcode::libav::encodeVideoFrame(codecs[packet->stream_index], NULL),
+    BOOST_REQUIRE_THROW( transcode::libav::encodeVideoFrame(decodeCodecs[packet->stream_index], NULL),
             transcode::IllegalArgumentException );
 }
 
