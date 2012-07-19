@@ -97,7 +97,7 @@ LibavSingleton::LibavSingleton() {
     av_register_all();
 
     // Set the log level to fatal to stop any warnings.
-    av_log_set_level(AV_LOG_FATAL);
+    av_log_set_level(AV_LOG_INFO);
 }
 
 string LibavSingleton::errorMessage(const int& errorCode) const {
@@ -363,6 +363,46 @@ template<typename T> T decodePacketTemplate(AVCodecContext *codecContext, const 
     return decodeCallback(codecContext, &packetCopy);
 }
 
+static AVPacket* encodeFrameWrapper(AVCodecContext *codecContext, const AVFrame *frame,
+        std::tr1::function<int(AVCodecContext *codecContext, AVPacket *packet,
+                const AVFrame *frame, int *packetEncoded)> encodeCallback) {
+
+    if (NULL == codecContext) {
+
+        throw IllegalArgumentException("The codec context for encoding cannot be null.");
+    }
+
+    if (NULL == frame) {
+
+        throw IllegalArgumentException("The frame for encoding cannot be null.");
+    }
+
+    AVPacket *packet = new AVPacket();
+
+    packet->size = 0;
+    packet->data = NULL;
+
+    av_init_packet(packet);
+
+    int packetEncoded = 0;
+
+    int result = encodeCallback(codecContext, packet, frame, &packetEncoded);
+
+    if (AVERROR_INVALIDDATA == result) {
+
+        throw InvalidPacketDataException(errorMessage(result));
+    }
+
+    if (0 > result) {
+
+        throw PacketDecodeException(errorMessage(result));
+    }
+
+    if (0 != packetEncoded) return packet;
+
+    return NULL;
+}
+
 /**
  * A callback function that decodes an audio packet. This should be supplied
  * to the <code>decodePacketTemplate</code> template.
@@ -439,6 +479,18 @@ static vector<AVFrame*> decodeAudioPacketCallback(AVCodecContext *codecContext,
     return frames;
 }
 
+static int encodeAudioFrameCallback(AVCodecContext *codecContext, AVPacket *packet,
+                const AVFrame *frame, int *packetEncoded) {
+
+    if (AVMEDIA_TYPE_AUDIO != findCodecType(codecContext)) {
+
+        throw IllegalArgumentException(
+                "The supplied codec context for encoding audio must have media type AVMEDIA_TYPE_AUDIO.");
+    }
+
+    return avcodec_encode_audio2(codecContext, packet, frame, packetEncoded);
+}
+
 /**
  * A callback function that decodes a video packet. This should be supplied
  * to the <code>decodePacketTemplate</code> template.
@@ -492,7 +544,7 @@ vector<AVFrame*> LibavSingleton::decodeAudioPacket(
 AVPacket* LibavSingleton::encodeAudioFrame(AVCodecContext *codecContext,
         const AVFrame *frame) const {
 
-    return NULL;
+    return encodeFrameWrapper(codecContext, frame, encodeAudioFrameCallback);
 }
 
 AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
