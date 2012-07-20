@@ -11,6 +11,7 @@
 extern "C" {
 #include "libavformat/avformat.h"
 #include "libavutil/avutil.h"
+#include "libavutil/audioconvert.h"
 }
 
 #include <util_test.hpp>
@@ -43,7 +44,7 @@ struct LibAvRegisterable {
         avcodec_register_all();
         av_register_all();
 
-        av_log_set_level(AV_LOG_INFO);
+        av_log_set_level(AV_LOG_FATAL);
     }
 };
 
@@ -211,6 +212,9 @@ struct OpenedCodecContextFixture: public CodecContextFixture {
                 if (CODEC_ID_AC3 == decodeCodecContext->codec_id
                         && AV_SAMPLE_FMT_S16 == decodeCodecContext->sample_fmt) {
                     encoder = avcodec_find_encoder_by_name("ac3_fixed");
+                } else if (CODEC_ID_AAC == decodeCodecContext->codec_id
+                        && AV_SAMPLE_FMT_S16 == decodeCodecContext->sample_fmt) {
+                    encoder = avcodec_find_encoder_by_name("libfaac");
                 } else {
                     encoder = avcodec_find_encoder(decodeCodecContext->codec_id);
                 }
@@ -236,6 +240,12 @@ struct OpenedCodecContextFixture: public CodecContextFixture {
                 if (CODEC_ID_FLV1 == encodeCodecContext->codec_id) {
                     encodeCodecContext->time_base.num = 1;
                     encodeCodecContext->time_base.den = 1000;
+                }
+
+                if (CODEC_ID_VORBIS == encodeCodecContext->codec_id) {
+                    encodeCodecContext->channels = 2;
+                    encodeCodecContext->channel_layout =
+                            av_get_default_channel_layout(encodeCodecContext->channels);
                 }
 
                 if (NULL == encodeCodecContext || NULL == encodeCodecs[i]) {
