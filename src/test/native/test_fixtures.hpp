@@ -20,6 +20,9 @@ extern "C" {
 #include <string>
 #include <vector>
 
+#include <tr1/functional>
+
+
 namespace test {
 
 std::string error(int error) {
@@ -428,15 +431,38 @@ struct FrameFixture: public PacketFixture {
     AVMediaType type;
     std::vector<AVFrame*> frames;
 
+    AVPacket* retryEncodeFrame(AVFormatContext *fc, AVCodecContext *codec,
+            std::tr1::function<AVPacket*(AVCodecContext *codecContext, AVFrame *frame)> encodeCallback) {
+
+        AVPacket *packet = NULL;
+
+        while (NULL == packet) {
+
+            for (int i = 0; i < frames.size(); i++) {
+
+                packet = encodeCallback(codec, frames[i]);
+
+                if (NULL != packet)
+                    return packet;
+            }
+
+            frames = retryDecodePacket(fc, NULL, type);
+        }
+
+        return packet;
+    }
+
     std::vector<AVFrame*> retryDecodePacket(AVFormatContext *fc, AVPacket *packet, AVMediaType type) {
 
-        std::vector<AVFrame*> frames = decodePacket(fc, packet);
+        std::vector<AVFrame*> frames;
+
+        if (NULL != packet) frames = decodePacket(fc, packet);
 
         // If we haven't been able successfully decode an audio frame on the
         // first go keep trying till we do.
         while (1 > frames.size()) {
 
-            av_free_packet(packet);
+            if (NULL != packet) av_free_packet(packet);
 
             packet = readPacket(fc, type);
 
@@ -458,6 +484,8 @@ struct FrameFixture: public PacketFixture {
 
         packetCopy.data = buffer;
         packetCopy.size = packet->size;
+        packetCopy.side_data_elems = packet->side_data_elems;
+        packetCopy.side_data = packet->side_data;
 
         AVCodecContext *codec = fc->streams[packet->stream_index]->codec;
 
