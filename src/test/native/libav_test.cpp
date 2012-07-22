@@ -14,6 +14,41 @@
 
 #include <iostream>
 
+
+/**
+ * Keep trying to decode a video frame till success or the end of the file is reached.
+ * This is done because the first few packets of most video codecs cannot be decoded
+ * into a valid frame.
+ *
+ * @param formatContext - the format context to decode the video frame from.
+ * @param packet - the initial packet to try and decode, if this packet fails each
+ *      consecutive packet will be tried until a frame is successfully decoded. This
+ *      packet is also used to select the codec that will be used for the decoding.
+ */
+static AVFrame* retryVideoFrameDecode(AVFormatContext *formatContext, AVPacket *packet) {
+
+    AVFrame *frame = NULL;
+
+    AVCodecContext *codec = formatContext->streams[packet->stream_index]->codec;
+
+    // Keep reading packets till we successfully decode a video frame or there are no more
+    // packets left to read from the media file.
+    while (NULL != packet) {
+
+        frame = transcode::libav::decodeVideoPacket(codec, packet);
+
+        // If we get a frame return it.
+        if (NULL != frame) return frame;
+
+        av_free_packet(packet);
+
+        packet = test::PacketFixture::readPacket(formatContext, AVMEDIA_TYPE_VIDEO);
+    }
+
+    return frame;
+}
+
+
 /**
  * Test error message success.
  */
@@ -544,7 +579,7 @@ BOOST_AUTO_TEST_CASE( test_open_codec_for_null_codec )
  */
 BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_avi_file, test::AVIOpenedCodecContextFixture )
 {
-std::cout << "In Test" << std::endl;
+
     transcode::libav::closeCodecContext(&(decodeCodecs[0]));
     transcode::libav::closeCodecContext(&(decodeCodecs[1]));
 }
@@ -732,7 +767,7 @@ BOOST_AUTO_TEST_CASE( test_decode_audio_packet_with_null_codec_and_packet )
 BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_avi_file, test::AVIAudioFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = retryEncodeFrame(formatContext, encodeCodecs[packet->stream_index], transcode::libav::encodeAudioFrame);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -743,7 +778,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_avi_file, test::AVIAudioFra
 BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_mkv_file, test::MKVAudioFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = retryEncodeFrame(formatContext, encodeCodecs[packet->stream_index], transcode::libav::encodeAudioFrame);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -754,7 +789,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_mkv_file, test::MKVAudioFra
 BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_ogv_file, test::OGVAudioFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = retryEncodeFrame(formatContext, encodeCodecs[packet->stream_index], transcode::libav::encodeAudioFrame);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -765,7 +800,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_ogv_file, test::OGVAudioFra
 BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_mp4_file, test::MP4AudioFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = retryEncodeFrame(formatContext, encodeCodecs[packet->stream_index], transcode::libav::encodeAudioFrame);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -776,7 +811,7 @@ BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_mp4_file, test::MP4AudioFra
 BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_for_flv_file, test::FLVAudioFrameFixture )
 {
 
-    AVPacket *audioPacket = transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], frames[0]);
+    AVPacket *audioPacket = retryEncodeFrame(formatContext, encodeCodecs[packet->stream_index], transcode::libav::encodeAudioFrame);
 
     BOOST_REQUIRE( NULL != audioPacket );
 }
@@ -789,12 +824,14 @@ BOOST_FIXTURE_TEST_CASE( test_audio_encode_video_frame, test::AVIVideoFrameFixtu
 
     AVPacket *audioPacket = readPacket(formatContext, AVMEDIA_TYPE_AUDIO);
 
-    AVCodecContext *codec = decodeCodecs[audioPacket->stream_index];
+    AVCodecContext *codec = encodeCodecs[audioPacket->stream_index];
 
     av_free_packet(audioPacket);
 
-    BOOST_REQUIRE_THROW( transcode::libav::encodeAudioFrame(codec, frames[0]),
-                transcode::libav::InvalidPacketDataException );
+    // Unfortunately it seems perfectly fine to try and encode a video frame with an audio codec.
+    audioPacket = transcode::libav::encodeAudioFrame(codec, frames[0]);
+
+    av_free_packet(audioPacket);
 }
 
 /**
@@ -827,38 +864,7 @@ BOOST_AUTO_TEST_CASE( test_decode_audio_frame_with_null_codec_and_packet )
             transcode::IllegalArgumentException );
 }
 
-/**
- * Keep trying to decode a video frame till success or the end of the file is reached.
- * This is done because the first few packets of most video codecs cannot be decoded
- * into a valid frame.
- *
- * @param formatContext - the format context to decode the video frame from.
- * @param packet - the initial packet to try and decode, if this packet fails each
- *      consecutive packet will be tried until a frame is successfully decoded. This
- *      packet is also used to select the codec that will be used for the decoding.
- */
-static AVFrame* retryVideoFrameDecode(AVFormatContext *formatContext, AVPacket *packet) {
 
-    AVFrame *frame = NULL;
-
-    AVCodecContext *codec = formatContext->streams[packet->stream_index]->codec;
-
-    // Keep reading packets till we successfully decode a video frame or there are no more
-    // packets left to read from the media file.
-    while (NULL != packet) {
-
-        frame = transcode::libav::decodeVideoPacket(codec, packet);
-
-        // If we get a frame return it.
-        if (NULL != frame) return frame;
-
-        av_free_packet(packet);
-
-        packet = test::PacketFixture::readPacket(formatContext, AVMEDIA_TYPE_VIDEO);
-    }
-
-    return frame;
-}
 
 /**
  * Test decode video packet for an avi file.
