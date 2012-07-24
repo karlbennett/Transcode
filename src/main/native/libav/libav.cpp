@@ -533,6 +533,18 @@ static AVFrame* decodeVideoPacketCallBack(AVCodecContext *codecContext,
     return NULL;
 }
 
+static int encodeVideoFrameCallback(AVCodecContext *codecContext, AVPacket *packet,
+                const AVFrame *frame, int *packetEncoded) {
+
+    if (AVMEDIA_TYPE_VIDEO != findCodecType(codecContext)) {
+
+        throw IllegalArgumentException(
+                "The supplied codec context for encoding video must have media type AVMEDIA_TYPE_VIDEO.");
+    }
+
+    return avcodec_encode_video2(codecContext, packet, frame, packetEncoded);
+}
+
 vector<AVFrame*> LibavSingleton::decodeAudioPacket(
         AVCodecContext *codecContext,
         const AVPacket *packet) const {
@@ -557,7 +569,7 @@ AVFrame* LibavSingleton::decodeVideoPacket(AVCodecContext *codecContext,
 AVPacket* LibavSingleton::encodeVideoFrame(AVCodecContext *codecContext,
         const AVFrame *frame) const {
 
-    return NULL;
+    return encodeFrameWrapper(codecContext, frame, encodeVideoFrameCallback);
 }
 
 
