@@ -633,6 +633,11 @@ AVCodecContext* openDecodeCodecContext(AVCodecContext *codecContext) {
     return LibavSingleton::getInstance().openDecodeCodecContext(codecContext);
 }
 
+AVCodecContext* openEncodeCodecContext(AVCodecContext *codecContext) {
+
+    return LibavSingleton::getInstance().openEncodeCodecContext(codecContext);
+}
+
 void closeCodecContext(AVCodecContext **codecContext) {
 
     LibavSingleton::getInstance().closeCodecContext(codecContext);
