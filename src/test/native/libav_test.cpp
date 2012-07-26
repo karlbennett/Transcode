@@ -486,8 +486,8 @@ BOOST_FIXTURE_TEST_CASE( test_find_type_for_null_packet, test::AVIFormatContextF
 BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_avi_file, test::AVICodecContextFixture )
 {
 
-    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[0]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[1]) );
 }
 
 /**
@@ -496,8 +496,8 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_avi_file, test::AVICodecContextFix
 BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mkv_file, test::MKVCodecContextFixture )
 {
 
-    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[0]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[1]) );
 }
 
 /**
@@ -506,9 +506,9 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mkv_file, test::MKVCodecContextFix
 BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_ogv_file, test::OGVCodecContextFixture )
 {
 // TODO: Subtitle codecs not yet supported.
-//    BOOST_REQUIRE( transcode::libav::openCodecContext(codecs[0]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[1]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[2]) );
+//    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(codecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[2]) );
 }
 
 /**
@@ -517,8 +517,8 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_ogv_file, test::OGVCodecContextFix
 BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mp4_file, test::MP4CodecContextFixture )
 {
 
-    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[0]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[1]) );
 }
 
 /**
@@ -527,8 +527,8 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mp4_file, test::MP4CodecContextFix
 BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_flv_file, test::FLVCodecContextFixture )
 {
 
-    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[0]) );
-    BOOST_REQUIRE( transcode::libav::openCodecContext(decodeCodecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[1]) );
 }
 
 /**
@@ -537,7 +537,7 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_flv_file, test::FLVCodecContextFix
 BOOST_AUTO_TEST_CASE( test_open_codec_for_null_codec )
 {
 
-    BOOST_REQUIRE_THROW( transcode::libav::openCodecContext(NULL),
+    BOOST_REQUIRE_THROW( transcode::libav::openDecodeCodecContext(NULL),
             transcode::IllegalArgumentException );
 }
 

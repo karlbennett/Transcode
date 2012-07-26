@@ -306,7 +306,7 @@ public:
     AVMediaType findPacketType(const AVFormatContext *formatContext,
             const AVPacket *packet) const;
 
-    AVCodecContext* openCodecContext(AVCodecContext *codecContext) const;
+    AVCodecContext* openDecodeCodecContext(AVCodecContext *codecContext) const;
 
     void closeCodecContext(AVCodecContext **codecContext) const;
 
@@ -512,7 +512,7 @@ AVMediaType LibavSingleton::findPacketType(const AVFormatContext *formatContext,
     return findStreamType(formatContext->streams[packetIndex]);
 }
 
-AVCodecContext* LibavSingleton::openCodecContext(
+AVCodecContext* LibavSingleton::openDecodeCodecContext(
         AVCodecContext *codecContext) const {
 
     if (NULL == codecContext) {
@@ -620,9 +620,9 @@ AVMediaType findPacketType(const AVFormatContext *formatContext,
     return LibavSingleton::getInstance().findPacketType(formatContext, packet);
 }
 
-AVCodecContext* openCodecContext(AVCodecContext *codecContext) {
+AVCodecContext* openDecodeCodecContext(AVCodecContext *codecContext) {
 
-    return LibavSingleton::getInstance().openCodecContext(codecContext);
+    return LibavSingleton::getInstance().openDecodeCodecContext(codecContext);
 }
 
 void closeCodecContext(AVCodecContext **codecContext) {

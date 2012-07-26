@@ -113,7 +113,7 @@ AVMediaType findPacketType(const AVFormatContext *formatContext,
  * @param codecContext - the codec context to open.
  * @return the newly opened codec context.
  */
-AVCodecContext* openCodecContext(AVCodecContext *codecContext);
+AVCodecContext* openDecodeCodecContext(AVCodecContext *codecContext);
 
 /**
  * Close the supplied codec context.
