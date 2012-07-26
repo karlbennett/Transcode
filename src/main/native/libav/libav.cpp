@@ -11,10 +11,11 @@ extern "C" {
 #include "libavutil/error.h"
 }
 
-#include <libav/libav.hpp>
 #include <error.hpp>
-#include <sstream>
+#include <libav/libav.hpp>
+#include <libav/libaverror.hpp>
 
+#include <sstream>
 #include <iostream>
 
 #include <tr1/functional>

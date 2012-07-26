@@ -11,6 +11,7 @@
 #include <util_test.hpp>
 
 #include <libav/libav.hpp>
+#include <libav/libaverror.hpp>
 
 #include <iostream>
 
