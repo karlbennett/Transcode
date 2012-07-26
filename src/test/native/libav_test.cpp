@@ -542,6 +542,67 @@ BOOST_AUTO_TEST_CASE( test_open_decode_codec_for_null_codec )
 }
 
 /**
+ * Test open encode codecs for an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_open_encode_codecs_for_avi_file, test::AVICodecContextFixture )
+{
+
+    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(decodeCodecs[1]) );
+}
+
+/**
+ * Test open encode codecs for an mkv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_open_encode_codecs_for_mkv_file, test::MKVCodecContextFixture )
+{
+
+    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(decodeCodecs[1]) );
+}
+
+/**
+ * Test open encode codecs for an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_open_encode_codecs_for_ogv_file, test::OGVCodecContextFixture )
+{
+// TODO: Subtitle codecs not yet supported.
+//    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(codecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(decodeCodecs[1]) );
+    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(decodeCodecs[2]) );
+}
+
+/**
+ * Test open encode codecs for an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_open_encode_codecs_for_mp4_file, test::MP4CodecContextFixture )
+{
+
+    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(decodeCodecs[1]) );
+}
+
+/**
+ * Test open encode codecs for an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_open_encode_codecs_for_flv_file, test::FLVCodecContextFixture )
+{
+
+    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(decodeCodecs[0]) );
+    BOOST_REQUIRE( transcode::libav::openEncodeCodecContext(decodeCodecs[1]) );
+}
+
+/**
+ * Test open encode codec for a null codec.
+ */
+BOOST_AUTO_TEST_CASE( test_open_encode_codec_for_null_codec )
+{
+
+    BOOST_REQUIRE_THROW( transcode::libav::openEncodeCodecContext(NULL),
+            transcode::IllegalArgumentException );
+}
+
+/**
  * Test close codecs for an avi file.
  */
 BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_avi_file, test::AVIOpenedCodecContextFixture )
