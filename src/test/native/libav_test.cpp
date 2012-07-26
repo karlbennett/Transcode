@@ -481,9 +481,9 @@ BOOST_FIXTURE_TEST_CASE( test_find_type_for_null_packet, test::AVIFormatContextF
 }
 
 /**
- * Test open codecs for an avi file.
+ * Test open decode codecs for an avi file.
  */
-BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_avi_file, test::AVICodecContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_open_decode_codecs_for_avi_file, test::AVICodecContextFixture )
 {
 
     BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[0]) );
@@ -491,9 +491,9 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_avi_file, test::AVICodecContextFix
 }
 
 /**
- * Test open codecs for an mkv file.
+ * Test open decode codecs for an mkv file.
  */
-BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mkv_file, test::MKVCodecContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_open_decode_codecs_for_mkv_file, test::MKVCodecContextFixture )
 {
 
     BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[0]) );
@@ -501,9 +501,9 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mkv_file, test::MKVCodecContextFix
 }
 
 /**
- * Test open codecs for an ogv file.
+ * Test open decode codecs for an ogv file.
  */
-BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_ogv_file, test::OGVCodecContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_open_decode_codecs_for_ogv_file, test::OGVCodecContextFixture )
 {
 // TODO: Subtitle codecs not yet supported.
 //    BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(codecs[0]) );
@@ -512,9 +512,9 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_ogv_file, test::OGVCodecContextFix
 }
 
 /**
- * Test open codecs for an mp4 file.
+ * Test open decode codecs for an mp4 file.
  */
-BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mp4_file, test::MP4CodecContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_open_decode_codecs_for_mp4_file, test::MP4CodecContextFixture )
 {
 
     BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[0]) );
@@ -522,9 +522,9 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_mp4_file, test::MP4CodecContextFix
 }
 
 /**
- * Test open codecs for an flv file.
+ * Test open decode codecs for an flv file.
  */
-BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_flv_file, test::FLVCodecContextFixture )
+BOOST_FIXTURE_TEST_CASE( test_open_decode_codecs_for_flv_file, test::FLVCodecContextFixture )
 {
 
     BOOST_REQUIRE( transcode::libav::openDecodeCodecContext(decodeCodecs[0]) );
@@ -532,9 +532,9 @@ BOOST_FIXTURE_TEST_CASE( test_open_codecs_for_flv_file, test::FLVCodecContextFix
 }
 
 /**
- * Test open codec for a null codec.
+ * Test open decode codec for a null codec.
  */
-BOOST_AUTO_TEST_CASE( test_open_codec_for_null_codec )
+BOOST_AUTO_TEST_CASE( test_open_decode_codec_for_null_codec )
 {
 
     BOOST_REQUIRE_THROW( transcode::libav::openDecodeCodecContext(NULL),
@@ -549,6 +549,8 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_avi_file, test::AVIOpenedCodecCon
 
     transcode::libav::closeCodecContext(&(decodeCodecs[0]));
     transcode::libav::closeCodecContext(&(decodeCodecs[1]));
+    transcode::libav::closeCodecContext(&(encodeCodecs[0]));
+    transcode::libav::closeCodecContext(&(encodeCodecs[1]));
 }
 
 /**
@@ -558,6 +560,8 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mkv_file, test::MKVOpenedCodecCon
 {
     transcode::libav::closeCodecContext(&(decodeCodecs[0]));
     transcode::libav::closeCodecContext(&(decodeCodecs[1]));
+    transcode::libav::closeCodecContext(&(encodeCodecs[0]));
+    transcode::libav::closeCodecContext(&(encodeCodecs[1]));
 }
 
 /**
@@ -569,6 +573,10 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_ogv_file, test::OGVOpenedCodecCon
     transcode::libav::closeCodecContext(&(decodeCodecs[0]));
     transcode::libav::closeCodecContext(&(decodeCodecs[1]));
     transcode::libav::closeCodecContext(&(decodeCodecs[2]));
+    // TODO: Subtitle streams are not yet supported.
+    //transcode::libav::closeCodecContext(&(decodeCodecs[0]));
+    transcode::libav::closeCodecContext(&(encodeCodecs[1]));
+    transcode::libav::closeCodecContext(&(encodeCodecs[2]));
 }
 
 /**
@@ -579,6 +587,8 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_mp4_file, test::MP4OpenedCodecCon
 
     transcode::libav::closeCodecContext(&(decodeCodecs[0]));
     transcode::libav::closeCodecContext(&(decodeCodecs[1]));
+    transcode::libav::closeCodecContext(&(encodeCodecs[0]));
+    transcode::libav::closeCodecContext(&(encodeCodecs[1]));
 }
 
 /**
@@ -589,6 +599,8 @@ BOOST_FIXTURE_TEST_CASE( test_close_codecs_for_flv_file, test::FLVOpenedCodecCon
 
     transcode::libav::closeCodecContext(&(decodeCodecs[0]));
     transcode::libav::closeCodecContext(&(decodeCodecs[1]));
+    transcode::libav::closeCodecContext(&(encodeCodecs[0]));
+    transcode::libav::closeCodecContext(&(encodeCodecs[1]));
 }
 
 /**
