@@ -41,6 +41,36 @@ const int BUFFER_SIZE = AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_S
 namespace wrappers {
 
 /**
+ * Wrap the opening of a codec context to allow the choice between an encode or
+ * decode codec.
+ *
+ * @param codecContext - the codec context that is to be opened.
+ * @param codeCallback - the call back function used to select the encoder or
+ *      decoder to be used by the codec context.
+ * @return the opened encode/decode codec context.
+ */
+static AVCodecContext* openCodecContextWrapper(AVCodecContext *codecContext,
+        std::tr1::function<AVCodec*(CodecID codecId)> codecCallback) {
+
+    if (NULL == codecContext) {
+
+        throw IllegalArgumentException(
+                "Cannot open a null AVCodectContext.");
+    }
+
+    // Find the codec for the provided codec context.
+    AVCodec *codec = codecCallback(codecContext->codec_id);
+
+    if (NULL == codec) throw CodecException("Could not find a supported codec.");
+
+    int codecOpenResult = avcodec_open2(codecContext, codec, NULL);
+
+    if (0 == codecOpenResult) return codecContext;
+
+    throw CodecException(errorMessage(codecOpenResult));
+}
+
+/**
  * Template that wraps the supplied callback with default error checking and makes an
  * internal copy of the supplied packet that is then passed into the callback.
  *
@@ -517,28 +547,13 @@ AVMediaType LibavSingleton::findPacketType(const AVFormatContext *formatContext,
 AVCodecContext* LibavSingleton::openDecodeCodecContext(
         AVCodecContext *codecContext) const {
 
-    if (NULL == codecContext) {
-
-        throw IllegalArgumentException(
-                "The supplied codec context for openCodecContext(AVCodecContext*) cannot be null.");
-    }
-
-    // Find the codec for the provided codec context.
-    AVCodec *codec = avcodec_find_decoder(codecContext->codec_id);
-
-    if (NULL == codec) throw CodecException("Could not find a supported codec.");
-
-    int codecOpenResult = avcodec_open2(codecContext, codec, NULL);
-
-    if (0 == codecOpenResult) return codecContext;
-
-    throw CodecException(errorMessage(codecOpenResult));
+    return wrappers::openCodecContextWrapper(codecContext, avcodec_find_decoder);
 }
 
 AVCodecContext* LibavSingleton::openEncodeCodecContext(
         AVCodecContext *codecContext) const {
 
-    return NULL;
+    return wrappers::openCodecContextWrapper(codecContext, avcodec_find_encoder);
 }
 
 void LibavSingleton::closeCodecContext(AVCodecContext **codecContext) const {
