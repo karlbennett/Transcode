@@ -308,6 +308,8 @@ public:
 
     AVCodecContext* openDecodeCodecContext(AVCodecContext *codecContext) const;
 
+    AVCodecContext* openEncodeCodecContext(AVCodecContext *codecContext) const;
+
     void closeCodecContext(AVCodecContext **codecContext) const;
 
     vector<AVFrame*> decodeAudioPacket(AVCodecContext *codecContext,
@@ -533,6 +535,12 @@ AVCodecContext* LibavSingleton::openDecodeCodecContext(
     throw CodecException(errorMessage(codecOpenResult));
 }
 
+AVCodecContext* LibavSingleton::openEncodeCodecContext(
+        AVCodecContext *codecContext) const {
+
+    return NULL;
+}
+
 void LibavSingleton::closeCodecContext(AVCodecContext **codecContext) const {
 
     if (NULL == codecContext) {
@@ -544,7 +552,7 @@ void LibavSingleton::closeCodecContext(AVCodecContext **codecContext) const {
     if (NULL == *codecContext) {
 
         throw IllegalArgumentException(
-                "The supplied codec context for openCodecContext(AVCodecContext**) cannot be null.");
+                "The supplied codec context for closeCodecContext(AVCodecContext**) cannot be null.");
     }
 
     int codecCloseResult = avcodec_close(*codecContext);

@@ -104,7 +104,7 @@ AVMediaType findPacketType(const AVFormatContext *formatContext,
         const AVPacket *packet);
 
 /**
- * Open the supplied codec context.
+ * Open the supplied codec context to be used for decoding.
  *
  * Note: This function opens the codec context instance
  * that it was given, it does not create a copy then open
@@ -114,6 +114,18 @@ AVMediaType findPacketType(const AVFormatContext *formatContext,
  * @return the newly opened codec context.
  */
 AVCodecContext* openDecodeCodecContext(AVCodecContext *codecContext);
+
+/**
+ * Open the supplied codec context to be used for encoding.
+ *
+ * Note: This function opens the codec context instance
+ * that it was given, it does not create a copy then open
+ * that.
+ *
+ * @param codecContext - the codec context to open.
+ * @return the newly opened codec context.
+ */
+AVCodecContext* openEncodeCodecContext(AVCodecContext *codecContext);
 
 /**
  * Close the supplied codec context.
