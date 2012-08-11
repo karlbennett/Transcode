@@ -10,6 +10,7 @@
 
 extern "C" {
 #include "libavutil/avutil.h"
+#include "libavcodec/avcodec.h"
 }
 
 #include <string>
@@ -41,6 +42,13 @@ namespace transcode {
  */
 namespace libav {
 
+/**
+ * Get the name of for the codec with the provided ID.
+ *
+ * @param codecId - the CodecID enum for the required codec.
+ * @return the name of the codec.
+ */
+std::string codecName(const CodecID codecId);
 
 /**
  * Return the error message string for the supplied error code.

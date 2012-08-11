@@ -9,16 +9,19 @@ extern "C" {
 #include "libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
 #include "libavutil/error.h"
+#include "libavutil/audioconvert.h"
 }
 
 #include <error.hpp>
 #include <libav/libav.hpp>
 #include <libav/libaverror.hpp>
+#include <util/standard.hpp>
 
 #include <sstream>
 #include <iostream>
 
 #include <tr1/functional>
+#include <map>
 
 using namespace std;
 
@@ -38,6 +41,51 @@ namespace libav {
  */
 const int BUFFER_SIZE = AVCODEC_MAX_AUDIO_FRAME_SIZE + FF_INPUT_BUFFER_PADDING_SIZE;
 
+static std::map<CodecID, std::string> initialiseCodecNameMap() {
+
+    std::map<CodecID, std::string> codecToMimeType;
+
+    // Audio codecs.
+    codecToMimeType[CODEC_ID_AC3] = "AC3";
+    codecToMimeType[CODEC_ID_FLAC] = "FLAC";
+    codecToMimeType[CODEC_ID_AAC] = "AAC";
+    codecToMimeType[CODEC_ID_MP2] = "MP2";
+    codecToMimeType[CODEC_ID_MP3] = "MP3";
+    codecToMimeType[CODEC_ID_VORBIS] = "Vorbis";
+    codecToMimeType[CODEC_ID_WMAV1] = "WMA";
+    codecToMimeType[CODEC_ID_WMAV2] = "WMA";
+    codecToMimeType[CODEC_ID_WMAVOICE] = "WMA";
+    codecToMimeType[CODEC_ID_WMAPRO] = "WMA";
+    codecToMimeType[CODEC_ID_WMALOSSLESS] = "WMA";
+
+    // Video codecs.
+    codecToMimeType[CODEC_ID_MPEG4] = "DIVX";
+    codecToMimeType[CODEC_ID_H264] = "H264";
+    codecToMimeType[CODEC_ID_MPEG1VIDEO] = "MPEG";
+    codecToMimeType[CODEC_ID_MPEG2VIDEO] = "MPEG";
+    codecToMimeType[CODEC_ID_MPEG2VIDEO_XVMC] = "MPEG";
+    codecToMimeType[CODEC_ID_THEORA] = "Theora";
+    codecToMimeType[CODEC_ID_WMV1] = "WMV";
+    codecToMimeType[CODEC_ID_WMV2] = "WMV";
+    codecToMimeType[CODEC_ID_FLV1] = "FLV";
+
+    // Subtitle types.
+    codecToMimeType[CODEC_ID_DVD_SUBTITLE] = "application/dvd";
+    codecToMimeType[CODEC_ID_DVB_SUBTITLE] = "application/dvb";
+    codecToMimeType[CODEC_ID_TEXT] = "text/plain";
+    codecToMimeType[CODEC_ID_XSUB] = "application/x-subrip";
+    codecToMimeType[CODEC_ID_SSA] = "application/ssa";
+    codecToMimeType[CODEC_ID_MOV_TEXT] = "text/plain";
+    codecToMimeType[CODEC_ID_HDMV_PGS_SUBTITLE] = "application/pgs";
+    codecToMimeType[CODEC_ID_DVB_TELETEXT] = "application/dvb";
+    codecToMimeType[CODEC_ID_FLV1] = "video/x-svq";
+
+    return codecToMimeType;
+}
+
+const std::map<CodecID, std::string> CODEC_NAMES =
+        initialiseCodecNameMap();
+
 namespace wrappers {
 
 /**
@@ -50,7 +98,7 @@ namespace wrappers {
  * @return the opened encode/decode codec context.
  */
 static AVCodecContext* openCodecContextWrapper(AVCodecContext *codecContext,
-        std::tr1::function<AVCodec*(CodecID codecId)> codecCallback) {
+        std::tr1::function<AVCodec*(AVCodecContext*)> codecCallback) {
 
     if (NULL == codecContext) {
 
@@ -59,9 +107,9 @@ static AVCodecContext* openCodecContextWrapper(AVCodecContext *codecContext,
     }
 
     // Find the codec for the provided codec context.
-    AVCodec *codec = codecCallback(codecContext->codec_id);
+    AVCodec *codec = codecCallback(codecContext);
 
-    if (NULL == codec) throw CodecException("Could not find a supported codec.");
+    if (NULL == codec) throw CodecException("Could not find a supported codec " + transcode::libav::codecName(codecContext->codec_id));
 
     int codecOpenResult = avcodec_open2(codecContext, codec, NULL);
 
@@ -156,6 +204,66 @@ static AVPacket* encodeFrameWrapper(AVCodecContext *codecContext, const AVFrame 
 }
 
 namespace callbacks {
+
+static AVCodec* openDecoderCallback(AVCodecContext *codecContext) {
+
+    return avcodec_find_decoder(codecContext->codec_id);
+}
+
+static AVCodec* openEncoderCallback(AVCodecContext *codecContext) {
+
+    AVCodec *encoder = NULL;
+
+    // The default libav AC3 and AAC codecs don't support S16 sample
+    // formats so we need to check for this so that we make sure to
+    // select a codec that does support it.
+    if (CODEC_ID_AC3 == codecContext->codec_id
+            && AV_SAMPLE_FMT_S16 == codecContext->sample_fmt) {
+
+        encoder = avcodec_find_encoder_by_name("ac3_fixed");
+
+    } else if (CODEC_ID_AAC == codecContext->codec_id
+            && AV_SAMPLE_FMT_S16 == codecContext->sample_fmt) {
+
+        encoder = avcodec_find_encoder_by_name("libfaac");
+
+    // Otherwise the default codec should work fine.
+    } else {
+
+        encoder = avcodec_find_encoder(codecContext->codec_id);
+    }
+
+    // If we could not find the correct encoder then no further
+    // processing is required.
+    if (NULL == encoder) return NULL;
+
+    // Some encoding codecs require some extra configuration to
+    // get them working.
+
+    // It seems the default libav settings for H264 encoding aren't
+    // quite right so we need to set the following.
+    if (CODEC_ID_H264 == codecContext->codec_id) {
+        codecContext->me_range = 16;
+        codecContext->max_qdiff = 4;
+        codecContext->qmin = 10;
+        codecContext->qmax = 51;
+        codecContext->qcompress = 0.6;
+    }
+
+    // FLV encoding must always have the time base set to 1/1000.
+    if (CODEC_ID_FLV1 == codecContext->codec_id) {
+        codecContext->time_base.num = 1;
+        codecContext->time_base.den = 1000;
+    }
+
+    // At the moment VORBIS encoding only supports two channels.
+    if (CODEC_ID_VORBIS == codecContext->codec_id) {
+        codecContext->channels = 2;
+        codecContext->channel_layout = av_get_default_channel_layout(codecContext->channels);
+    }
+
+    return encoder;
+}
 
 /**
  * A callback function that decodes an audio packet. This should be supplied
@@ -547,13 +655,13 @@ AVMediaType LibavSingleton::findPacketType(const AVFormatContext *formatContext,
 AVCodecContext* LibavSingleton::openDecodeCodecContext(
         AVCodecContext *codecContext) const {
 
-    return wrappers::openCodecContextWrapper(codecContext, avcodec_find_decoder);
+    return wrappers::openCodecContextWrapper(codecContext, callbacks::openDecoderCallback);
 }
 
 AVCodecContext* LibavSingleton::openEncodeCodecContext(
         AVCodecContext *codecContext) const {
 
-    return wrappers::openCodecContextWrapper(codecContext, avcodec_find_encoder);
+    return wrappers::openCodecContextWrapper(codecContext, callbacks::openEncoderCallback);
 }
 
 void LibavSingleton::closeCodecContext(AVCodecContext **codecContext) const {
@@ -606,6 +714,11 @@ AVPacket* LibavSingleton::encodeVideoFrame(AVCodecContext *codecContext,
             callbacks::encodeVideoFrameCallback);
 }
 
+
+std::string codecName(const CodecID codecId) {
+
+    return transcode::util::get(CODEC_NAMES, codecId);
+}
 
 string errorMessage(const int& errorCode) {
 
