@@ -1015,9 +1015,9 @@ BOOST_AUTO_TEST_CASE( test_decode_video_packet_with_null_codec_and_packet )
 BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_avi_file, test::AVIVideoFrameFixture )
 {
 
-    AVPacket *audioPacket = retryEncodeFrameWrapper(transcode::libav::encodeVideoFrame);
+    AVPacket *videoPacket = retryEncodeFrameWrapper(transcode::libav::encodeVideoFrame);
 
-    BOOST_REQUIRE( NULL != audioPacket );
+    BOOST_REQUIRE( NULL != videoPacket );
 }
 
 /**
@@ -1026,9 +1026,9 @@ BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_avi_file, test::AVIVideoFra
 BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_mkv_file, test::MKVVideoFrameFixture )
 {
 
-    AVPacket *audioPacket = retryEncodeFrameWrapper(transcode::libav::encodeVideoFrame);
+    AVPacket *videoPacket = retryEncodeFrameWrapper(transcode::libav::encodeVideoFrame);
 
-    BOOST_REQUIRE( NULL != audioPacket );
+    BOOST_REQUIRE( NULL != videoPacket );
 }
 
 /**
@@ -1037,9 +1037,9 @@ BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_mkv_file, test::MKVVideoFra
 BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_ogv_file, test::OGVVideoFrameFixture )
 {
 
-    AVPacket *audioPacket = retryEncodeFrameWrapper(transcode::libav::encodeVideoFrame);
+    AVPacket *videoPacket = retryEncodeFrameWrapper(transcode::libav::encodeVideoFrame);
 
-    BOOST_REQUIRE( NULL != audioPacket );
+    BOOST_REQUIRE( NULL != videoPacket );
 }
 
 /**
@@ -1048,9 +1048,9 @@ BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_ogv_file, test::OGVVideoFra
 BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_mp4_file, test::MP4VideoFrameFixture )
 {
 
-    AVPacket *audioPacket = retryEncodeFrameWrapper(transcode::libav::encodeVideoFrame);
+    AVPacket *videoPacket = retryEncodeFrameWrapper(transcode::libav::encodeVideoFrame);
 
-    BOOST_REQUIRE( NULL != audioPacket );
+    BOOST_REQUIRE( NULL != videoPacket );
 }
 
 /**
@@ -1059,9 +1059,9 @@ BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_mp4_file, test::MP4VideoFra
 BOOST_FIXTURE_TEST_CASE( test_encode_video_frame_for_flv_file, test::FLVVideoFrameFixture )
 {
 
-    AVPacket *audioPacket = retryEncodeFrameWrapper(transcode::libav::encodeVideoFrame);
+    AVPacket *videoPacket = retryEncodeFrameWrapper(transcode::libav::encodeVideoFrame);
 
-    BOOST_REQUIRE( NULL != audioPacket );
+    BOOST_REQUIRE( NULL != videoPacket );
 }
 
 /**
