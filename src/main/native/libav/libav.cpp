@@ -45,6 +45,8 @@ static std::map<CodecID, std::string> initialiseCodecNameMap() {
 
     std::map<CodecID, std::string> codecToMimeType;
 
+    codecToMimeType[CODEC_ID_NONE] = "NONE";
+
     // Audio codecs.
     codecToMimeType[CODEC_ID_AC3] = "AC3";
     codecToMimeType[CODEC_ID_FLAC] = "FLAC";
