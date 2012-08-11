@@ -885,9 +885,9 @@ BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_with_null_codec, test::AVIAudio
 }
 
 /**
- * Test decode audio frame with null packet.
+ * Test encode audio frame with null packet.
  */
-BOOST_FIXTURE_TEST_CASE( test_decode_audio_frame_with_null_packet, test::AVIAudioFrameFixture )
+BOOST_FIXTURE_TEST_CASE( test_encode_audio_frame_with_null_packet, test::AVIAudioFrameFixture )
 {
 
     BOOST_REQUIRE_THROW( transcode::libav::encodeAudioFrame(decodeCodecs[packet->stream_index], NULL),
@@ -895,16 +895,14 @@ BOOST_FIXTURE_TEST_CASE( test_decode_audio_frame_with_null_packet, test::AVIAudi
 }
 
 /**
- * Test decode audio frame with null codec and packet.
+ * Test encode audio frame with null codec and packet.
  */
-BOOST_AUTO_TEST_CASE( test_decode_audio_frame_with_null_codec_and_packet )
+BOOST_AUTO_TEST_CASE( test_encode_audio_frame_with_null_codec_and_packet )
 {
 
     BOOST_REQUIRE_THROW( transcode::libav::encodeAudioFrame(NULL, NULL),
             transcode::IllegalArgumentException );
 }
-
-
 
 /**
  * Test decode video packet for an avi file.
@@ -1109,5 +1107,69 @@ BOOST_AUTO_TEST_CASE( test_encode_video_frame_with_null_codec_and_packet )
 {
 
     BOOST_REQUIRE_THROW( transcode::libav::encodeVideoFrame(NULL, NULL),
+            transcode::IllegalArgumentException );
+}
+
+/**
+ * Test resample audio frame for an avi file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_resample_audio_frame_for_avi_file, test::AVIAudioFrameFixture )
+{
+
+    BOOST_REQUIRE( NULL != transcode::libav::resampleAudioFrame(avresample_alloc_context(), AV_SAMPLE_FMT_S16, frames[0]));
+}
+
+/**
+ * Test resample audio frame for an mkv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_resample_audio_frame_for_mkv_file, test::MKVAudioFrameFixture )
+{
+
+    BOOST_REQUIRE( NULL != transcode::libav::resampleAudioFrame(avresample_alloc_context(), AV_SAMPLE_FMT_S16, frames[0]));
+}
+
+/**
+ * Test resample audio frame for an ogv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_resample_audio_frame_for_ogv_file, test::OGVAudioFrameFixture )
+{
+
+    BOOST_REQUIRE( NULL != transcode::libav::resampleAudioFrame(avresample_alloc_context(), AV_SAMPLE_FMT_S16, frames[0]));
+}
+
+/**
+ * Test resample audio frame for an mp4 file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_resample_audio_frame_for_mp4_file, test::MP4AudioFrameFixture )
+{
+
+    BOOST_REQUIRE( NULL != transcode::libav::resampleAudioFrame(avresample_alloc_context(), AV_SAMPLE_FMT_S16, frames[0]));
+}
+
+/**
+ * Test resample audio frame for an flv file.
+ */
+BOOST_FIXTURE_TEST_CASE( test_resample_audio_frame_for_flv_file, test::FLVAudioFrameFixture )
+{
+
+    BOOST_REQUIRE( NULL != transcode::libav::resampleAudioFrame(avresample_alloc_context(), AV_SAMPLE_FMT_S16, frames[0]));
+}
+
+/**
+ * Test audio resample video frame.
+ */
+BOOST_FIXTURE_TEST_CASE( test_audio_resample_video_frame, test::AVIVideoFrameFixture )
+{
+
+    transcode::libav::resampleAudioFrame(avresample_alloc_context(), AV_SAMPLE_FMT_S16, frames[0]);
+}
+
+/**
+ * Test resample audio frame with null codec.
+ */
+BOOST_FIXTURE_TEST_CASE( test_resample_audio_frame_with_null_codec, test::AVIAudioFrameFixture )
+{
+
+    BOOST_REQUIRE_THROW( transcode::libav::resampleAudioFrame(NULL, AV_SAMPLE_FMT_S16, frames[0]),
             transcode::IllegalArgumentException );
 }

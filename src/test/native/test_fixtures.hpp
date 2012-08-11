@@ -12,6 +12,7 @@ extern "C" {
 #include "libavformat/avformat.h"
 #include "libavutil/avutil.h"
 #include "libavutil/audioconvert.h"
+#include "libavresample/avresample.h"
 }
 
 #include <util_test.hpp>
