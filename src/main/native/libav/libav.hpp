@@ -10,6 +10,7 @@
 
 extern "C" {
 #include "libavutil/avutil.h"
+#include "libavutil/samplefmt.h"
 #include "libavcodec/avcodec.h"
 }
 
@@ -28,6 +29,7 @@ struct AVStream;
 struct AVCodecContext;
 struct AVPacket;
 struct AVFrame;
+struct AVAudioResampleContext;
 
 
 /**
@@ -191,6 +193,12 @@ AVFrame* decodeVideoPacket(AVCodecContext *codecContext,
  */
 AVPacket* encodeVideoFrame(AVCodecContext *codecContext,
         const AVFrame *frame);
+
+/**
+ * Resample a decoded audio frame into the supplied sample format.
+ */
+AVFrame* resampleAudioFrame(AVAudioResampleContext *resampleContext,
+        const AVSampleFormat sampleFormat, const AVFrame *frame);
 
 } /* namespace util */
 } /* namespace transcode */

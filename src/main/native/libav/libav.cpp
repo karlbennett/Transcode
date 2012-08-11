@@ -10,6 +10,7 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include "libavutil/error.h"
 #include "libavutil/audioconvert.h"
+#include "libavresample/avresample.h"
 }
 
 #include <error.hpp>
@@ -463,6 +464,9 @@ public:
 
     AVPacket* encodeVideoFrame(AVCodecContext *codecContext,
             const AVFrame *frame) const;
+
+    AVFrame* resampleAudioFrame(AVAudioResampleContext *resampleContext,
+            const AVSampleFormat sampleFormat, const AVFrame *frame) const;
 };
 
 LibavSingleton::LibavSingleton() {
@@ -716,6 +720,12 @@ AVPacket* LibavSingleton::encodeVideoFrame(AVCodecContext *codecContext,
             callbacks::encodeVideoFrameCallback);
 }
 
+AVFrame* LibavSingleton::resampleAudioFrame(AVAudioResampleContext *resampleContext,
+            const AVSampleFormat sampleFormat, const AVFrame *frame) const {
+
+     return NULL;
+}
+
 
 std::string codecName(const CodecID codecId) {
 
@@ -797,6 +807,11 @@ AVPacket* encodeVideoFrame(AVCodecContext *codecContext,
     return LibavSingleton::getInstance().encodeVideoFrame(codecContext, frame);
 }
 
+AVFrame* resampleAudioFrame(AVAudioResampleContext *resampleContext,
+        const AVSampleFormat sampleFormat, const AVFrame *frame) {
+
+    return LibavSingleton::getInstance().resampleAudioFrame(resampleContext, sampleFormat, frame);
+}
 
 } /* namespace util */
 } /* namespace transcode */
